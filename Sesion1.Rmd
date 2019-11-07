@@ -562,7 +562,7 @@ getwd()
 
 ```{r wd2}
 
-setwd("c:/Users/Usuario/Documents/Mapfre/")
+setwd("c:/Users/Usuario/Documents/Mapfre/IntroToR/")
 
 ```
 
@@ -718,12 +718,66 @@ describe(ukaggclaim)
 
 La función `skim` de la librería `skimr` también aporta más información que `summary`
 
-```{r df11, warning=FALSE}
+```{r df30, warning=FALSE}
 
 pacman::p_load(skimr)
 skim(ukaggclaim)
 
 ```
+
+Una librería más reciente llamada `inspectdf` no solo aporta mucha información también en forma gráfica, sino que permite comparar dos dataframes que comparten columnas
+
+Por ejemplo podemos ver un resumen parecido al de la función `summary()`, con la función `show_plot()` graficamos los histogramas de las variables numéricas
+
+```{r df31, warning=FALSE, message=FALSE}
+
+pacman::p_load(inspectdf)
+inspect_num(ukaggclaim)
+show_plot(inspect_num(ukaggclaim))
+
+
+```
+
+
+Podemos ver los distintos tipos de variables a través de una tabla y/o un gráfico
+
+```{r df32, warning=FALSE, message=FALSE, }
+
+inspect_types(ukaggclaim)
+show_plot(inspect_types(ukaggclaim))
+
+```
+
+También inspeccionar solo las variables categóricas
+
+```{r df33, warning=FALSE, message=FALSE}
+
+inspect_cat(ukaggclaim)
+show_plot(inspect_cat(ukaggclaim))
+
+```
+
+
+
+Ver el número de datos no disponibles o "celdas vacias"
+
+```{r df34, warning=FALSE, message=FALSE}
+
+inspect_na(ukaggclaim)
+show_plot(inspect_na(ukaggclaim))
+
+```
+
+Y por último ver las correlaciones entre los datos de la tabla
+
+```{r df35, warning=FALSE, message=FALSE}
+
+inspect_cor(ukaggclaim)
+show_plot(inspect_cor(ukaggclaim))
+
+```
+
+
 
 ## Selecciones
 
