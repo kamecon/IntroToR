@@ -1,0 +1,1582 @@
+---
+title: "Breve Introducción a R"
+author: "Kamal Romero"
+date: "`r format(Sys.time(), '%m %d, %Y')`"
+format:
+  html: 
+    toc: true
+    toc-depth: 3
+    toc-location: left
+---
+
+# ¿Qué es R?
+
+La siguiente definición es del libro [Learning R de Richard Cotton](https://www.oreilly.com/library/view/learning-r/9781449357160/):
+
+"*Para confundirte, R se refiere a dos cosas. Está R, el lenguaje de programación, y R, el software que se utiliza para ejecutar programas escritos en R. Afortunadamente, la mayoría de las veces debería estar claro en el contexto a qué R se hace referencia.*"
+
+"*R (el lenguaje) fue creado a principios de los 90 por Ross Ihaka y Robert Gentleman, ambos trabajaban en la Universidad de Auckland. Se basa en el lenguaje S desarrollado en los Laboratorios Bell en los años 70, principalmente por John Chambers. R (el software) es un proyecto GNU, lo que refleja su condición de importante software libre y de código abierto.*"
+
+Características del lenguaje
+
+-   Interpretado: permite ejecuciones directas del código, lo que lo hace más lento que los lenguajes compilados.
+-   Tipado dinámicamente: Fácil y menos boiler plate, facilita mucho la metaprogramación.
+-   Multiparadigma. Aunque la mayoría de los usuarios explotan la versión funcional y algunos la orientación a objetos.
+
+# Entorno de trabajo
+
+En este curso utilizaremos la herramienta online [Posit cloud](https://login.rstudio.cloud/login?redirect=%2F) de Posit.
+
+[Rstudio](https://posit.co/download/rstudio-desktop/) es un IDE (entorno de desarrollo integrado) que funciona como una interfaz gráfica que facilita el uso del lenguaje R.
+
+Posit Cloud en su versión online
+
+## Alternativas
+
+Existen alternativas a Posit (algunos lo seguimos llamando Rstudio), pero este es el IDE de facto de R para muchos y el que seguramente se toparán en su actividad profesional.
+
+Una alternativa que va ganando mucha popularidad es el conocido [Visual Studio Code](https://code.visualstudio.com/)
+
+Si no desean usar Posit, esta sería la alternativa recomendada
+
+![R studio](rstudio.jpg)
+
+## Proyectos, directorios y librerías: Organizar el entorno de trabajo
+
+Para mantener todos nuestros archivos organizados, incluyendo bases de datos que cargamos o gráficas que creamos, vamos a trabajar en lo que Posit llama proyectos.
+
+Esencialmente, un proyecto de Posit es una carpeta o directorio de nuestro ordenador que contiene todos los elementos de nuestro proyecto.
+
+![Create R project](create%20RProject.gif)
+
+El uso de proyectos en RStudio es una buena práctica que permite mantener el control de todos los archivos empleados en un proyecto.
+
+Los proyectos suelen ser no solo complejos sino dinámicos, el manejo de todos los elementos que componen los mismos suele ser una parte esencial en el flujo de trabajo.
+
+Asimismo, la organización en proyectos facilita la reproducibilidad
+
+Para una discusión más detallada, leer esta [sección](https://r4ds.hadley.nz/workflow-scripts.html#projects) de este [buen libro](https://r4ds.hadley.nz/) (también en [español](https://es.r4ds.hadley.nz/))
+
+## Funcionamiento básico
+
+A continuación, vamos a introducir manejos básicos del entorno de trabajo, tales como definir variables, realizar comentarios al código, etc. En este proceso, iremos introduciendo conecptos del lenguaje que iremos definiendo de manera formal más adelante
+
+### Operaciones aritméticas
+
+Para introducirnos al uso del editor y de la linea de comandos de Rstudio, empezaremos con unas operaciones muy básica
+
+```{r operaciones}
+
+2 + 2
+
+5 - 3
+
+3 * 2
+
+6 / 3
+
+```
+
+Es posible aplicar reglas de asociación estándar así como operaciones más allá de las básicas (potencia, logaritmo, etc.)
+
+```{r operaciones 2}
+
+(5 + 3) / 4
+
+3^2
+
+log(100, base = 10)
+
+5 %% 3
+
+sqrt(9)
+
+
+```
+
+### Asignación de variables
+
+Podemos guardar *valores* asignandoles un nombre, de modo que podamos acceder a dicho valor posteriormente
+
+```{r asigna}
+
+x <- 4
+
+x
+
+y <- (5 + 3) / 4
+
+y
+
+```
+
+Se crean variables, o crean nuevos *objetos* (puede que volvamos a esto luego) con el operador `<-`. También se puede hacer de la manera más convencional con `=`. Cuando expliquemos como crear funciones, justificaremos el uso de la práctica habitual.
+
+```{r}
+
+Numero_de_empleados <- 150
+
+Numero_de_empleados
+
+```
+
+Con los nombres hay que respetar ciertas convenciones: deben comenzar con una letra y solo pueden contener letras, números, `_` y `.`
+
+Se es libre de nombrar las variables como uno prefiera, pero existen unas reglas de estilo, como por ejemplo
+
+```{r}
+#| eval: false
+
+i_use_snake_case
+otherPeopleUseCamelCase
+some.people.use.periods
+Lo_queMeSale.de.por_AHI
+
+```
+
+::: {#fig-elephant}
+[![](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/dbb99049-2916-4bc8-824f-1816f5c4f06d_rw_1920.png?h=f0b45a30ba31ad414562d1085cd6c172)](https://allisonhorst.com/everything-else)
+
+Una ilustración de los estilos con que nombrar variables hecho por la gran [Allison Horst](https://allisonhorst.com/allison-horst). La fuente es [esta](https://allisonhorst.com/everything-else). 
+:::
+
+En caso de que lleguemos a hablar algo de POO, les diré porque puede ser mala idea nombrar objetos con puntos
+
+```{r}
+Nuevos_analistas_enero <- 5
+
+Nuevos_analistas_febrero <- 3
+
+Analistas <- Nuevos_analistas_enero + Nuevos_analistas_febrero
+
+Analistas
+
+```
+
+### Introducir comentarios
+
+Se inician los comentarios con \#
+
+```{r}
+
+#Calculo del numero de analistas
+Analistas <- Nuevos_analistas_enero + Nuevos_analistas_febrero
+
+Analistas
+
+```
+
+### Errores
+
+Discutiremos acerca de los errores de manera detallada más adelante, pero vale la pena irse acostumbrando a los mismos, ya que nos acompañaran siempre 😢
+
+```{r}
+#| eval: false
+
+#Calculo del numero de analistas
+Analistas_update <- Nuevos_analistas_enero + Nuevos_analistas_febrero + Nuevos_analistas_marzo
+
+Analistas_update
+
+```
+
+# Librerías
+
+Las librerías o paquetes puede que sean los elementos de mayor uso en R para el trabajo práctico.
+
+Una definición formal de una librería sacada del libro R Packages de Hadley Wickham y Jennifer Bryan es la siguiente:
+
+"*En R, la unidad fundamental de código compartible es el paquete. Un paquete agrupa código, datos, documentación y pruebas, y es fácil de compartir con otros. En marzo de 2023, había más de 19.000 paquetes disponibles en Comprehensive R Archive Network, o CRAN, el centro público de intercambio de paquetes de R.*"
+
+Un paquete de R es una manera de compartir código de una manera organizada y que expanden las posibilidades de R extendiendo las funcionalidades del mismo
+
+Las librerías se instalan usando el comando `install.packages()`, y se cargan las librerías con `library()`
+
+```{r libreria}
+#| eval: false
+
+install.packages(emoji)
+library(emoji)
+
+
+```
+
+# Tipos básicos en R
+
+Para poder trabajar con datos, es necesario entender como los datos son almacenados en el ordenador por cada lenguaje de programación.
+
+Las estructuras que almacenan información numérica, y la manera de acceder a ellas, difieren de Python a R, o de R a otros lenguajes.
+
+La familia más importante de tipos de variable en R son los vectores, que pueden clasificarse en atómicos o listas.
+
+La estructura de los vectores atómicos es la siguiente (fuente: [Advanced R](https://adv-r.hadley.nz/index.html)):
+
+![Tipos en R](summary-tree-atomic.png){width=300}
+
+```{r tipos}
+
+Numero <-  1.0   # (real, flotante)
+Entero <- 1
+Caracter <- "ab"   
+Logico <- TRUE  
+
+Numero
+Entero
+Caracter
+Logico
+
+```
+
+Tener cuidado cuando trabajamos con tipos distintos
+
+```{r tipos2}
+#| eval: false
+
+Numero + Caracter
+
+```
+
+Cuando realizamos una operación con dos tipos numéricos distintos (real + entero), R *fuerza* (coerce) a que el resultado al tipo con mayor precisión, en este caso al tipo real
+
+```{r tipos3}
+
+Suma <- Numero + Entero
+
+Suma
+
+typeof(Suma)
+
+```
+
+Varias cosas acá, hemos tenido nuestra primera aproximación a una función en R, tópico que exploraremos con mayor detalle más adelante. Al igual que la idea intuitiva que tenemos de función de las matemáticas de secundaria, una función en R tiene un argumento (variable entre paréntesis) y nos arroja un resultado.
+
+En R las funciones tienen su nombre seguido de paréntesis, donde colocamos la(s) variable(s) de argumento(s): `una_funcion(x)`
+
+Las funcion `typeof()` nos indica la clase de la variable (numérico, entero o lógico)
+
+```{r tipos3-5}
+
+typeof(Numero)
+typeof(Entero)
+typeof(Caracter)
+typeof(Logico)
+
+```
+
+Asimismo, existen funciones específicas para determinar si una variable es de un tipo específico
+
+```{r tipos4}
+is.numeric(Numero)
+is.integer(Entero) 
+is.character(Caracter)
+is.logical(Logico)
+```
+
+Vemos que R nos dice que `Entero` no es un entero, para especificar un entero debemos colocar una letra L al final del número
+
+```{r tipos5}
+Entero_2 <- 1L
+Entero_2
+is.integer(Entero_2)
+typeof(Entero_2)
+
+```
+
+# Vectores
+
+Vamos a utilizar R para analizar datos y crear modelos estadísticos o algorítmicos a partir de los mismos.
+
+La mayoría de los datos vienen representados en *tablas*: hojas de cálculo, bases de datos relacionales, ficheros .csv, etc.
+
+La mayoría de los modelos estadísticos usan como input datos en forma de tabla.
+
+El objeto más empleado para trabajar con tablas en R son los **data frame** y demás variantes (los tibble o data.tables por ejemplo).
+
+Antes de entender como trabajar tablas, repasamos el concepto de vector, que es el tipo básico sobre el cual están construidos los data frames.
+
+Lo que caracteriza a un vector, es que puede almacenar solo datos del **mismo tipo**
+
+```{r vectores}
+
+vector_numerico <- c(1, 10, 49)
+vector_caracter <- c("a", "b", "c")
+
+vector_numerico
+vector_caracter
+
+```
+
+Los vectores son arreglos de una dimensión (fila o columna) que pueden almacenar números, caracteres o variables lógicas.
+
+Como hemos visto arriba, los vectores se crean con el comando `c()` donde la c viene de *combinar*
+
+```{r vectores2}
+
+vector_mixto <- c(1,2,"a")
+vector_mixto
+
+```
+
+En el ejemplo anterior hemos querido crear un vector con elementos de distintos tipos, numérico y carácter. R ha convertido todos los elementos a carácter.
+
+Si hay carácteres en un vector R convierte todos los elementos a carácter, si todos son numéricos pero de distinto tipo, R los convierte al tipo de mayor precisión (doble). ¿Qué pasa con los vectores lógicos?
+
+```{r vectores3}
+
+vector_mixto2 <- c(1,2,TRUE)
+vector_mixto2
+typeof(vector_mixto2)
+
+```
+
+En este caso R ha convertido los elementos del vector a numérico
+
+Observamos algo que posteriormente va a ser muy útil, R le ha asignado a la variable lógica `TRUE` el número 1. La variable `FALSE` tiene asignado un cero
+
+¿Podemos cambiar una variable o un vector de tipo? SI
+
+```{r vectores4}
+
+vector_numerico
+
+as.character(vector_numerico)
+
+vector_logico <- c(TRUE, FALSE)
+
+vector_logico
+
+as.numeric(vector_logico)
+
+```
+
+Existen varias funciones en R que permiten realizar cambios de tipo
+
+```{r vectores4_5}
+as.character(vector_logico)
+
+```
+
+
+Existen otro par de formas de crear vectores
+
+```{r vectores5}
+
+vector_1 <- 1:5
+
+vector_2 <- seq(1,5)
+
+vector_1
+
+vector_2
+
+
+```
+
+Donde `seq` viene de secuencia
+
+Se pueden crear secuencias más complejas con la función `seq()`
+
+```{r vectores6}
+
+vector_3 <- seq(1,10, by = 2)
+
+vector_4 <- seq(1,10, length.out = 20)
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_3
+
+vector_4
+
+vector_5
+
+```
+
+Se pueden asignar nombres a los elementos del vector
+
+```{r vectores7}
+
+names(vector_1)
+
+nombres <- c("uno", "dos", "tres", "cuatro", "cinco")
+
+names(vector_1) <- nombres
+
+names(vector_1)
+
+```
+
+Otro comando para generar secuencias es `rep`
+
+```{r vectores8}
+
+repetido <- rep(4,10)
+
+repetido
+
+```
+
+Podemos repetir no solo un valor sino vectores
+
+```{r vectores9}
+
+repetido_2 <- rep(1:4, 4)
+
+repetido_2
+
+repetido_3 <- rep(1:4, each = 4)
+
+repetido_3
+
+repetido_4 <- rep(1:4, each=2, times=2)
+
+repetido_4
+
+repetido_5 <- rep(1:4, c(2,3,4,5))
+
+repetido_5
+
+```
+
+Otra característica de los vectores además de su tipo, es su **longitud** o dimensión, la cual podemos determinar con la función `length()`
+
+```{r longitud}
+
+length(vector_1)
+
+length(vector_4)
+
+length(repetido_5)
+
+```
+
+
+## Operaciones con vectores
+
+Se pueden realizar operaciones con vectores
+
+```{r vectores10}
+
+vector_1
+
+vector_2
+
+Vec_suma <- vector_1 +vector_2
+
+Vec_suma
+
+```
+
+```{r vectores11}
+vector_1
+
+vector_2
+
+Vec_producto <- vector_1 * vector_2
+
+Vec_producto
+
+
+```
+
+En este caso, ambos vectores tienen la misma dimensión. ¿Qué ocurre si pasa lo contrario?
+
+```{r vectores11_1}
+
+vector_1 
+
+seq(6,15)
+
+vector_1 + seq(6,15)
+
+
+```
+
+Este comportamiento peculiar es lo que se denomina **reciclaje**. Observar el resultado ¿qué es lo que ha hecho R en este caso?
+
+
+## Vectorización de operaciones
+
+Decimos que una operación está vectorizada si la misma puede ser aplicada a todos los elementos de un vector
+
+```{r vectorizacion}
+
+vector_numerico
+
+vector_numerico + 2
+
+vector_numerico * 2
+
+vector_numerico / 2
+
+vector_numerico^2
+
+sqrt(vector_numerico)
+
+log(vector_numerico)
+
+
+```
+
+Observamos que cuando se aplica un operador aritmético (`+`, `*`, `-`, `/`, `^`) a un vector, la operación se realiza sobre cada uno de los elementos del vector. Del mismo modo, cuando aplicamos una función (`sqrt()`, `log()`) esta usa como argumentos todos los elementos del vector y su output es un vector de dimensión igual a la dimensión del vector original 
+
+
+## Inspección de vectores
+
+Es posible aplicar ciertas funciones para analizar algunas características de los vectores.
+
+Recordar que el objetivo último es el de realizar análisis de datos, algunas de estas funciones serán empleadas de manera regular cuando queramos inspeccionar los datos de una tabla 
+
+Longitud de un vector
+
+```{r inspect}
+
+vector_4
+
+length(vector_4)
+
+```
+
+Estadísticos de un vector
+
+```{r inspect1}
+
+summary(vector_4)
+
+```
+
+
+Valores al principio y al final
+
+```{r inspect2}
+
+head(vector_4)
+
+tail(vector_4)
+
+```
+
+
+Tabla de frecuencias
+
+En muchas aplicaciones prácticas necesitaremos analizar las frecuencias de aparición de un conjunto de datos, con la función `table()` podremos obtener las frecuencias absolutas y pasando como argumento el output de `table()` a la función `prop.table()`
+
+Vamos a construir un ejemplo usando estas funciones generando una muestra de las letras del abecedario. Podemos generar muestras de un vector con la función `sample()`, la cual nos pedirá el vector en cuestión, el tamaño de la muestra, y si realizamos el muestreo con o sin repetición. Obtendremos las letras del abecedario a partir de un vector de constantes predefinido en R llamado `letters` (`LETTERS` si deseamos mayúsculas)
+
+```{r inspect3}
+
+vector_letras <- sample(x = letters[1:5], size = 50, replace = TRUE) #Realizamos una selección de letters, explicamos esto más adelante
+
+tabla <- table(vector_letras)
+
+tabla
+
+prop.table(tabla)
+
+```
+
+## Selecciones
+
+Es posible construir nuevos vectores a partir de un vector
+
+```{r select1}
+
+vector_1
+
+vector_cuadrado <- vector_1^2
+
+vector_cuadrado
+
+```
+
+¿Como accedemos a los elementos de un vector?
+
+```{r select2}
+
+vector_cuadrado[1]
+
+vector_cuadrado[3]
+
+```
+
+Varios elementos seguidos (slice)
+
+```{r select3}
+
+vector_cuadrado[1:3]
+
+vector_cuadrado[3:1]
+
+```
+
+Varios elementos no seguidos
+
+```{r select4}
+
+vector_cuadrado[c(1,3)]
+
+vector_cuadrado[c(3,1)]
+
+```
+
+Todos los elementos excepto algunos
+
+```{r select5}
+
+vector_cuadrado[-c(1,3)]
+
+vector_cuadrado[-length(vector_cuadrado)]
+
+```
+
+Todos los elementos que cumplan una condición
+
+```{r select6}
+
+vector_5
+
+vector_5[vector_5 < 5]
+
+vector_5[vector_5 > 5]
+
+```
+
+La condición puede ser una igualdad
+
+```{r select7}
+
+vector_5[vector_5 == 5.5]
+
+```
+
+Estas condiciones son muy importantes para el análisis de datos. Suponga que desea localizar en una tabla con los datos financieros de un conjunto de personas, los datos de aquellos clientes cuyo ingreso sea mayor a 30.000 al año
+
+También es útil para localizar datos y reemplazarlos por otro valor. Siguiendo el ejemplo anterior, sustituir la columna de ingresos de los clientes cuyo ingreso anual es menor de 12.000 al año por cero, ya que no trabajaremos con ese segmento
+
+```{r select8}
+
+vector_5
+
+vector_5[vector_5 < 5] <- 0
+
+vector_5
+
+```
+
+En el caso que los vectores tengan nombres, podemos emplear estos para seleccionar elementos 
+
+```{r select9}
+
+vector_cuadrado["dos"]
+
+vector_cuadrado[c("uno", "tres")]
+
+```
+
+Más funciones aplicadas a vectores
+
+```{r select10}
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_5
+
+max(vector_5)
+
+min(vector_5)
+
+sum(vector_5)
+
+prod(vector_5)
+
+```
+
+## Matrices
+
+Hasta ahora hemos trabajado con una estructura de datos de una sola dimensión, pero en el análisis de datos en ocasiones estamos interesados en *descubrir* o encontrar relaciones entre variables, por lo que es necesario verlas en su conjunto para poder captar interrelaciones
+
+Esto nos obliga a tener que trabajar en más de una dimensión, en R podemos hacer eso con **matrices** y **arrays**
+
+Una matriz no es más que una estructura de dos dimensiones que nos permite almacenar datos homogéneos. Para construir una matriz utilizamos la función `matrix()`
+
+```{r matrices}
+
+vector_6 <- seq(8)
+
+vector_6
+
+A <- matrix(vector_6)
+
+A
+
+
+```
+
+Tenemos un vector de una columna. ¿Y si queremos más de una dimensión?
+
+```{r matrices2}
+
+A <- matrix(vector_6, nrow = 2)
+
+A
+
+
+```
+
+```{r matrices3}
+
+A <- matrix(vector_6, ncol = 2)
+
+A
+
+```
+
+
+```{r matrices4}
+
+A <- matrix(vector_6, nrow = 4, ncol = 2)
+
+A
+
+```
+
+
+Observamos que la matriz se *rellena* por columnas, podemos cambiar ese comportamiento
+
+```{r matrices5}
+
+A <- matrix(vector_6, nrow = 4, ncol = 2, byrow = TRUE)
+
+A
+
+```
+
+Del mismo modo que teníamos el atributo nombre para los vectores, también podemos nombrar las filas y columnas de una matriz. Para inspeccionar los nombres de fila de una matriz usamos `rownames()`, y los nombres de las filas `colnames()`
+
+
+```{r matrices6}
+
+rownames(A)
+colnames(A)
+
+```
+
+
+`NULL` nos indica cuando una expresión o función da como resultado un valor indefinido. En este caso nos indica que la matriz no tiene nombres. Vamos a asignarle nombres asociando un vector de caracteres
+
+```{r matrices7}
+
+rownames(A) <- c("fila_1", "fila_2", "fila_3", "fila_4")
+colnames(A) <- c("columna_1", "columma_2")
+
+rownames(A)
+colnames(A)
+
+A
+
+```
+
+`dimnames()` es otra manera de inspeccionar/asignar los nombres de una matriz. 
+
+```{r matrices8}
+
+dimnames(A)
+
+```
+
+¿Se ve algo extraño en esta estructura? Volveremos a esto en el siguiente tópico
+
+Acceder a los elementos de una matriz es muy similar al caso de los vectores, solo debemos diferenciar entre dimensiones con una coma `,`
+
+```{r matrices9}
+
+A
+
+A[1,1]
+
+A[3,2]
+
+A["fila_2", "columma_2"]
+
+A[1:2, 1]
+
+A[c("fila_1", "fila_4"), 2]
+
+```
+
+## Arreglos (arrays)
+
+En el caso que necesitemos trabajar con más de una dimensión, usamos los **arrays**, que definiremos con la función `array()`
+
+```{r arrays1}
+
+arreglo_1 <- array(rep(1:3, each = 4), dim = c(2,2,3))
+
+arreglo_1
+
+```
+
+Y filtranos elementos del siguiente modo que con vectores y matrices
+
+```{r arrays2}
+
+arreglo_1[1,2,2]
+
+arreglo_1[2,1:2,3]
+
+arreglo_1[2,1:2,1]
+
+```
+
+En el trabajo práctico, en muchas ocasiones se suelen colapsar más de dos dimensiones en una matriz, usando el llamado formato *long*, del cual hablaremos en el siguiente módulo
+
+
+# Data Frames
+
+El `data.frame` será uno de los objetos que más utilizaremos en R para el análisis de datos.
+
+Los data frames son *tablas* o arreglos rectangulares, podemos tratarlos como si fueran una hoja de Excel en la cual organizamos los datos que deseamos analizar.
+
+Al igual que en Excel, podemos hacer cálculos con las tablas, crear nuevas columnas (variables), realizar análisis estadísticos, etc.
+
+
+## Inspeccionar los datos
+
+Por lo general, solemos inspeccionar los datos de una tabla para familiarizarnos con ellos y ver que tipo de análisis podemos realizar con ellos.
+
+Vamos a usar uno de los conjuntos de datos que ya viene en la instalación básica de R, `mtcars`
+
+
+Podemos abrir una versión amigable de la tabla en RStudio
+
+```{r df1}
+
+mtcars
+
+```
+
+Existen varias formas de echar vistazos rápidos a los datos sin necesidad de visualizar la tabla entera
+
+Por ejemplo podemos ver las 6 primeras filas
+
+```{r df2}
+
+head(mtcars)
+
+```
+
+O las 6 últimas
+
+```{r df3}
+
+tail(mtcars)
+
+```
+
+Si en lugar de 6, queremos ver un determinado número de filas, simplemente se lo decimos a las funciones `head`y `tail`
+
+```{r df4}
+
+head(mtcars, n = 3)
+
+tail(mtcars, n = 2)
+
+```
+
+En ocasiones utilizamos tablas muy grandes que almacenan muchas variables, en este caso antes de visualizar aunque sea solo una fracción de la tabla, es útil ver el nombre las columnas o lo que es lo mismo, las variables
+
+```{r df5}
+
+colnames(mtcars)
+
+```
+
+
+En general, para poder determinar cuantas variables y cuantas observaciones tenemos, usamos la función `dim`, la cual nos da el número de columnas y filas de la tabla
+
+```{r df6}
+
+dim(mtcars)
+
+```
+
+Podemos ver por separado el número de filas y columnas con `nrow` y `ncol`
+
+```{r df7}
+
+ncol(mtcars)
+
+nrow(mtcars)
+
+```
+
+
+
+Otra forma es usando la función `str`. Aunque no es intuitiva e incluso intimida a primera vista, no es tan complicado y aporta información útil 
+
+```{r df8}
+
+str(mtcars)
+
+```
+
+Una versión que aporta información estadística es `summary`
+
+```{r df9}
+
+summary(mtcars)
+
+```
+
+Existen otras versiones de `summary` fuera de R base, elaboradas por otras personas (luego hablaremos de las librerías)
+
+Una que aporta mucho detalle es la función `describe`de la librería `psich`
+
+```{r df10}
+
+#install.packages("psych")
+library(psych)
+describe(mtcars)
+
+```
+
+La función`skim` de la librería `skimr` también aporta más información que `summary`
+
+```{r df11, warning=FALSE}
+
+#install.packages("skimr")
+library(skimr)
+skim(mtcars)
+
+```
+
+Ahora que tenemos nuestros datos en un data frame, el próximo paso es acceder a ciertos datos de la tabla (una columna o grupo de filas que cumplan una condición), manipular y crear nuevas variables.
+
+Podemos acceder a los datos del data frame del mismo modo que lo hacíamos con los vectores, los data frames no dejan de ser una especie de conjuntos de vectores
+
+Recordar que podíamos acceder a elementos de los vectores por posición o nombre
+
+```{r df12}
+
+head(mtcars, n = 1)
+
+mtcars[1,2]
+
+mtcars[1,4]
+
+```
+
+En el primer caso le decimos a R que queremos que nos muestre el dato de la primera fila y la segunda columna, en el segundo caso el dato de la primera fila y cuarta columna
+
+En el caso que deseemos ver una columna o fila específica, dejamos una de las dimensiones en blanco
+
+Si queremos acceder a la información de la segunda fila
+
+```{r df13}
+
+mtcars[2, ]
+
+```
+
+Si queremos acceder a la información de la cuarta columna
+
+```{r df14}
+
+mtcars[ , 4]
+
+```
+
+Tambien podemos obtener la información por columna usando el nombre de la misma
+
+```{r df15}
+
+mtcars[ , "cyl"]
+
+```
+
+Asimismo, podemos inspeccionar una columna de data frame escribiendo el nombre del mismo seguido de un signo `$` y el nombre de la columna
+
+La ventaja de este método es que los nombres de la columna se autocompletan
+
+```{r df16}
+
+mtcars$cyl
+
+```
+
+Con la posición, al igual que los vectores, podemos acceder a conjuntos de filas y columnas (slices)
+
+Por ejemplo, si nos queremos quedar solo con las 3 primeras filas y la cuarta y quinta columna
+
+```{r df17}
+
+mtcars[1:3, 4:5]
+
+```
+
+Podemos construir una tabla nueva a partir de esta sub-tabla, asignando la última a un nombre
+
+```{r df18}
+
+mtcars_peque <-  mtcars[1:3, 4:5]
+
+mtcars_peque
+
+```
+
+Sub-tabla solo con las 10 primeras filas
+
+```{r df19}
+
+mtcars[1:10, ]
+
+```
+
+Sub-tabla solo con las 2 últimas columnas
+
+```{r df20}
+
+mtcars[, 4:5]
+
+```
+
+
+Podemos seleccionar datos con criterios según cumplan una condición
+
+```{r df21}
+
+mtcars[mtcars$cyl > 4 , ]
+
+```
+
+```{r df22}
+
+mtcars[mtcars$cyl == 6, ]
+
+```
+
+Lo podemos complicar
+
+```{r df23}
+
+mtcars[mtcars$cyl == 6 & mtcars$mpg > 18, ]
+
+```
+
+Le hemos pedido a R que nos muestre los datos de la tabla que corresponden a los modelos de coches "A" y que el número de solicitudes sea mayor o igual a 100
+
+Ambas condiciones se cumplen de manera simultanea
+
+```{r df23_1}
+
+mtcars[mtcars$cyl == 6 | mtcars$mpg > 18, ]
+
+```
+
+
+<!-- ::: {#fig-types} -->
+<!-- [![](dataStructuresNew.png) -->
+
+<!-- Resumen de tipos en R -->
+<!-- ::: -->
+
+# Estructuras de control
+
+El análisis de datos es un flujo de trabajo en el que los datos capturados se convierten en productos que generan valor. En dicho proceso es necesario variar el flujo de control si ciertas condiciones se cumplen o no, así como repetir operaciones un gran número de veces. En este tema se introducen las estructuras básicas para este proceso
+
+
+El objetivo de las estructuras condicionales es hacer nuestro proceso contingente a ciertas situaciones
+
+Por ejemplo, que se transforme una variable solo si su valor es negativo, que se asigne una etiqueta solo a aquellas personas que tengan más de 25 años, o que un algoritmo de previsión se lleve a cabo acorde a las características de los datos.
+
+Las estructuras condicionales en R no difieren mucho del presente en el resto de los lenguajes de programación, pero si existen algunos cambios en cuanto a su sintaxis
+
+## Estructura `if`
+
+```{r control1}
+#| eval: false
+
+if (condicion se cumple) {
+  ejecuta una acción
+}
+
+```
+
+Vamos a ver un ejemplo usando una columna de `mtcars´
+
+```{r control1_5}
+#| eval: false
+
+if (mtcars$mpg[1] > 15) {
+  print("Bien")
+}
+
+
+if (mtcars$mpg[1] < 15) {
+  print("Mal")
+}
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+}
+
+
+```
+
+## Estructura `if - else`
+
+```{r control1_6}
+#| eval: false
+
+if (condicion se cumple) {
+  ejecuta una acción
+} else {
+  ejecuta otra acción
+}
+
+```
+
+Por ejemplo
+
+```{r control2}
+
+
+if (mtcars$mpg[1] > 15) {
+  print("Bien")
+} else {
+  print("Mal")
+}
+
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+} else {
+  mtcars$mpg[1] - 5
+}
+
+
+```
+
+## Estructura `if` - `else if` - `else`
+
+```{r control3_5}
+#| eval: false
+
+if (condicion se cumple) {
+  ejecuta una acción
+} else if (se cumple esta condicion) {
+  ejecuta otra acción
+} else{
+  ejecuta esta otra accion
+}
+
+```
+
+Por ejemplo
+
+```{r control4_5}
+
+mtcars$mpg[15]
+
+if (mtcars$mpg[15] >= 25) {
+  print("Grande")
+} else if (mtcars$mpg[15] > 15 & mtcars$mpg[15] < 25) {
+  print("Mediano")
+} else {
+  print("Pequeno")
+}
+
+
+```
+
+R nos proporciona una función muy útil, sobretodo cuando trabajamos con data frames o flujos complejos, la función `ifelse()`, la cual nos ahorra escribir la estructura entera del `if`
+
+```{r control5}
+
+ifelse(mtcars$mpg[1] > 15, "Grande", "Pequeno")
+
+```
+
+# Estructura iterativa en R
+
+Es común que tengamos que aplicar la misma operación un número de veces, donde este número es lo suficientemente grande como para que sea inviable, o al menos, incómoda.
+
+Por lo general aplicaremos funciones en este esquema iterativo, o unas cuentas líneas de código que deseamos ejecutar varias veces.
+
+La estructura iterativa básica es un buble (loop) que adopta la siguiente forma:
+
+
+```{r loop1}
+#| eval: false
+
+for (variable in vector) {
+  Ejecuta esta accion
+  Ejecuta esta accion
+  ...
+  Ejecuta esta accion
+}
+
+```
+
+
+Ejemplos
+
+```{r loop2}
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+}
+
+
+```
+
+```{r loop2_5}
+
+contador <- 1
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+  contador <- contador + 1
+  if (contador >10){
+    break
+  }
+}
+
+
+```
+
+```{r loop3}
+
+mtcars_peque <- mtcars[1:20,]
+
+for (i in seq_along(mtcars_peque$cyl)) {
+  if (mtcars_peque$cyl[i] >= 8){
+    mtcars_peque$cyl[i] <- "Grande"
+  } else{
+    mtcars_peque$cyl[i] <- "Pequeno"
+  }
+}
+
+mtcars_peque
+
+```
+
+
+```{r loop4}
+
+for (i in seq_along(mtcars_peque$cyl)) {
+  if (mtcars_peque$cyl[i] >= 6) {
+    mtcars_peque$cyl[i] <- "Grande"
+  } else if (mtcars_peque$cyl[i] > 4 & mtcars_peque$cyl[i] < 6) {
+    mtcars_peque$cyl[i] <- "Mediano"
+  } else {
+    mtcars_peque$cyl[i] <-"Pequeno"
+  }
+}
+
+mtcars_peque
+
+```
+
+
+# Funciones
+
+Ya hemos trabajado con varias funciones de R, tales como `length()`, `nrow()`, `summary()`
+
+Pero en esta sección no nos concentramos en las distintas funciones que podemos llamar en R y sus librerías, que son miles, sino en como podemos definir nuestras propias funciones.
+
+Es más que habitual en el flujo de trabajos con datos necesitemos repetir un tipo de operación no trivial (cuya realización implique el uso de un script de código) varias veces. En este caso, en lugar de copiar y pegar las instrucciones una y otra vez, podemos escribir una función que encapsule esas instrucciones y llamar a la misma cada vez que necesitemos realizar la operación.
+
+Siguiendo este [consejo](https://es.r4ds.hadley.nz/19-functions.html#cu%C3%A1ndo-deber%C3%ADas-escribir-una-funci%C3%B3n), deberíamos convertir en una función cualquier bloque de código que hayamos copiado y pegado al menos 3 veces en nuestro flujo de trabajo
+
+Veamos un ejemplo muy sencillo. deseamos escribir una función que normalice una variable que pertenece a un conjunto de datos, sustrayendo su media y dividiéndolo por su desviación típica.
+
+Generamos unos datos aleatorios que sirvan de ejemplo
+
+```{r fun01}
+
+set.seed(154)
+datos_1 <- rnorm(n = 100, mean = 50, sd = 15)
+
+```
+
+Seleccionamos uno al azar
+
+```{r fun02}
+
+dato_1 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_1
+
+```
+
+Normalizamos la variable
+
+```{r fun03}
+
+normal_1 <- (dato_1 - mean(datos_1)) / sd(datos_1)
+
+normal_1
+
+```
+
+Queremos volver a hacer esta operación con otro dato del conjunto
+
+```{r fun04}
+
+dato_2 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_2
+
+normal_2 <- (dato_2 - mean(datos_1)) / sd(datos_1)
+
+normal_2
+
+
+```
+
+Y otra vez
+
+```{r fun05}
+
+dato_3 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_3
+
+normal_3 <- (dato_3 - mean(datos_1)) / sd(datos_1)
+
+normal_3
+
+
+```
+
+Esto de copiar y pegar un trozo de código cada vez que necesitamos hacer una operación, no tiene sentido.
+
+Para evitar eso definimos una *función personalizada* 
+
+En R se definen funciones del siguiente modo:
+
+```{r fun06}
+#| eval: false
+
+nombre_de_la_funcion <- function(argumentos) {
+  
+  Cuerpo de la funcion
+}
+
+```
+
+Podemos identificar tres partes de la función:
+
+* Nombre de la función
+
+* Argumentos
+
+* Cuerpo de la función
+
+El nombre de la función debe ser informativo (ver estos [consejos](https://es.r4ds.hadley.nz/19-functions.html#las-funciones-son-para-los-seres-humanos-y-para-las-computadoras)).
+
+EL cuerpo de la función es el código que deseamos re utilizar
+
+Los argumentos son las variables (pueden ser de cualquier tipo: vectores, matrices, dtataframes, etc.) que necesita el cuerpo para poder ejecutar el código
+
+Implementamos nuestro ejemplo
+
+```{r fun07}
+
+normalizar <- function(dato, datos) {
+  
+  (dato - mean(datos)) / sd(datos)
+  
+}
+
+```
+
+Una vez ejecutamos la instrucción anterior, la función está a nuestra disposición en el entorno de trabajo
+
+Probemos con los valores utilizados antes
+
+```{r fun08}
+
+normalizar(dato = dato_1, datos = datos_1)
+
+normalizar(dato = dato_2, datos = datos_1)
+
+normalizar(dato = dato_2, datos = datos_1)
+
+```
+
+Por supuesto, podemos asignar el resultado de la función a una variable (objeto)
+
+```{r fun09}
+
+normal_1_2 <- normalizar(dato = dato_1, datos = datos_1)
+
+normal_2_2 <- normalizar(dato = dato_2, datos = datos_1)
+
+normal_3_2 <- normalizar(dato = dato_2, datos = datos_1)
+
+normal_1_2
+normal_2_2
+normal_3_2
+
+```
+
+Podemos pasar un vector como argumento
+
+```{r fun10}
+
+datos_entrada <- c(dato_1, dato_2, dato_3)
+
+normal_vec <- normalizar(dato = datos_entrada, datos = datos_1)
+
+normal_vec
+
+```
+
+Y por ende, una columna de un data frame
+
+```{r fun11}
+
+datos_entrada_2 <- mtcars$mpg
+
+normal_mpg <- normalizar(dato = datos_entrada_2, datos = datos_entrada_2)
+
+normal_mpg
+
+```
+
+Escribir funciones es un mundo y un arte, a la función anterior por ejemplo habría que añadirle alguna prueba que verificara, por ejemplo, si los vectores de entrada son numéricos, como actuar en caso de que haya datos faltantes, imprimir errores informativos en caso de errores, posibilidad de llamar a otras funciones, etc.
+
+La primera parte del párrafo anterior se implementa con el uso de las estructuras condicionales vistas en las secciones anteriores
+
+# Gráficos
+
+El tópico de gráficos o visualización en general, ocuparía un curso entero. En las presentes notas nos limitamos a explicar el funcionamiento básico de la función `plot()`
+
+Lo más básico
+
+```{r plot01}
+
+plot(x = mtcars$mpg, y = mtcars$hp)
+
+```
+
+```{r plot01_2}
+
+plot(x = mtcars$mpg,
+     y = mtcars$hp,
+     type = "l")
+
+```
+
+```{r plot01_3}
+
+plot(x = mtcars$mpg,
+     y = mtcars$hp,
+     main = "Mi primer gráfico")
+
+```
+
+```{r plot01_4}
+
+plot(x = mtcars$mpg,
+     y = mtcars$hp,
+     main = "Mi primer gráfico",
+     xlab = "Millas por Galón",
+     ylab = "Caballos")
+
+```
+
+```{r plot01_5}
+
+plot(x = mtcars$mpg,
+     y = mtcars$hp,
+     main = "Mi primer gráfico",
+     xlab = "Millas por Galón",
+     ylab = "Caballos",
+     col = mtcars$cyl)
+
+```
+
+
+```{r plot02}
+
+barplot(height = mtcars$cyl)
+
+```
+
+
+```{r plot03}
+
+barplot(height = mtcars$cyl,
+        names.arg = rownames(mtcars))
+
+```
+
+```{r plot04}
+
+barplot(height = mtcars$cyl,
+        names.arg = rownames(mtcars),
+        col = "red")
+
+```
+
+```{r plot05}
+
+barplot(height = mtcars$cyl,
+        names.arg = rownames(mtcars),
+        col = "red",
+        main = "Número de Cilindros")
+
+```
+
+```{r plot06}
+
+barplot(height = mtcars$cyl,
+        names.arg = rownames(mtcars),
+        col = "red",
+        main = "Número de Cilindros",
+        horiz = TRUE)
+
+```
+
+```{r plot07}
+
+barplot(height = mtcars$cyl,
+        names.arg = rownames(mtcars),
+        col = "red",
+        main = "Número de Cilindros",
+        xlab = "Marca" )
+
+```
+
+```{r plot08}
+
+barplot(height = mtcars$cyl,
+        names.arg = rownames(mtcars),
+        col = "red",
+        main = "Número de Cilindros",
+        xlab = "Marca",
+        ylab = "Cilindros")
+
+```
+
+```{r plot09}
+
+barplot(height = mtcars$cyl,
+        names.arg = rownames(mtcars),
+        col = "red",
+        main = "Número de Cilindros",
+        xlab = "Marca",
+        ylab = "Cilindros",
+        border = "blue")
+
+```
+
+```{r plot10}
+
+hist(x = mtcars$cyl)
+
+```
+
