@@ -1364,13 +1364,13 @@ We compute the Leontief inverse in R:
 #| output: false
 
 #Number of sectors
-n = length(x) 
+n <- length(x) 
 
 #Identy matrix
-I = diag(n) 
+I <- diag(n) 
 
 #Leontief inverse
-B = solve(I - A) 
+B <- solve(I - A) 
 
 ```
 
@@ -1389,13 +1389,13 @@ The matrix $B$ enables us to calculate the increase in the production of each se
 #| output: false
 
 #Number of sectors
-n = length(x) 
+n <- length(x) 
 
 #Identy matrix
-I = diag(n) 
+I <- diag(n) 
 
 #Leontief matrix
-B = solve(I - A) 
+B <- solve(I - A) 
 
 ```
 
@@ -1512,11 +1512,11 @@ Compute the consumption and earnings coefficients
 
 ```{r io62}
 
-hc = c / sum(r) # Consumption coefficient
+hc <- c / sum(r) # Consumption coefficient
 
-hr = r / x # Earnings coefficient
+hr <- r / x # Earnings coefficient
 
-hr = t(hr) # Transpose
+hr <- t(hr) # Transpose
 
 ```
 
@@ -1524,8 +1524,8 @@ Build the  $\begin{bmatrix} \mathbf{A} &  \mathbf{h_c} \\ \mathbf{h_r} & 0 \end{
 
 ```{r io63}
 
-AF = matrix(NA, ncol = n + 1, nrow = n + 1)  # A Matrix for the closed model
-AF = rbind(cbind(A, hc), cbind(hr, 0)) # Technical coefficients matrix
+AF <- matrix(NA, ncol = n + 1, nrow = n + 1)  # A Matrix for the closed model
+AF <- rbind(cbind(A, hc), cbind(hr, 0)) # Technical coefficients matrix
 
 ```
 
@@ -1533,9 +1533,9 @@ Compute the Leontief inverse matrix for the closed model
 
 ```{r io64}
 
-IF = diag(n + 1) # Identity (n+1)x(n+1)
+IF <- diag(n + 1) # Identity (n+1)x(n+1)
 
-BF = solve(IF - AF) # Leontief inverse matrix
+BF <- solve(IF - AF) # Leontief inverse matrix
 
 ```
 
