@@ -1,0 +1,6 @@
+"0",""
+"0","graph <- ggplot(economics, aes(x = date, y = unemploy)) +"
+"0","  geom_line(color = ""blue"", size = 1.2)"
+"0",""
+"0","graph"
+"0",""

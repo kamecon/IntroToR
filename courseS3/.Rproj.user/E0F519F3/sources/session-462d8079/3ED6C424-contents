@@ -1,0 +1,2443 @@
+---
+title: "Input -Output with R"
+author: "Kamal Romero"
+date: "`r format(Sys.time(), '%m %d, %Y')`"
+format:
+  html: 
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    link-external-newwindow: true
+---
+
+```{r libraries}
+#| echo: false
+#| warning: false
+
+#Load the libraries with "pacman".
+
+#Verify if the pacman library is installed, if not, it is installed
+if (! ('pacman' %in% installed.packages())) install.packages('pacman')
+
+#Once pacman is installed, this command loads the library, and if it is not installed, it installs the libraries.
+pacman::p_load(openxlsx, knitr, tibble, readxlsb, dplyr, ggplot2, data.table, wooldridge, AER)
+
+```
+
+# R programming language: A (very) brief introduction 
+
+## What Is R?
+
+The following definition is from the book [Learning R de Richard Cotton](https://www.oreilly.com/library/view/learning-r/9781449357160/):
+
+"*Just to confuse you, R refers to two things. There is R, the programming language, and R, the piece of software that you use to run programs written in R. Fortunately, most of the time it should be clear from the context which R is being referred to.*"
+
+"*R (the language) was created in the early 1990s by Ross Ihaka and Robert Gentleman, then both working at the University of Auckland. It is based upon the S language that was developed at Bell Laboratories in the 1970s, primarily by John Chambers. R (the software) is a GNU project, reflecting its status as important free and open source software.*"
+
+## Strengths of R
+
+* Free and open source
+
+* Platform independent
+
+* Foster's a reproducible workflow
+
+* Active community of users and programmers making R better
+
+## Working environment
+
+In this course we will use [Rstudio](https://posit.co/download/rstudio-desktop/).
+
+Rstudio is an IDE (integrated development environment) that works as a graphical interface that facilitates the use of the R language.
+
+You have a online version, [Posit cloud](https://login.rstudio.cloud/login?redirect=%2F) 
+
+## R vs RStudio
+
+The following image and sentence is taken from the book [Statistical Inference via Data Science: A ModernDive into R and the Tidyverse](https://moderndive.com/index.html)
+
+::: {#fig-rvsrstudio}
+![](https://moderndive.com/images/shutterstock/R_vs_RStudio_1.png)
+
+R vs Studio [Source](https://moderndive.com/1-getting-started.html). 
+
+:::
+
+"*More precisely, R is a programming language that runs computations, while RStudio is an integrated development environment (IDE) that provides an interface by adding many convenient features and tools. So just as the way of having access to a speedometer, rearview mirrors, and a navigation system makes driving much easier, using RStudio’s interface makes using R much easier as well.*"
+
+## Alternatives
+
+There are alternatives to Rstudio, but Rstudio is the de facto R IDE for many.
+
+An alternative that is gaining a lot of popularity is the well-known [Visual Studio Code](https://code.visualstudio.com/).
+
+If you don't want to use Rstudio, this would be the suggested alternative
+
+
+## Highlights of RStudio
+
+::: {#fig-rstdio}
+![](images/rstudio-panes-labeled.jpeg)
+
+RStudio pane layout. [Source](https://docs.posit.co/ide/user/ide/guide/ui/ui-panes.html). 
+:::
+
+* Lower Right:
+    + Files, Plots, Packages, Help
+
+* Upper Right: 
+    + Environment, History
+
+* Lower Left: Console
+
+* Upper Left: Text editor
+
+* Nice Features:
+    + Importing Data
+    + Tab completion
+    + **ChatGTP**
+    
+## Projects, directories and libraries: Organising the working environment
+
+To keep all our files organised, including databases we load or graphics we create, we are going to work in what RStudio calls projects.
+
+Essentially, a RStudio project is a folder or directory on your computer that contains all the elements of your project.
+
+::: {#fig-project}
+![](images/create RProject.gif)
+
+Create a R project
+:::
+
+The use of projects in RStudio is a good practice that allows you to keep control of all the files used in a project.
+
+Projects are often not only complex but also dynamic, and the management of all the elements that make up a project is often an essential part of the workflow.
+
+Furthermore, the organisation into projects facilitates reproducibility.
+
+For a more detailed discussion, read this [section](https://r4ds.hadley.nz/workflow-scripts.html#projects) of this [good book](https://r4ds.hadley.nz/).
+
+## Basic functioning
+
+Next, we are going to introduce the basic handling of the working environment, such as defining variables, making comments to the code, etc. In this process, we will be introducing language concepts that we will be defining in a formal way later on.
+
+### Arithmetic operations
+
+To introduce us to the use of the editor and the command line of Rstudio, we will start with some very basic operations
+
+```{r operaciones}
+
+2 + 2
+
+5 - 3
+
+3 * 2
+
+6 / 3
+
+```
+
+It is possible to apply standard association rules as well as operations beyond the basic ones (power, logarithm, etc.)
+
+```{r operaciones 2}
+
+(5 + 3) / 4
+
+3^2
+
+log(100, base = 10)
+
+5 %% 3
+
+sqrt(9)
+
+
+```
+
+### Assigning variables
+
+We can store *values* by assigning a name to them, so that we can access the value later.
+
+```{r asigna}
+
+x <- 4
+
+x
+
+y <- (5 + 3) / 4
+
+y
+
+```
+
+You create variables, or create new *objects* with the `<-` operator. You can also do this in the more conventional way with `=` but this is not standard practice.
+
+```{r}
+
+Employees <- 150
+
+Employees
+
+```
+
+With names you have to respect certain conventions: they must start with a letter and can only contain letters, numbers, `_` and `.`.
+
+You are free to name variables as you like, but there are some rules of style, for example
+
+```{r}
+#| eval: false
+
+i_use_snake_case
+otherPeopleUseCamelCase
+some.people.use.periods
+What_EVer.I.wha_NT
+
+```
+
+::: {#fig-style}
+[![](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/dbb99049-2916-4bc8-824f-1816f5c4f06d_rw_1920.png?h=f0b45a30ba31ad414562d1085cd6c172)](https://allisonhorst.com/everything-else)
+
+An illustration of variable naming styles by the great [Allison Horst](https://allisonhorst.com/allison-horst). [Source](https://allisonhorst.com/everything-else). 
+:::
+
+```{r}
+
+New_analysts_January <- 5
+
+New_analysts_February <- 3
+
+Analysts <- New_analysts_January + New_analysts_February
+
+Analysts
+
+```
+
+### Introduce comments
+
+Comments are initiated with `#`
+
+```{r}
+
+# Calculation of number of analysts
+Analysts <- New_analysts_January + New_analysts_February
+
+Analysts
+
+```
+
+### Errors
+
+Throughout the course we will talk about R runtime errors, but it is worth getting used to them, as they will always be with us 😢, but they give us a guide to solve them 😊
+
+
+```{r errorexample}
+#| eval: false
+
+## analyst_number_calculation
+Analysts_update <- New_analysts_January + New_analysts_February + New_analysts_March
+
+Analyst_update
+
+```
+
+## Libraries
+
+Libraries or packages are perhaps the most commonly used elements in R for practical work.
+
+A formal definition of a library from the book [R Packages](https://r-pkgs.org/) by Hadley Wickham and Jennifer Bryan is as follows:
+
+"*In R, the fundamental unit of shareable code is the package. A package bundles together code, data, documentation, and tests, and is easy to share with others. As of March 2023, there were over 19,000 packages available on the Comprehensive R Archive Network, or CRAN, the public clearing house for R packages*".
+
+An R package is a way to share code in an organised way that expands the possibilities of R by extending its functionality.
+
+Libraries are installed using the `install.packages()` command, and libraries are loaded with `library()`.
+
+```{r libreria}
+#| eval: false
+
+install.packages(emoji)
+library(emoji)
+
+
+```
+
+## Basic types in R ([Data Types](http://www.statmethods.net/input/datatypes.html))
+
+In order to work with data, it is necessary to understand how data is stored in the computer by each programming language.
+
+The structures that store numerical information, and the way they are accessed, differ from Python to R, or from R to other languages.
+
+The most important family of variable types in R are vectors, which can be classified as either atomic or list.
+
+
+The common data objects in R are:
+
++ Vectors: one dimensional array 
+  + Types: numeric, integer, character, factor, logical
++ Matrices: two dimensional array
+  + Each column must have the same type
++ **Data Frames**: two dimensional array
+  + Columns may have different types
++ Lists
+  + Items don't need to be the same size.
+
+The structure of atomic vectors is as follows:
+
+::: {#fig-style}
+![](images/summary-tree-atomic.png){width=300}
+
+
+Atomic vectors. Source: [Advanced R](https://adv-r.hadley.nz/index.html)
+:::
+
+
+```{r types}
+
+Number <- 1.0 # (real, floating)
+Integer <- 1
+Character <- "ab"   
+Logical <- TRUE  
+
+Number
+Integer
+Character
+Logical
+
+```
+
+Be careful when working with different types
+
+```{r types2}
+#| eval: false
+
+Number + Character
+
+```
+
+When we perform an operation with two different numeric types (real + integer), R *forces* (coerces) the result to the type with the highest precision, in this case the real type.
+
+```{r types3}
+
+Sum <- Number + Integer
+
+Sum
+
+typeof(Sum)
+
+```
+
+Several things here, we've had our first approximation to a function in R, a topic we'll explore in more detail later. Like the intuitive idea we have of a function from high school mathematics, a function in R has an argument (variable in parentheses) and gives us a result.
+
+In R, functions have their name followed by parentheses, where we place the argument variable(s): `a_function(x)`.
+
+The `typeof()` function tells us the type of the variable (numeric, integer or logical).
+
+```{r types3-5}
+
+typeof(Number)
+typeof(Integer)
+typeof(Character)
+typeof(Logical)
+
+```
+
+There are also specific functions to determine whether a variable is of a specific type
+
+```{r types4}
+is.numeric(Number)
+is.integer(Integer) 
+is.character(Character)
+is.logical(Logical)
+```
+
+We see that R tells us that `Integer` is not an integer, to specify an integer we have to put a letter L at the end of the number
+
+```{r types5}
+Integer_2 <- 1L
+Integer_2
+is.integer(Integer_2)
+typeof(Integer_2)
+
+```
+
+### Vectors
+
+We are going to use R to analyse data and create statistical or algorithmic models from it.
+
+Most data is represented in *tables*: spreadsheets, relational databases tables, .csv files, etc.
+
+Most statistical models use as input data in table form.
+
+The most commonly used objects for working with tables in R are **data frames** and other variants (tibble or data.tables for example).
+
+Before understanding how to work with tables, let's review the concept of vector, which is the basic type on which data frames are built.
+
+What characterises a vector is that it can store only data of the **same type**.
+
+```{r vectors}
+
+vector_numeric <- c(1, 10, 49)
+vector_character <- c("a", "b", "c")
+
+vector_numeric
+vector_character
+
+```
+
+Vectors are one-dimensional arrays (row or column) that can store numbers, characters or logical variables.
+
+As we have seen above, vectors are created with the `c()` command where the c stands for *combine*.
+
+**Be careful not to confuse** this structure with vectors as elements of a vector space (more on this later).
+
+```{r vectors2}
+
+vector_mixed <- c(1,2, "a")
+vector_mixed
+
+```
+
+In the previous example we wanted to create a vector with elements of different types, numeric and character. R has converted all the elements to character.
+
+If there are characters in a vector R converts all the elements to character, if they are all numeric but of different types, R converts them to the type with the highest precision (double). What happens with logical vectors?
+
+```{r vectors3}
+
+vector_mixed2 <- c(1,2,TRUE)
+vector_mixed2
+typeof(vector_mixed2)
+
+```
+
+In this case R has converted the elements of the vector to numeric.
+
+We observe something that later will be very useful, R has assigned to the logical variable `TRUE` the number 1. The variable `FALSE` has been assigned a zero.
+
+Can we change a variable or a vector type? YES
+
+```{r vectors4}
+
+vector_numeric
+
+as.character(vector_numeric)
+
+logic_vector <- c(TRUE, FALSE)
+
+logic_vector
+
+as.numeric(logic_vector)
+
+```
+
+There are several functions in R that allow for changes of type
+
+```{r vectors4_5}
+as.character(logic_vector)
+
+```
+
+
+There are a couple of other ways to create vectors
+
+```{r vectors5}
+
+vector_1 <- 1:5
+
+vector_2 <- seq(1,5)
+
+vector_1
+
+vector_2
+
+
+```
+
+where `seq` stands for sequence
+
+Since in this course the data we will use is external and not generated by us, we will not go into the different ways of generating vectors. The following box elaborates in more detail on this topic and is optional, you can follow the rest of the lecture without reading it.
+
+::: {.callout-note}
+
+More complex sequences can be created with the `seq()` function.
+
+```{r vector6}
+
+vector_3 <- seq(1,10, by = 2)
+
+vector_4 <- seq(1,10, length.out = 20)
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_3
+
+vector_4
+
+vector_5
+
+```
+
+
+Another command to generate sequences is ``rep``.
+
+```{r vectors8}
+
+repeated <- rep(4,10)
+
+repeated
+
+```
+
+We can repeat not only a value but vectors
+
+```{r vectors9}
+
+repeat_2 <- rep(1:4, 4)
+
+repeat_2
+
+repeat_3 <- rep(1:4, each = 4)
+
+repeat_3
+
+repeat_4 <- rep(1:4, each=2, times=2)
+
+repeat_4
+
+repeat_5 <- rep(1:4, c(2,3,4,5))
+
+repeat_5
+
+```
+
+We can also create *random* vectors, i.e., realisations of a random variable from a given distribution
+
+```{r vectors10}
+
+random_normal <- rnorm(10)
+
+random_uniform <- runif(10)
+
+random_normal
+
+random_uniform
+
+```
+
+:::
+
+The elements of the vector can be assigned names
+
+```{r vectors7}
+
+names(vector_1)
+
+names_vec <- c("one", "two", "three", "four", "five")
+
+names(vector_1) <- names_vec
+
+names(vector_1)
+
+```
+
+Another characteristic of vectors besides their type, is their **length** or dimension, which we can determine with the `length()` function.
+
+```{r length}
+
+length(vector_1)
+
+length(vector_4)
+
+length(repeat_5)
+
+```
+
+#### Arithmetic operations with vectors
+
+Arithmetic operations can be performed with vectors
+
+```{r vectors10_1}
+
+vector_1
+
+vector_2
+
+Vec_sum <- vector_1 +vector_2
+
+Vec_sum
+
+```
+
+```{r vectors11}
+vector_1
+
+vector_2
+
+Vec_product <- vector_1 * vector_2
+
+Vec_product
+
+
+```
+
+In this case, both vectors have the same dimension. What happens if the opposite is true?
+
+```{r vectors11_1}
+
+vector_1 
+
+seq(6,15)
+
+vector_1 + seq(6,15)
+
+
+```
+
+This peculiar behaviour is called **recycling**. Observe the result: what has R done in this case?
+
+
+#### Vectorisation of operations
+
+An operation is said to be vectorised if it can be applied to all elements of a vector.
+
+```{r vectorisation}
+
+vector_numeric
+
+vector_numeric + 2
+
+vector_numeric * 2
+
+vector_numeric / 2
+
+vector_numeric^2
+
+sqrt(vector_numeric)
+
+log(vector_numeric)
+
+
+```
+
+We note that when an arithmetic operator (`+`, `*`, `-`, `/`, `^`) is applied to a vector, the operation is performed on each of the elements of the vector. Similarly, when we apply a function (`sqrt()`, `log()`) it uses all the elements of the vector as arguments and its output is a vector of dimension equal to the dimension of the original vector. 
+
+
+#### Vector inspection
+
+It is possible to apply certain functions to analyse some characteristics of vectors.
+
+Remember that the ultimate goal is to perform data analysis, some of these functions will be used on a regular basis when we want to inspect data in a table. 
+
+Basic statistics of a vector
+
+```{r inspect1}
+
+summary(vector_4)
+
+```
+
+
+Values at the beginning and at the end
+
+```{r inspect2}
+
+head(vector_4)
+
+tail(vector_4)
+
+```
+
+
+#### Selections
+
+It is possible to construct new vectors from a vector
+
+```{r select1}
+
+vector_1
+
+vector_square <- vector_1^2
+
+vector_square
+
+```
+
+How do we access the elements of a vector?
+
+```{r select2}
+
+vector_square[1]
+
+vector_square[3]
+
+```
+
+Several elements in a row (slice)
+
+```{r select3}
+
+vector_square[1:3] 
+
+vector_square[3:1]
+
+```
+
+Non consecutive elements of a vector
+
+```{r select4}
+
+vector_square[c(1,3)]
+
+vector_square[c(3,1)]
+
+```
+
+All elements except some
+
+```{r select5}
+
+vector_square[-c(1,3)] 
+
+vector_square[-length(vector_square)]
+
+```
+
+All elements satisfying a condition
+
+```{r select6}
+
+vector_5
+
+vector_5[vector_5 < 5]
+
+vector_5[vector_5 > 5]
+
+```
+
+The condition can be an equality
+
+```{r select7}
+
+vector_5[vector_5 == 5.5]
+
+```
+
+These conditions are very important for data analysis. Suppose you want to locate in a table with the financial data from a sample of bank costumers, those customers whose income is greater than 30,000 per year.
+
+It is also useful to locate data and replace it with another value. Following the example above, replace the income column for customers whose annual income is less than 12,000 per year with zero, as we will not be working with that segment.
+
+```{r select8}
+
+vector_5
+
+vector_5[vector_5 < 5] <- 0
+
+vector_5
+
+```
+
+In case the vectors have names, we can use these to select elements 
+
+```{r select9}
+
+vector_square["two"]
+
+vector_square[c("one", "three")]
+
+```
+
+More functions applied to vectors
+
+```{r select10}
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_5
+
+max(vector_5)
+
+min(vector_5)
+
+sum(vector_5)
+
+prod(vector_5)
+
+```
+
+### Matrices
+
+So far we have been working with a one-dimensional data structure, but in data analysis we are sometimes interested in *discovering* or finding relationships between variables, so it is necessary to look at them as a whole in order to capture interrelationships.
+
+In our particular case, we will represent subsets of the input output table as matrices, and apply linear algebra operations to them.
+
+This forces us to have to work in more than one dimension, in R we can do that with **matrices** and **arrays**.
+
+A matrix is nothing more than a two-dimensional structure that allows us to store homogeneous data. To construct a matrix we use the `matrix()` function
+
+```{r matrices}
+
+vector_6 <- seq(8)
+
+vector_6
+
+A <- matrix(vector_6)
+
+A
+
+
+```
+
+We have a one-column vector. What if we want more than one dimension?
+
+```{r matrix2}
+
+A <- matrix(vector_6, nrow = 2)
+
+A
+
+
+```
+
+```{r matrices3}
+
+A <- matrix(vector_6, ncol = 2)
+
+A
+
+```
+
+
+```{r matrices4}
+
+A <- matrix(vector_6, nrow = 4, ncol = 2)
+
+A
+
+```
+
+
+We notice that the matrix is *filled* by columns, we can change that behaviour
+
+```{r matrices5}
+
+A <- matrix(vector_6, nrow = 4, ncol = 2, byrow = TRUE)
+
+A
+
+```
+
+Just as we had the name attribute for vectors, we can also name the rows and columns of a matrix. To inspect the row names of a matrix we use `rownames()`, and the row names `colnames()`.
+
+
+```{r arrays6}
+
+rownames(A)
+colnames(A)
+
+```
+
+
+NULL indicates when an expression or function results in an undefined value. In this case it indicates that the array has no names. Let's assign names to it by associating a vector of characters
+
+```{r arrays7}
+
+rownames(A) <- c("row_1", "row_2", "row_3", "row_4")
+colnames(A) <- c("column_1", "column_2")
+
+rownames(A)
+colnames(A)
+
+A
+
+```
+
+``dimnames()` is another way to inspect/assign the names of an array. 
+
+```{r arrays8}
+
+dimnames(A)
+
+```
+
+Is there anything strange about this structure? There are *lists*, a topic that we will not be covered in this course.
+
+Accessing the elements of an array is very similar to the case of vectors, we just need to differentiate between dimensions with a comma `,`.
+
+```{r arrays9}
+
+A
+
+A[1,1]
+
+A[3,2]
+
+A["row_2", "column_2"]
+
+A[1:2, 1]
+
+A[c("row_1", "row_4"), 2]
+
+```
+
+One operation that is widely used in practice is to create a new *table* from another by binding rows and columns. This is done with the `rbind()` and `cbind()` functions.
+
+If we want to add columns based on another matrix:
+
+
+```{r matriz41}
+
+set.seed(125)
+
+matrix_A <- matrix(data = runif(n = 8, min = 10, max = 50), nrow = 2, ncol = 4)
+
+matrix_B <- matrix(data = runif(n = 2, min = 10, max = 50), nrow = 2, ncol = 1)
+
+matrix_A
+
+matrix_B
+
+```
+
+We combine both matrices
+
+```{r matriz42}
+
+matrix_AB <- cbind(matrix_A, matrix_B)
+
+matrix_AB
+
+```
+
+
+If we want to add rows based on another matrix:
+
+```{r matriz51}
+
+matrix_C <- matrix(data = runif(n = 5, min = 10, max = 50), nrow = 1, ncol = 5)
+
+matrix_C
+
+matrix_ABC <- rbind(matrix_AB, matrix_C)
+
+matrix_ABC
+
+```
+
+As mentioned before, matrices are objects that can be manipulated as matrices in the sense of linear algebra. For example, we can calculate the transpose or the inverse of a matrix
+
+Transpose
+
+```{r matrix6}
+
+A
+
+t(A)
+
+```
+
+Inverse
+
+```{r matrix6_5}
+
+A
+
+solve(A[1:2,1:2])
+
+```
+
+Diagonal
+
+```{r matrix7}
+
+vector_diagonal <- c(1,2,3,4)
+
+diag(vector_diagonal)
+
+```
+
+In this case
+
+```{r matrix8}
+
+diag(4)
+
+```
+
+The `diag(n)` command generates a square diagonal matrix of ones whit dimension n
+
+The `%*%` operator performs products of matrices, as we will see in the practical examples
+
+::: {.callout-note}
+
+Use the help to determine what the following linear algebra functions do
+
+`det()`, `svd()`, `eigen()`, `qr()`, `chol()`
+
+:::
+
+## Data Frames
+
+The `data.frame` will be one of the most commonly used objects in R for data analysis.
+
+Data frames are *tables* or rectangular arrays, we can treat them as if they were an Excel sheet in which we organise the data we want to analyse.
+
+As in Excel, we can do calculations with the tables, create new columns (variables), perform statistical analysis, etc.
+
+### Inspecting the data
+
+In general, we usually inspect the data in a table to familiarise ourselves with it and see what kind of analysis we can do with it.
+
+Let's use one of the datasets that already comes with the basic R installation, `mtcars`.
+
+We can view a user friendly version of the table in RStudio
+
+```{r df1}
+
+mtcars
+
+```
+
+There are several ways to take a quick look at the data without having to view the whole table.
+
+For example we can see the first 6 rows
+
+```{r df2}
+
+head(mtcars)
+
+```
+
+Or the last 6
+
+```{r df3}
+
+tail(mtcars)
+
+```
+
+If instead of 6, we want to see a certain number of rows, we simply tell the `head` and `tail` functions to do so
+
+```{r df4}
+
+head(mtcars, n = 3)
+
+tail(mtcars, n = 2)
+
+```
+
+Sometimes we use very large tables that store many variables, in this case before displaying even a fraction of the table, it is useful to inspect the column names of the data frame
+
+```{r df5}
+
+colnames(mtcars)
+
+```
+
+
+In general, in order to determine how many variables and how many observations we have, we use the `dim` function, which gives the number of columns and rows in the table
+
+```{r df6}
+
+dim(mtcars)
+
+```
+
+We can see the number of rows and columns separately with `nrow` and `ncol`.
+
+```{r df7}
+
+ncol(mtcars)
+
+nrow(mtcars)
+
+```
+
+
+
+Another way is to use the `str` function. Although it is not intuitive and even intimidating at first glance, it is not that complicated and provides useful information. 
+
+```{r df8}
+
+str(mtcars)
+
+```
+
+A version that provides statistical information is ``summary``.
+
+```{r df9}
+
+summary(mtcars)
+
+```
+
+
+Now that we have our data in a data frame, the next step is to access subsets of data in the table (a column or group of rows that meet a condition), manipulate it and create new variables.
+
+We can access the data in the data frame in the same way as we did with vectors, data frames are a kind of set of vectors.
+
+Remember that we could access elements of vectors by position or name
+
+```{r df12}
+
+mtcars[1,2]
+
+mtcars[1,4]
+
+```
+
+In the first case we tell R that we want it to show us the data of the first row and the second column, in the second case the data of the first row and the fourth column.
+
+In the case that we want to see a specific column or row, we leave one of the dimensions blank.
+
+If we want to access the information of the second row
+
+```{r df13}
+
+mtcars[2, ]
+
+```
+
+If we want to access the information in the fourth column
+
+```{r df14}
+
+mtcars[ , 4]
+
+```
+
+We can also get the information per column using the column name
+
+```{r df15}
+
+mtcars[ , "cyl"]
+
+```
+
+Likewise, we can inspect a data frame column by typing the data frame name followed by a `$` sign and the column name.
+
+The advantage of this method is that the column names are autocompleted
+
+```{r df16}
+
+mtcars$cyl
+
+```
+
+With position, like vectors, we can access sets of rows and columns (slices).
+
+For example, if we want to keep only the first 3 rows and the fourth and fifth columns, we can access the following position sets
+
+```{r df17}
+
+mtcars[1:3, 4:5]
+
+```
+
+We can build a new table from this sub-table, assigning a name to the latter
+
+```{r df18}
+
+mtcars_peque <- mtcars[1:3, 4:5]
+
+mtcars_peque
+
+```
+
+Sub-table with first 10 rows only
+
+```{r df19}
+
+mtcars[1:10, ]
+
+```
+
+Sub-table with last 2 columns only
+
+```{r df20}
+
+mtcars[, 4:5]
+
+```
+
+
+We can select data with criteria based on meeting a condition
+
+```{r df21}
+
+mtcars[mtcars$cyl > 4 , ]
+
+```
+
+```{r df22}
+
+mtcars[mtcars$cyl == 6 , ]
+
+```
+
+We can complicate it
+
+```{r df23}
+
+mtcars[mtcars$cyl == 6 & mtcars$mpg > 18, ]
+
+```
+
+We have asked R to show us the data in the table corresponding to cars with 6 cylinders and miles per gallon greater that 18.
+
+Both conditions are fulfilled at the same time.
+
+In case you need that only one of the condition holds:
+
+```{r df23_1}
+
+mtcars[mtcars$cyl == 6 | mtcars$mpg > 18, ]
+
+```
+
+
+## Read and write data in R
+
+As mentioned earlier, instead of *generating* the data we will be analysing, we typically obtain the data from external sources. In our case, the input-output tables are generated by the national statistical institutes.
+
+These tables are shared in various formats, such as Excel or flat files (mainly csv). It is advisable to prioritize the use of flat files.
+
+Similarly, we will also want to save the data generated in R in a format that can be read in other platforms, such as Excel.
+
+### Reading data in R
+
+In this presentation we will focus on two formats: Excel and csv.
+
+#### csv files
+
+The R base function for reading csv files is `read.csv()`.
+
+We need to provide the function with the file's location path.
+
+```{r csv01}
+#| eval: false
+
+mtcars_csv <- read.csv(file = "mtcars.csv")
+
+head(mtcars_csv)
+
+```
+
+Inspecting the function, we can find additional arguments. Let us explore them using the tab button.
+
+In practice, we typically use the arguments  `header`, `sep` and `dec`
+
+#### xlsx files
+
+Base R does not have a function to read Excel files, so we must rely on a library. The most common choice is the `readxl` package. 
+
+Once we load the library, we will use the function `read_excel()`
+
+```{r xlsx01}
+#| eval: false
+
+library(readxl)
+
+mtcars_excel <- read_excel("mtcars.xlsx")
+
+head(mtcars_excel)
+
+```
+
+In the practice section, we will use some of the other arguments of the read_excel() function. It's worth mentioning the skip argument, which is used if we don't wish to read the first n lines of an Excel file.
+
+### Writing data in R
+
+Unsurprisingly, we write data from R using the functions `write.csv()` and `write_xlsx()`
+
+We must provide both functions with the object (data frame) we wish to save and the file path.
+
+```{r xlsx02}
+#| eval: false
+
+write.csv(x = airquality, file = "my_airquality.csv")
+
+library(writexl)
+
+write_xlsx(x = airquality, path = "my_airquality.xlsx")
+
+```
+
+
+# Más allá de los data frames
+
+Los data frames son una estructura extremadamente útil, con la gran ventaja de que forma parte del ecosistema de R base (no depende de librería elaboradas por terceros). Pero, lo anterior también representa también una restricción, por lo que se han desarrollado librerías que complementan las propiedades de los data frames
+
+## El universo Tidyverse
+
+::: {#fig-tidyverse}
+![](images/tidyverse_website.png)
+
+Colección de paquetes del ecosistema Tidyverse. Ver su [web](https://www.tidyverse.org/)
+:::
+
+La principal referencia de este apartado va a ser este [capítulo](https://r4ds.had.co.nz/transform.html) del libro [R for Data Science](https://r4ds.had.co.nz/index.html) (acá en [español](https://es.r4ds.hadley.nz/))
+
+En esta primera parte de la exposición nos concentraremos en el paquete [dplyr](https://dplyr.tidyverse.org/) y en la manipulación de datos, e introduciremos el pipe de la librería [magrittr](https://magrittr.tidyverse.org/)
+
+### Dplyr
+
+::: {#fig-dplyr}
+![](images/logo.png){width=200}
+
+Hex sticker de dplyr
+:::
+
+
+En su página web, se presenta la librería dplyr como “*dplyr es una gramática de manipulación de datos, que proporciona un conjunto coherente de verbos que ayudan a resolver los problemas más comunes de manipulación de datos*” 
+
+Otra definición se puede ver en este [texto](https://www.datanalytics.com/libro_r/1300_dplyr.html) de [Carlos Gil Bellosta](https://www.datanalytics.com/bio/) 
+
+El “conjunto de verbos” es el siguiente:
+
+* `mutate()` añade nuevas variables que son funciones de variables existentes
+* `select()` selecciona variables basándose en sus nombres
+* `filter()` selecciona casos basándose en sus valores
+* `summarise()` reduce múltiples valores a un único resumen
+* `arrange()` cambia el orden de las filas.
+
+Al ser una librería desarrollada por terceros, hay que instalar la librería (se hace una sola vez) y cargarla
+
+```{r dplyr01}
+#| eval: false
+
+install.packages("dplyr")
+library(dplyr)
+
+```
+
+
+Vamos a trabajar con el conjunto de datos `starwars`
+
+```{r dplyr02}
+
+starwars
+
+```
+
+Observen que nuestro data frame ha *cambiado* de nombre, ahora es un `tibble`. Leer este capítulo del [libro](https://es.r4ds.hadley.nz/10-tibble.html) para una exposición detallada.
+
+Inspeccionamos el data frame (si, el tibble sigue siendo un data frame) con `glimpse`
+
+```{r dplyr03}
+
+glimpse(starwars)
+
+```
+
+Antes de continuar, es mejor presentar ya el *pipe* de [magrittr](https://magrittr.tidyverse.org/). Empezaremos con un ejemplo simple en el cual deseamos calcular el logaritmo de la raíz cuadrada de la sumatoria de una secuencia de 20 realizaciones de una distribución uniforme.
+
+Los pasos serían los siguientes:
+
+* Generar la secuencia de 20 realizaciones de una distribución uniforme `runif(20)`
+* Calcular la sumatoria `sum(runif(20)))`
+* Obtener la raíz cuadrada `sqrt(sum(runif(20)))`
+* Aplicar el logaritmo `log(sqrt(sum(runif(20))))` 
+
+
+```{r dplyr04}
+
+set.seed(356)
+log(sqrt(sum(runif(20))))
+
+```
+
+La función es algo complicada de leer, y se complica su lectura a medida que añadimos más funciones.
+
+El **pipe** (tubería) de magrittr `%>%` parte de la misma idea que el pipe de bash `|`, pasar el output de la salida de una función a otra función de manera encadenada.
+
+Una manera “limpia” de ejecutar varios verbos de manera secuencial es a través del uso del pipe 
+
+Según su web, dicha herramienta permite hacer nuestro código más legible por las siguientes razones:
+
+* estructurando secuencias de operaciones de datos de izquierda a derecha (en lugar de dentro a fuera)
+
+* evitando las llamadas a funciones anidadas
+
+* minimizando la necesidad de variables locales y definiciones de funciones
+
+* facilitar añadir pasos en cualquier punto de la secuencia de operaciones
+
+La operación anterior quedaría de la siguiente forma con pipes:
+
+```{r dplyr05}
+
+set.seed(356)
+
+runif(20) %>% 
+  sum() %>% 
+  sqrt() %>% 
+  log()
+
+
+```
+
+Lo cual, es más natural y fácil de leer. Vamos a aplicar este encadenamiento de funciones con el pipe de manera intensiva con dplyr
+
+
+
+Vamos a seleccionar filas que cumplan una determinada condición, esto se hace con el verbo `filter()`
+
+Por ejemplo, nos quedamos solo con los personajes de Star Wars que son de Tatooine
+
+```{r dplyr06}
+starwars %>% 
+  dplyr::filter(homeworld == "Tatooine")
+
+
+```
+
+O que viva en Tatooine y sean de género masculino 
+
+```{r dplyr07}
+starwars %>%
+  dplyr::filter(homeworld == "Tatooine" & gender == "masculine") 
+
+```
+
+
+O queremos quedarnos con aquellos registros que no sean humanos 
+
+```{r dplyr08}
+
+starwars |> 
+  dplyr::filter(species != "Human")
+
+```
+Si lo que deseamos es seleccionar columnas, usamos el verbo `select()`
+
+Siguiendo con el primer ejemplo, queremos saber que personajes de Star Wars son de Tatooine, pero solo queremos ver la columna del nombre del personaje
+
+```{r dplyr09}
+
+starwars %>% 
+  dplyr::filter(homeworld == "Tatooine") %>%
+  select(name)
+
+
+```
+
+Además del nombre, queremos saber su altura y la especie
+
+```{r dplyr10}
+
+starwars %>% 
+  dplyr::filter(homeworld == "Tatooine") %>%
+  select(name, height, species)
+
+```
+
+Supongamos que no sabemos de antemano, cuantos tipos de especies hay, y deseamos saberlo para aplicar los filtros adecuados. En R base tendríamos que extraer la columna y usar la función `unique()` (`unique(starwars$species)`). En dplyr tenemos la función `distinct()`
+
+
+```{r dplyr11}
+
+starwars |> 
+  select(species) |> 
+  distinct()
+
+```
+
+Si queremos contar cuantos registros hay por especie, usamos la función `count()`
+
+```{r dplyr12}
+
+starwars |> 
+  count(species)
+
+```
+
+Si deseamos que presente la información en orden descendente
+
+
+```{r dplyr12_5}
+
+starwars |> 
+  count(species, sort = TRUE)
+
+```
+
+Si una vez escogida la columna deseada, desea ordenarla como en la caso anterior, usamos el verbo `arrange()`. En este caso seleccionamos la columna de masa corporal y nombre
+
+```{r dplyr13}
+
+starwars %>%
+  select(name, mass) %>%
+  arrange(mass)
+
+```
+
+Para ordenarlo de mayor a menos usamos la función `desc()` dentro de `arrange()`
+
+```{r dplyr14}
+
+starwars %>%
+  select(name, mass) %>%
+  arrange(desc(mass))
+
+```
+
+Supongamos que deseamos seleccionar solo las columnas que cumplan una determinada condición, esto se puede hacer con la función `where()` dentro del verbo `select()`. Por ejemplo, si deseamos solo las columnas que contengan variables numéricas
+
+```{r dplyr14_2}
+
+starwars %>%
+  select(where(is.numeric))
+
+```
+
+Pero, también existen variantes de `select()` más específicas. Por ejemplo, para este caso también podríamos haber usado `select_if()` y la condición
+
+```{r dplyr14_3}
+
+starwars %>%
+  select_if(is.numeric)
+
+```
+
+::: {.callout-note}
+
+Hay varias funciones *helpers* que permiten hacer una selección más fina de columnas. Para echar un vistazo ejecutar `?select`
+
+:::
+
+Algo que solemos realizar de manera muy frecuente, es crear nuevas columnas transformando las existentes, esto lo hacemos con el verbo `mutate()`
+
+```{r dplyr15}
+
+starwars |> 
+  mutate(H_W = height / mass)
+
+```
+
+Es posible crear varias columnas al mismo tiempo
+
+```{r dplyr16}
+
+starwars |> 
+  mutate(H_W = height / mass,
+         fakeVar = sqrt(mass))
+
+```
+
+Y para finalizar este exceso resumido paso por dplyr, presentamos dos verbos de los más usado en el ciclo de análisis de datos: `group_by()` y `summarise()`
+
+Para los que conocen SQL, los dos verbos anteriores son el equivalente a un `GROUP BY` y una operación de agregación 
+
+Por ejemplo, supongamos que queremos obtener la altura media por género
+
+```{r dplyr17}
+
+starwars |> 
+  group_by(gender) |> 
+  summarise(altura_media = mean(height, na.rm = TRUE))
+
+
+```
+
+O el peso medio por planeta de origen
+
+```{r dplyr18}
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(peso_medio = mean(mass, na.rm = TRUE))
+
+```
+
+Recordar que lo podemos ordenar
+
+```{r dplyr19}
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(peso_medio = mean(mass, na.rm = TRUE)) |> 
+  arrange(desc(peso_medio))
+
+```
+Número de registros por planeta ordenado de mayor a menor
+
+```{r dplyr20}
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(registros = n()) |> 
+  arrange(desc(registros))
+
+```
+
+Y para finalizar, si deseamos cambiar el nombre de una columna, usamos la función `rename()`, y para cambiar el orden de las columnas `relocate()`
+
+```{r dplyr21}
+
+starwars |> 
+  rename(planeta = homeworld)
+
+```
+
+```{r dplyr22}
+
+starwars |> 
+  relocate(species, .after = mass)
+
+```
+
+Algo adicional que conviene saber y combina bien con las funciones `map`, los tibbles anidados. Los tibbles anidados se crean con el verbo `nest_by()`
+
+```{r dplyr23}
+
+starwars_nested <- starwars |>
+  nest_by(homeworld)
+
+starwars_nested
+
+```
+
+Se accede al tibble anidado con la sintaxis de una lista
+
+```{r dplyr23_5}
+
+starwars_nested$data[[40]]
+
+```
+
+
+### Más allá de los tibbles: joins
+
+Acabamos esta sección abarcando un problema con el cual ya se han topado en módulos anteriores, el hecho de que es común trabajar con más de una tabla de datos que guardan relación entre si, por lo que recurrimos a los ya conocidos JOINS y sus variantes.
+
+También podemos realizar estas operaciones en tidyverse con las siguientes funciones:
+
+* left_join()
+
+* right_join() 
+
+* inner_join() 
+
+* full_join() 
+
+* anti_join()
+
+* semi_join() 
+
+::: {.callout-note}
+
+Una buena introducción a los joins (uniones) con dplyr es  [esta](https://es.r4ds.hadley.nz/13-relational-data.html#mutating-joins). Y para una comparación con R base y SQL [esto](https://es.r4ds.hadley.nz/13-relational-data.html#otras-implementaciones)
+
+:::
+
+Vamos a usar un ejemplo de juguete para mostrar los joins más básicos. Creamos dos conjuntos de datos usando la función `tibble()`
+
+```{r joins00}
+
+df_A <- tribble(
+  ~ID, ~y,
+   "A", 5,
+   "B", 5,
+   "C", 8,
+   "D", 0,
+   "F", 9)
+df_B <- tribble(
+  ~ID, ~z,
+   "A", 30,
+   "B", 21,
+   "C", 22,
+   "D", 25,
+   "E", 29)
+
+df_A
+
+df_B
+
+```
+
+
+* Left join
+
+```{r joins01}
+
+left_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+* Right join
+
+```{r joins02}
+
+right_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+* Inner join
+
+```{r joins03}
+
+inner_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+* Full join
+
+```{r joins04}
+
+full_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+¿Qué ocurre si las columnas tienen nombres distintos?
+
+```{r joins05}
+
+colnames(df_B)[1] <- "KL"
+
+full_join(x = df_A, y = df_B, by = c("ID"="KL"))
+
+```
+
+
+## data.table: The need for speed
+
+::: {#fig-datatble}
+![](images/logo4.png){width=200}
+
+Hex sticker de data.table
+:::
+
+Ya que nos hemos empapado de parte del tidyverse, vamos a aprender la otra gran alternativa a los data frames estructura de R base, la librería data.table
+
+Antes de empezar a analizar esta librería, primero habría que preguntarse ¿Por qué debemos aprender otras alternativas ya teniendo R base y el tidyverse? 
+
+data.table posee unas ventajas idiosincráticas que la hacen una alternativa atractiva. Según los mismos desarrolladores de la librería, data.table:
+
+“*es un paquete extremadamente rápido y eficiente en memoria para transformar datos en R.*”
+
+Siguiendo a [Carlos Gil Bellosta](https://www.datanalytics.com/bio/), tal y como menciona en su [texto](https://www.datanalytics.com/libro_r/1300_dplyr.html):
+
+“*El tidyverse no es el único dialecto popular de R. Por ejemplo, el paquete data.table propone otro dialecto con características muy distintas. El código en dicho dialecto es mucho menos legible pero tiene una ventaja importante: es increíblemente rápido y gestiona muy bien la memoria. Es un paquete (o dialecto) con el que conviene familiarizarse para trabajar con conjuntos de datos muy grandes, de millones, decenas de millones o, incluso de cientos de millones de filas*”
+
+Y finalizamos con esta afirmación de [Grant McDermott](https://grantmcdermott.com/), profesor de la Universidad de Oregon y consultor de analítica de grandes datos
+
+“_El tidyverse es genial (…) Entonces, ¿por qué molestarse en aprender otro paquete/sintaxis de gestión de datos? En lo que respecta a data.table, se me ocurren al menos cinco razones_:
+
+* _Conciso_ 
+
+* _Increíblemente rápido_
+
+* _Uso eficiente de memoria_
+
+* _Rico en funciones (y estable)_
+
+* _Sin dependencias_”
+
+Mi opinión personal es muy concreta, data.table es muy rápido y eficiente a la hora de manejar una gran cantidad de datos que aún no hayan pasado el límite para convertirse en Big Data.
+
+Pero nada es gratuito, como menciona Gil Bellosta, la sintaxis es menos amigable si la comparamos con la del tidyverse.
+
+La sintaxis de data table se puede resumir mediante el siguiente diagrama:
+
+::: {#fig-tablesintax}
+![](datatable.jpg){width=200}
+
+Sintaxis de data.table
+:::
+
+* <span style="color:green;">i</span> indica las filas que deseamos seleccionar ya sea para filtrar o para ejecutar una operación sobre ese subconjunto de filas. El equivalente a <span style="color:green;">filter()</span>, <span style="color:green;">slice()</span> y <span style="color:green;">arrange()</span> en dplyr o <span style="color:green;">WHERE</span> en SQL
+
+ * <span style="color:blue;">j</span> indica ya sea las columnas que deseamos seleccionar o la operación que deseamos realizar sobre las columnas. El equivalente a <span style="color:blue;">select()</span>; <span style="color:blue;">mutate()</span> en dplyr o <span style="color:blue;">SELECT</span> o las funciones de agregación en SQL
+
+* <span style="color:red;">by</span> indica como debemos agregar el conjunto de datos. El equivalente a <span style="color:red;">group_by()</span> en dplyr o <span style="color:red;">GROUP BY</span> en SQL
+
+Vamos a replicar los ejemplos de la sección anterior para poder realizar una comparación directa
+
+Primero, instalamos la librería y la llamamos posteriormente
+
+```{r datatable01}
+#| eval: false
+
+install.packages(data.table)
+library(data.table)
+
+```
+
+Convertimos `starwars` a un objeto `data.table`
+
+```{r datatable02}
+
+starwars_dt <- as.data.table(starwars)
+
+starwars_dt 
+
+```
+
+Observar que la presentación de la tabla en la consola es distinta a la de un tibble que a su vez era distinta a la de un data frame
+
+Empezamos, nos quedamos solo con los personajes de Star Wars que son de Tatooine
+
+
+```{r datatable03}
+
+starwars_dt[homeworld == "Tatooine"]
+
+```
+
+Que viva en Tatooine y sean de género masculino
+
+```{r datatable04}
+
+starwars_dt[homeworld == "Tatooine" & gender == "masculine"]
+
+```
+
+Solo los registros que no sean humanos
+
+```{r datatable05}
+
+starwars_dt[species != "Human"]
+
+```
+
+También podemos seleccionar filas por posición, por ejemplo las 6 primeras filas
+
+```{r datatable05_5}
+
+starwars_dt[1:6]
+
+```
+
+
+Ahora seleccionamos columnas, recordar que para eso debemos usar el segundo argumento
+
+```{r datatable06}
+
+starwars_dt[homeworld == "Tatooine", list(name)]
+
+```
+
+Tenemos que pasar los nombres de las columnas como una lista, afortunadamente podemos usar el alias `.`
+
+```{r datatable07}
+
+starwars_dt[homeworld == "Tatooine", .(name)]
+
+```
+
+Si pasamos el nombre solamente, nos devuelve un vector en lugar de un data table
+
+```{r datatable08}
+
+starwars_dt[homeworld == "Tatooine", name]
+
+```
+
+::: {.callout-note}
+
+Pruebe lo anterior con dos columnas, ¿Qué devuelve? ¿Tiene lógica?
+
+Ahora intente con tres columnas ¿Por qué cree que tiene un error?
+
+Intente lo anterior pasando un vector de caracteres con los nombres de las columnas que desea seleccionar
+
+:::
+
+Más columnas
+
+```{r datatable09}
+
+starwars_dt[homeworld == "Tatooine", .(name, height, species)]
+
+```
+
+Si deseamos ordenar el data table según alguna columna en particular
+
+```{r datatable10}
+
+starwars_dt[, .(name, mass)][order(mass)]
+
+```
+
+Observamos dos cosas nuevas:
+
+La primera, si no vamos a realizar una operación sobre las filas, la *casilla* de ese argumento queda en blanco, y en el segundo argumento seleccionamos las columnas.
+
+Lo segundo, una vez seleccionadas las columnas de interés, queremos operar sobre las filas, asi que necesitamos *encadenar* esa operación abriendo unos nuevos corchetes y operando sobre el primer argumento que es de la fila.
+
+
+Para ordenar de manera descendente
+
+```{r datatable11}
+
+starwars_dt[, .(name, mass)][order(-mass)]
+
+```
+
+Para seleccionar solo las columnas que cumplan una determinada condición, por ejemplo, si deseamos solo las columnas que contengan variables numéricas, la operación es algo más verbosa
+
+```{r datatable12}
+
+starwars_dt[, .SD, .SDcols = is.numeric]
+
+```
+Acá introducimos dos elementos nuevos: `.SD` se emplea para hacer sub conjuntos del data table, definidos por las columnas enunciadas en `.SDcols`. A primera vista no es intuitivo, veremos un ejemplo menos trivial
+
+Supongamos que queremos calcular la media de las columnas numéricas
+
+```{r datatable13}
+
+starwars_dt[, lapply(.SD, mean, na.rm = TRUE), .SDcols = is.numeric]
+
+```
+
+O solo a dos columnas
+
+```{r datatable13_5}
+
+starwars_dt[, lapply(.SD, mean, na.rm = TRUE), .SDcols = c("height", "mass")]
+
+```
+
+En data table creamos nuevas columnas transformando las existentes con `:=`
+
+```{r datatable14}
+
+starwars_dt[, H_W := height / mass][]
+
+```
+
+Es posible crear varias columnas al mismo tiempo
+
+```{r datatable15}
+
+starwars_dt[, `:=` (H_W = height / mass,
+                    fakeVar = sqrt(mass))][]
+
+```
+
+Y para realizar operaciones de agrupación en data table
+
+```{r datatable16}
+
+starwars_dt[, .(altura_media = mean(height, na.rm = TRUE)), by = gender]
+
+```
+
+# Introduction to Data Visualization in R with `ggplot2`
+
+Data visualization stands as a cornerstone in the data analysis cycle, permeating its beginning, middle, and end stages.
+
+In this module, emphasis lies on practical, hands-on code sessions over theoretical discussions, fostering an interactive learning experience.
+
+We will delve into the visualization capabilities of the ggplot2 library within the tidyverse ecosystem, a versatile tool favored by renowned entities such as the [BBC](https://bbc.github.io/rcookbook/) and the [Financial Times](https://blog.revolutionanalytics.com/2018/06/ft-bbc-uses-r.html).
+
+
+::: {#fig-ggplot}
+![](images/logo5.png){width=200}
+
+Hex sticker de ggplot2
+:::
+
+::: {.callout-note}
+
+**Bibliographical References**
+
+For those eager to delve deeper into data visualization with ggplot2, I recommend the following resources:
+
++ Foundational
+
+  - [R Graphics Cookbook](https://r-graphics.org/), 2nd edition by Winston Chang: This cookbook-style reference is invaluable for resolving both basic and advanced visualization queries.
+
+  - [Data Visualization A practical introduction](https://socviz.co/) by Kieran Healy: Offering a comprehensive exploration beyond mere tool proficiency, this work delves into the principles of effective visualization.
+
++ Supplementary
+
+  - [ggplot2: Elegant Graphics for Data Analysis (3e)](https://ggplot2-book.org/) by Hadley Wickham, Danielle Navarro, and Thomas Lin Pedersen: An essential read for understanding the philosophy underpinning ggplot2, known as the Grammar of Graphics. 
+  
+  - [The Grammar of Graphics](https://link.springer.com/book/10.1007/0-387-28695-0?source=post_page-----1f92b4ed4149--------------------------------)  by Leland Wilkinson: A foundational text on the principles of _The Grammar of Graphics_, highly recommended for enthusiasts of visualization.
+
+:::
+
+Let's proceed by installing and loading the ggplot2 library.
+
+```{r ggplot01}
+#| eval: false
+
+install.packages(ggplot2)
+library(ggplot2)
+
+```
+
+We're going to use datasets provided by the ggplot2 library as examples. Let's start with `mpg`.
+
+```{r ggplot02}
+
+mpg
+
+```
+
+
+Similar to how language grammar organizes language using a set of rules, the grammar of graphics delineates a set of rules for structuring graphs.
+
+At its core, the **grammar of graphics** revolves around the concept of layers. A coherent combination of layers culminates in the formation of a graph
+
+## Layers
+
+* _Data_: source dataset being visualized
+* _Aesthetics_: links variables in the dataset to visual properties like color, size, and shape
+* _Geometries_: visual representation used for the data (line, points, bars)
+* _Facets_: divides the data into subsets based on one or more categorical variables (country, gender, age)
+* _Statistics_: computed geometries based on statistical measures
+* _Coordinates_: specifies the type of coordinate system, such as cartesian, polar, etc.
+* _Themes_: appearance of plot decorations (axis, grid lines, background)
+
+::: {#fig-layers}
+![](images/gglayers.png){width=400}
+
+Image adapted from The Grammar of Graphics. [Source](https://r.qcbs.ca/workshop03/book-en/grammar-of-graphics-gg-basics.html). 
+:::
+
+Fundamentally, every plot necessitates a dataset, a geometric representation, and aesthetic specifications.
+
+
+```{r ggplot03}
+#| eval: false
+
+ggplot(data = <DATA>, mapping = aes(<MAP>)) + <GEOMETRY>(OPTIONS)
+
+```
+
+The Geometry refers to the type of plot (scatter, line, bar, etc.), and aesthetics describe how we map data onto the axes, essentially what we place on the axes.
+
+The function for creating a plot is `ggplot()`.
+
+Let's construct a plot that relates the variables `displ` and `hwy`. The first step is to call the data and specify the variables we want to represent; this latter aspect is what ggplot refers to as *aesthetics*
+
+## Data and aesthetics
+
+```{r ggplot035}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) 
+
+graph
+
+```
+
+
+## Geometries
+
+We see that it represents a sort of canvas where the variables to be represented are displayed. We need a geometry *layer*. Yo can see a list of ggplot2 geometries [here](https://ggplot2.tidyverse.org/reference/#geoms)
+
+```{r ggplot04}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+
+graph
+
+```
+
+Within aesthetics, we can incorporate additional options:
+
+* `color`: Specifies the color of the geometry and can vary depending on a third variable if such a dependency exists
+
+* `fill` Specifies the fill color of the geometry if it's a shape that can be filled (such as bars, points, polygons, etc.).
+
+* `shape` Indicates the shape of the points (ordered pairs or n-tuples of the represented variables) or the lines connecting them.
+
+* `size` Defines the size of the geometry.
+
+* `alpha` Controls the transparency of the geometry.
+
+We add a color to the geometry that depends on the discrete variable `class` from the dataset.
+
+```{r ggplot05}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = class)) +
+  geom_point()
+
+graph
+
+```
+
+This is what we called a a _non fixed_ aesthetic, in this case it should appear as a argument if the `aes()` function.
+
+Look at what happens if we include the color argument in `geom_point()`
+
+```{r ggplot055}
+#| eval: false
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = class)
+
+graph
+
+```
+
+We obtain a error, let us substitute the `class` variable by a color name
+
+```{r ggplot056}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = "blue")
+
+graph
+
+```
+
+This is what we call a _fixed aesthetic_, the color is the same for all the points.
+
+Likewise, we can include a shape for each ordered pair that depends on another variable, in this case `cyl`. Before adding it, we convert it into a factor
+
+```{r ggplot06}
+
+graph <- ggplot(mpg, aes(x = displ,
+                         y = hwy,
+                         color = class,
+                         shape = factor(cyl))
+                ) +
+  geom_point()
+
+graph
+
+```
+
+We can modify the size of the aesthetics
+
+```{r ggplot065}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = class, shape = factor(cyl))) +
+  geom_point(size = 3)
+
+graph
+
+```
+
+Honestly, this chart introduces more confusion than it resolves. Let’s simplify our approach by returning to the basic version, and we will select the shape of the aesthetic elements using the `shape` attribute. Each shape option is assigned a specific number, which you can reference [here](https://ggplot2.tidyverse.org/articles/ggplot2-specs.html#point)
+
+```{r ggplot07}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 3, shape = 23)
+
+graph
+
+```
+
+Let's stick with slightly larger circles
+
+```{r ggplot08}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21)
+
+graph
+
+```
+
+We are going to exclude cars with 5 cylinders (as there are very few), and this way we see how we can manipulate the dataset within the plot instructions.
+
+```{r ggplot09}
+#| class-source: "numberLines"
+#| source-line-numbers: "1"
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21)
+
+graph
+
+```
+
+Changing the geom, bar graph
+
+```{r ggplot092}
+#| class-source: "numberLines"
+#| source-line-numbers: "1"
+
+graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
+  geom_bar()
+
+graph
+
+```
+
+We will explore a different dataset that is well-suited for creating line graphs, the `economics` dataset
+
+```{r ggplotecon}
+
+economics
+
+
+```
+
+Line graph
+
+```{r ggplot082}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line()
+
+graph
+
+```
+
+```{r ggplot083}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line(color = "blue", size = 1.2)
+
+graph
+
+```
+
+Histograms
+
+```{r ggplot14}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram()
+
+graph_h
+
+```
+
+Not that nice, let us change the default parameters, the bindwith
+
+```{r ggplot15}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(binwidth = 3)
+
+graph_h
+
+```
+
+Or the number of bins
+
+```{r ggplot152}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(bins = 8)
+
+graph_h
+
+```
+
+Or use some colors
+
+```{r ggplot16}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(binwidth = 3, fill = "blue", color = "black")
+
+graph_h
+
+```
+
+
+A boxplot
+
+```{r ggplot17}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot()
+
+graph_b
+
+```
+
+Change the color
+
+```{r ggplot172}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot(color= "black", fill = "cornsilk")
+
+graph_b
+
+```
+
+```{r ggplot173}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy, fill = factor(class) )) +
+  geom_boxplot()
+
+graph_b
+
+```
+
+## Facets
+
+It may not be easy to view everything on a single graph, in this case we can create a sub plot for each categorical variable. In such cases, we can define facets with `facet_wrap()`.
+
+```{r ggplot12}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  facet_wrap( ~ cyl)
+
+graph
+
+```
+
+You can also facet by two categorical variables using `facet_grid()`
+
+```{r ggplot13}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(manufacturer))) +
+  geom_point(size = 4, shape = 21) +
+  facet_grid(class ~ cyl)
+
+graph
+
+```
+
+## Statistics
+
+Now, let’s estimate a linear relationship between the variables `hwy` and `disp` by cylinders.
+
+```{r ggplot10}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth(method = lm)
+
+graph
+
+```
+
+We have the ability to adjust the appearance of the smoothing functions. For instance, we can remove the confidence interval and change the line thickness.
+
+```{r ggplot105}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth(method = lm, se = FALSE, size = 3)
+
+graph
+
+```
+
+And if we want the relationship to be nonlinear, we do not specify the method (nonlinear is the default)
+
+```{r ggplot11}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth()
+
+graph
+
+```
+
+## Themes
+
+
+
+Vamos con más gráfico de estadística descriptiva propia de un EDA.
+
+Un histograma
+
+
+Finalmente, como ponemos títulos y etiquetas a nuestros gráficos
+
+```{r ggplot18}
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  labs(title = "Mi Primer Gráfico",
+       subtitle = "Con ggplot",
+       caption = "Fuente: Yo mismo") +
+  xlab("Cilindrada") +
+  ylab("Millas por galón")
+
+graph
+
+```
+
+
+# Una (extremadamente) breve introducción a la modelización en R
+
+## Modelos lineales (regresión lineal)
+
+La estimación lineal en R base se realiza con la función `lm()`
+
+Los argumentos básicos de esta función son un conjunto de datos y una *formula* que indique a la función que variables deseamos relacionar
+
+Vamos a usar como ejemplo, el mismo conjunto de datos usado en la sección de matrices
+
+Cargamos e inspeccionamos los datos de la librería `Wooldridge`
+
+```{r lm01}
+
+data("wage1")
+
+head(wage1)
+
+summary(wage1)
+
+str(wage1)
+
+```
+
+Estimamos un modelo lineal que explique el logaritmo del salario como función de los años de educación, la experiencia y años en la empresa actual.
+
+
+```{r lm02}
+
+modelo_1 <- lm(data = wage1, lwage ~ educ + exper + tenure)
+
+summary(modelo_1)
+
+```
+
+## Regresión logística
+
+La regresión logística se puede interpretar como un modelo de regresión no lineal que puede lidiar con variables dependientes binarias, o como un modelo de clasificación que pretende predecir una respuesta cualitativa.
+
+En R base, usamos la función `glm()` para estimar modelos lineales generalizados
+
+Presentamos un ejemplo usando una base de datos de aprobación de créditos bancarios. Exploramos los datos
+
+```{r glm01}
+
+data("HMDA")
+
+head(HMDA)
+
+summary(HMDA)
+
+str(HMDA)
+
+```
+
+
+Estimamos un regresión logística que intente explicar los factores que determinan la probabilidad de que un crédito sea rechazado como función del ratio de pagos sobre ingreso y la etnia, en este caso, si se es afroamericano o no.
+
+
+```{r glm02}
+
+modelo_2 <- glm(data = HMDA, formula = deny ~ pirat + afam , family = binomial(link = logit))
+
+summary(modelo_2)
+
+```

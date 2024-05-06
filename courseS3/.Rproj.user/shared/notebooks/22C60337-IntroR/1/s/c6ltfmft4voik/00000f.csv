@@ -1,0 +1,7 @@
+"0","#| warning: false"
+"0",""
+"0","graph_h <- ggplot(mpg, aes(x = cty)) +"
+"0","  geom_histogram(binwidth = 3, fill = ""blue"", color = ""black"")"
+"0",""
+"0","graph_h"
+"0",""

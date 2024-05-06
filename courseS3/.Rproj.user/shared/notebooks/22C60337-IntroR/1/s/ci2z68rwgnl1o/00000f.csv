@@ -1,0 +1,5 @@
+"0","pacman::p_load(openxlsx, knitr, tibble, readxlsb, dplyr, ggplot2, data.table, Wooldridge)
+"
+"2","Installing package into ‘C:/Users/Kamal/Documents/R/win-library/4.1’
+(as ‘lib’ is unspecified)
+"

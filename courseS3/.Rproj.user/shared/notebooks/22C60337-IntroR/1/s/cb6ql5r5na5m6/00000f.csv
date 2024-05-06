@@ -1,0 +1,6 @@
+"0",""
+"0","graph <- ggplot(mpg, aes(x = displ, y = hwy, color = class, shape = factor(cyl))) +"
+"0","  geom_point(size = 3)"
+"0",""
+"0","graph"
+"0",""

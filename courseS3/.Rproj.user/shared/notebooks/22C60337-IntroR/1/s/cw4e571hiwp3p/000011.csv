@@ -1,0 +1,7 @@
+"0","#| warning: false"
+"0",""
+"0","graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +"
+"0","  geom_boxplot()"
+"0",""
+"0","graph_b"
+"0",""
