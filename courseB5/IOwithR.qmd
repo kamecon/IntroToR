@@ -1879,6 +1879,46 @@ normalized_mpg
 
 Writing functions is a vast topic and an art. For the previous function, for example, we would have to add some checks that verify, for example, if the input vectors are numeric, how to act in the case of missing data, print informative errors in case of errors, possibility of calling other functions, etc.
 
+## The apply family
+
+We will explore the `lapply()` and `sapply()` functions, which are powerful tools for applying a function to each element of a list or vector
+
+This combines two previously discussed concepts: user-defined functions and loops
+
+These functions minimize the need to create an explicit loop, making the code more concise and efficient
+
+With `lapply()`, you can apply a function to each element of a list and obtain a list as a result
+
+
+```{r apply01}
+
+#input_data <- c(datum_1, datum_2, datum_3)
+
+#normalized_vector <- normalize(datum = input_data, data = data_1)
+
+normalized_vector
+
+```
+
+```{r apply02}
+
+normalized_vector02 <- lapply(input_data, normalize, data = data_1)
+
+normalized_vector02
+
+```
+
+On the other hand, sapply simplifies the result to a vector or matrix when possible.
+
+```{r apply03}
+
+normalized_vector03 <- sapply(input_data, normalize, data = data_1)
+
+normalized_vector03
+
+```
+
+We will not be able to extensively cover the full scope of these functions and their various applications in this course
 
 ## Read and write data in R
 
