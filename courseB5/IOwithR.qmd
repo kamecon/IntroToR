@@ -1632,6 +1632,87 @@ full_join(x = df_A, y = df_B, by = c("ID"="KL"))
 
 ```
 
+## Iterative Structure in R
+
+It is common to have to apply the same operation a number of times, where this number is large enough to make it unfeasible, or at least, inconvenient.
+
+Generally, we will apply functions in this iterative scheme, or a few lines of code that we want to execute several times.
+
+The basic iterative structure is a loop that takes the following form:
+
+
+```{r loop1}
+#| eval: false
+
+for (variable in vector) {
+  Execute this action
+  Execute this action
+  ...
+  Execute this action
+}
+
+```
+
+
+Examples
+
+```{r loop2}
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+}
+
+
+```
+
+```{r loop2_5}
+
+counter <- 1
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+  counter <- counter + 1
+  if (counter >10){
+    break
+  }
+}
+
+
+```
+
+```{r loop3}
+
+mtcars_small <- mtcars[1:20,]
+
+for (i in seq_along(mtcars_small$cyl)) {
+  if (mtcars_small$cyl[i] >= 8){
+    mtcars_small$cyl[i] <- "Large"
+  } else{
+    mtcars_small$cyl[i] <- "Small"
+  }
+}
+
+mtcars_small
+
+```
+
+
+```{r loop4}
+
+for (i in seq_along(mtcars_small$cyl)) {
+  if (mtcars_small$cyl[i] >= 6) {
+    mtcars_small$cyl[i] <- "Large"
+  } else if (mtcars_small$cyl[i] > 4 & mtcars_small$cyl[i] < 6) {
+    mtcars_small$cyl[i] <- "Medium"
+  } else {
+    mtcars_small$cyl[i] <-"Small"
+  }
+}
+
+mtcars_small
+
+```
+
 
 ## Read and write data in R
 
