@@ -238,10 +238,83 @@ starwars |>
 
 
 
+# Estructura iterativa en R
+
+Es común que tengamos que aplicar la misma operación un número de veces, donde este número es lo suficientemente grande como para que sea inviable, o al menos, incómoda.
+
+Por lo general aplicaremos funciones en este esquema iterativo, o unas cuentas líneas de código que deseamos ejecutar varias veces.
+
+La estructura iterativa básica es un buble (loop) que adopta la siguiente forma:
 
 
-Continue generating
+```{r loop1}
+#| eval: false
+
+for (variable in vector) {
+  Ejecuta esta accion
+  Ejecuta esta accion
+  ...
+  Ejecuta esta accion
+}
+
+```
 
 
+Ejemplos
 
-ChatGPT can make mistakes. Check important info.
+```{r loop2}
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+}
+
+
+```
+
+```{r loop2_5}
+
+contador <- 1
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+  contador <- contador + 1
+  if (contador >10){
+    break
+  }
+}
+
+
+```
+
+```{r loop3}
+
+mtcars_peque <- mtcars[1:20,]
+
+for (i in seq_along(mtcars_peque$cyl)) {
+  if (mtcars_peque$cyl[i] >= 8){
+    mtcars_peque$cyl[i] <- "Grande"
+  } else{
+    mtcars_peque$cyl[i] <- "Pequeno"
+  }
+}
+
+mtcars_peque
+
+```
+
+
+```{r loop4}
+
+for (i in seq_along(mtcars_peque$cyl)) {
+  if (mtcars_peque$cyl[i] >= 6) {
+    mtcars_peque$cyl[i] <- "Grande"
+  } else if (mtcars_peque$cyl[i] > 4 & mtcars_peque$cyl[i] < 6) {
+    mtcars_peque$cyl[i] <- "Mediano"
+  } else {
+    mtcars_peque$cyl[i] <-"Pequeno"
+  }
+}
+
+mtcars_peque
+
+```
