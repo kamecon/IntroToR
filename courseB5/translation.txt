@@ -318,3 +318,171 @@ for (i in seq_along(mtcars_peque$cyl)) {
 mtcars_peque
 
 ```
+# Funciones
+
+Ya hemos trabajado con varias funciones de R, tales como `length()`, `nrow()`, `summary()`
+
+Pero en esta sección no nos concentramos en las distintas funciones que podemos llamar en R y sus librerías, que son miles, sino en como podemos definir nuestras propias funciones.
+
+Es más que habitual en el flujo de trabajos con datos necesitemos repetir un tipo de operación no trivial (cuya realización implique el uso de un script de código) varias veces. En este caso, en lugar de copiar y pegar las instrucciones una y otra vez, podemos escribir una función que encapsule esas instrucciones y llamar a la misma cada vez que necesitemos realizar la operación.
+
+Siguiendo este [consejo](https://es.r4ds.hadley.nz/19-functions.html#cu%C3%A1ndo-deber%C3%ADas-escribir-una-funci%C3%B3n), deberíamos convertir en una función cualquier bloque de código que hayamos copiado y pegado al menos 3 veces en nuestro flujo de trabajo
+
+Veamos un ejemplo muy sencillo. deseamos escribir una función que normalice una variable que pertenece a un conjunto de datos, sustrayendo su media y dividiéndolo por su desviación típica.
+
+Generamos unos datos aleatorios que sirvan de ejemplo
+
+```{r fun01}
+
+set.seed(154)
+datos_1 <- rnorm(n = 100, mean = 50, sd = 15)
+
+```
+
+Seleccionamos uno al azar
+
+```{r fun02}
+
+dato_1 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_1
+
+```
+
+Normalizamos la variable
+
+```{r fun03}
+
+normal_1 <- (dato_1 - mean(datos_1)) / sd(datos_1)
+
+normal_1
+
+```
+
+Queremos volver a hacer esta operación con otro dato del conjunto
+
+```{r fun04}
+
+dato_2 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_2
+
+normal_2 <- (dato_2 - mean(datos_1)) / sd(datos_1)
+
+normal_2
+
+
+```
+
+Y otra vez
+
+```{r fun05}
+
+dato_3 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_3
+
+normal_3 <- (dato_3 - mean(datos_1)) / sd(datos_1)
+
+normal_3
+
+
+```
+
+Esto de copiar y pegar un trozo de código cada vez que necesitamos hacer una operación, no tiene sentido.
+
+Para evitar eso definimos una *función personalizada* 
+
+En R se definen funciones del siguiente modo:
+
+```{r fun06}
+#| eval: false
+
+nombre_de_la_funcion <- function(argumentos) {
+  
+  Cuerpo de la funcion
+}
+
+```
+
+Podemos identificar tres partes de la función:
+
+* Nombre de la función
+
+* Argumentos
+
+* Cuerpo de la función
+
+El nombre de la función debe ser informativo (ver estos [consejos](https://es.r4ds.hadley.nz/19-functions.html#las-funciones-son-para-los-seres-humanos-y-para-las-computadoras)).
+
+EL cuerpo de la función es el código que deseamos re utilizar
+
+Los argumentos son las variables (pueden ser de cualquier tipo: vectores, matrices, dtataframes, etc.) que necesita el cuerpo para poder ejecutar el código
+
+Implementamos nuestro ejemplo
+
+```{r fun07}
+
+normalizar <- function(dato, datos) {
+  
+  (dato - mean(datos)) / sd(datos)
+  
+}
+
+```
+
+Una vez ejecutamos la instrucción anterior, la función está a nuestra disposición en el entorno de trabajo
+
+Probemos con los valores utilizados antes
+
+```{r fun08}
+
+normalizar(dato = dato_1, datos = datos_1)
+
+normalizar(dato = dato_2, datos = datos_1)
+
+normalizar(dato = dato_2, datos = datos_1)
+
+```
+
+Por supuesto, podemos asignar el resultado de la función a una variable (objeto)
+
+```{r fun09}
+
+normal_1_2 <- normalizar(dato = dato_1, datos = datos_1)
+
+normal_2_2 <- normalizar(dato = dato_2, datos = datos_1)
+
+normal_3_2 <- normalizar(dato = dato_2, datos = datos_1)
+
+normal_1_2
+normal_2_2
+normal_3_2
+
+```
+
+Podemos pasar un vector como argumento
+
+```{r fun10}
+
+datos_entrada <- c(dato_1, dato_2, dato_3)
+
+normal_vec <- normalizar(dato = datos_entrada, datos = datos_1)
+
+normal_vec
+
+```
+
+Y por ende, una columna de un data frame
+
+```{r fun11}
+
+datos_entrada_2 <- mtcars$mpg
+
+normal_mpg <- normalizar(dato = datos_entrada_2, datos = datos_entrada_2)
+
+normal_mpg
+
+```
+
+Escribir funciones es un mundo y un arte, a la función anterior por ejemplo habría que añadirle alguna prueba que verificara, por ejemplo, si los vectores de entrada son numéricos, como actuar en caso de que haya datos faltantes, imprimir errores informativos en caso de errores, posibilidad de llamar a otras funciones, etc.
