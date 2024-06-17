@@ -142,7 +142,7 @@ Copy code
 
 starwars |> 
   count(species)
-If we want to present the information in descending order.
+If we wish to display the information in descending order.
 
 {r
 Copy code
