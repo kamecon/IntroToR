@@ -1,0 +1,247 @@
+Beyond Data Frames
+Data frames are an extremely useful structure, with the great advantage of being part of the base R ecosystem (not dependent on libraries developed by third parties). However, this also represents a limitation, which is why libraries have been developed to complement the properties of data frames.
+
+The Tidyverse Universe
+-tidyverse
+
+
+Collection of packages from the Tidyverse ecosystem. See their website
+
+The main reference for this section will be this chapter from the book R for Data Science (available in Spanish)
+
+In this first part of the presentation, we will focus on the dplyr package and data manipulation, and introduce the pipe from the magrittr library.
+
+Dplyr
+-dplyr
+{width=200}
+
+Hex sticker of dplyr
+
+On its website, the dplyr library is presented as “dplyr is a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges.”
+
+Another definition can be seen in this text by Carlos Gil Bellosta
+
+The “set of verbs” is as follows:
+
+mutate() adds new variables that are functions of existing variables
+select() selects variables based on their names
+filter() selects cases based on their values
+summarise() reduces multiple values to a single summary
+arrange() changes the order of the rows.
+Being a third-party library, you need to install the library (done only once) and load it.
+
+{r
+Copy code
+#| eval: false
+
+install.packages("dplyr")
+library(dplyr)
+We will work with the starwars dataset.
+
+{r
+Copy code
+
+starwars
+Notice that our data frame has changed its name, it is now a tibble. Read this chapter from the book for a detailed explanation.
+
+We inspect the data frame (yes, the tibble is still a data frame) with glimpse.
+
+{r
+Copy code
+
+glimpse(starwars)
+Before continuing, it is better to introduce the pipe from magrittr. We will start with a simple example where we want to calculate the logarithm of the square root of the sum of a sequence of 20 realizations of a uniform distribution.
+
+The steps would be as follows:
+
+Generate the sequence of 20 realizations of a uniform distribution runif(20)
+Calculate the sum sum(runif(20)))
+Get the square root sqrt(sum(runif(20)))
+Apply the logarithm log(sqrt(sum(runif(20))))
+{r
+Copy code
+
+set.seed(356)
+log(sqrt(sum(runif(20))))
+The function is somewhat complicated to read, and it becomes more complicated as we add more functions.
+
+The pipe of R |> (the magrittr library has its version of the pipe %>%) follows the same idea as the bash pipe |, passing the output of one function to another function in a chained manner.
+
+A “clean” way to execute multiple verbs sequentially is through the use of the pipe.
+
+According to its website, this tool makes our code more readable for the following reasons:
+
+structuring sequences of data operations from left to right (instead of from inside out)
+avoiding nested function calls
+minimizing the need for local variables and function definitions
+making it easier to add steps at any point in the sequence of operations
+The previous operation would look like this with pipes:
+
+{r
+Copy code
+
+set.seed(356)
+
+runif(20) |> 
+  sum() |> 
+  sqrt() |> 
+  log()
+Which is more natural and easier to read. We will apply this chaining of functions with the pipe intensively with dplyr.
+
+We will select rows that meet a certain condition, this is done with the verb filter()
+
+For example, we only keep the Star Wars characters who are from Tatooine.
+
+{r
+Copy code
+starwars |> 
+  dplyr::filter(homeworld == "Tatooine")
+Or who live on Tatooine and are male.
+
+{r
+Copy code
+starwars |>
+  dplyr::filter(homeworld == "Tatooine" & gender == "masculine")
+Or we want to keep those records that are not human.
+
+{r
+Copy code
+
+starwars |> 
+  dplyr::filter(species != "Human")
+If we want to select columns, we use the verb select()
+
+Continuing with the first example, we want to know which Star Wars characters are from Tatooine, but we only want to see the name column.
+
+{r
+Copy code
+
+starwars |> 
+  dplyr::filter(homeworld == "Tatooine") |>
+  select(name)
+In addition to the name, we want to know their height and species.
+
+{r
+Copy code
+
+starwars |> 
+  dplyr::filter(homeworld == "Tatooine") |>
+  select(name, height, species)
+Suppose we don't know in advance how many types of species there are, and we want to know to apply the appropriate filters. In base R, we would have to extract the column and use the unique() function (unique(starwars$species)). In dplyr we have the distinct() function.
+
+{r
+Copy code
+
+starwars |> 
+  select(species) |> 
+  distinct()
+If we want to count the number of records per species, we use the count() function.
+
+{r
+Copy code
+
+starwars |> 
+  count(species)
+If we want to present the information in descending order.
+
+{r
+Copy code
+
+starwars |> 
+  count(species, sort = TRUE)
+If once the desired column is chosen, we want to sort it as in the previous case, we use the verb arrange(). In this case, we select the mass and name columns.
+
+{r
+Copy code
+
+starwars |>
+  select(name, mass) |>
+  arrange(mass)
+To sort it from highest to lowest, we use the desc() function within arrange().
+
+{r
+Copy code
+
+starwars |>
+  select(name, mass) |>
+  arrange(desc(mass))
+Suppose we want to select only the columns that meet a certain condition, this can be done with the where() function within the select() verb. For example, if we only want columns that contain numeric variables.
+
+{r
+Copy code
+
+starwars |>
+  select(where(is.numeric))
+But, there are also more specific variants of select(). For this case, we could also have used select_if() and the condition.
+
+{r
+Copy code
+
+starwars |>
+  select_if(is.numeric)
+There are several helper functions that allow for finer column selection. To take a look, run ?select
+
+Something we often do very frequently is create new columns by transforming existing ones, we do this with the verb mutate().
+
+{r
+Copy code
+
+starwars |> 
+  mutate(H_W = height / mass)
+It is possible to create several columns at the same time.
+
+{r
+Copy code
+
+starwars |> 
+  mutate(H_W = height / mass,
+         fakeVar = sqrt(mass))
+And to finish this brief overview of dplyr, we present two of the most used verbs in the data analysis cycle: group_by() and summarise().
+
+For those familiar with SQL, the two previous verbs are equivalent to a GROUP BY and an aggregation operation.
+
+For example, suppose we want to get the average height by gender.
+
+{r
+Copy code
+
+starwars |> 
+  group_by(gender) |> 
+  summarise(average_height = mean(height, na.rm = TRUE))
+Or the average weight by home planet.
+
+{r
+Copy code
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(average_weight = mean(mass, na.rm = TRUE))
+Remember that we can sort it.
+
+{r
+Copy code
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(average_weight = mean(mass, na.rm = TRUE)) |> 
+  arrange(desc(average_weight))
+Number of records by planet sorted from highest to lowest.
+
+{r
+Copy code
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(records = n()) |> 
+  arrange(desc(records))
+
+
+
+
+
+
+Continue generating
+
+
+
+ChatGPT can make mistakes. Check important info.

@@ -14,13 +14,13 @@ format:
 #| echo: false
 #| warning: false
 
-#Vamos a cargar las librerías con "pacman"
+#Load the libraries with "pacman".
 
-#Verificamos si esta instalado la libreria pacman, en caso que no lo este, se instala
+#Verify if the pacman library is installed, if not, it is installed
 if (! ('pacman' %in% installed.packages())) install.packages('pacman')
 
-#Una vez instalada, este comando carga la libreria, y si no esta instalada, lo hace
-pacman::p_load(openxlsx, knitr, kableExtra, dplyr, ggplot2, scales, tibble, gridExtra, readxlsb)
+#Once pacman is installed, this command loads the library, and if it is not installed, it installs the libraries.
+pacman::p_load(openxlsx, knitr, tibble, readxlsb)
 
 ```
 
@@ -190,7 +190,7 @@ You are free to name variables as you like, but there are some rules of style, f
 i_use_snake_case
 otherPeopleUseCamelCase
 some.people.use.periods
-Lo_queMeSale.de.por_AHI
+What_EVer.I.wha_NT
 
 ```
 
@@ -270,15 +270,16 @@ The structures that store numerical information, and the way they are accessed, 
 The most important family of variable types in R are vectors, which can be classified as either atomic or list.
 
 
-* The common data objects in R are:
-    + Vectors: one dimensional array 
-        + Types: numeric, integer, character, factor, logical
-    + Matrices: two dimensional array
-        + Each column must have the same type
-    + **Data Frames**: two dimensional array
-        + Columns may have different types
-    + Lists
-        + Items don't need to be the same size.
+The common data objects in R are:
+
++ Vectors: one dimensional array 
+  + Types: numeric, integer, character, factor, logical
++ Matrices: two dimensional array
+  + Each column must have the same type
++ **Data Frames**: two dimensional array
+  + Columns may have different types
++ Lists
+  + Items don't need to be the same size.
 
 The structure of atomic vectors is as follows:
 
@@ -387,7 +388,7 @@ Vectors are one-dimensional arrays (row or column) that can store numbers, chara
 
 As we have seen above, vectors are created with the `c()` command where the c stands for *combine*.
 
-**DO NOT CONFUSE** this structure with vectors as elements of a vector space (more on this later).
+**Be careful not to confuse** this structure with vectors as elements of a vector space (more on this later).
 
 ```{r vectors2}
 
@@ -766,11 +767,11 @@ prod(vector_5)
 
 So far we have been working with a one-dimensional data structure, but in data analysis we are sometimes interested in *discovering* or finding relationships between variables, so it is necessary to look at them as a whole in order to capture interrelationships.
 
-In our particular case, we will represent subsets of the input otput table as matrices, and apply linear algebra operations to them.
+In our particular case, we will represent subsets of the input output table as matrices, and apply linear algebra operations to them.
 
 This forces us to have to work in more than one dimension, in R we can do that with **matrices** and **arrays**.
 
-A matrix is nothing more than a two-dimensional structure that allows us to store homogeneous data. To construct a matrix we use the ``matrix()` function
+A matrix is nothing more than a two-dimensional structure that allows us to store homogeneous data. To construct a matrix we use the `matrix()` function
 
 ```{r matrices}
 
