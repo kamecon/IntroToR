@@ -489,7 +489,7 @@ Escribir funciones es un mundo y un arte, a la función anterior por ejemplo hab
 
 # Control Structures
 
-The objective of conditional structures is to make our process contingent on certain situations.
+The goal of conditional structures is to make our process contingent on certain situations.
 
 For example, transform a variable only if its value is negative, assign a label only to people who are over 25 years old, or run a forecasting algorithm according to the characteristics of the data.
 
