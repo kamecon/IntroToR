@@ -486,3 +486,111 @@ normal_mpg
 ```
 
 Escribir funciones es un mundo y un arte, a la función anterior por ejemplo habría que añadirle alguna prueba que verificara, por ejemplo, si los vectores de entrada son numéricos, como actuar en caso de que haya datos faltantes, imprimir errores informativos en caso de errores, posibilidad de llamar a otras funciones, etc.
+
+# Control Structures
+
+The objective of conditional structures is to make our process contingent on certain situations.
+
+For example, transform a variable only if its value is negative, assign a label only to people who are over 25 years old, or run a forecasting algorithm according to the characteristics of the data.
+
+Conditional structures in R do not differ much from those in other programming languages, but there are some changes in syntax.
+
+## `if` Structure
+
+```{r control1}
+#| eval: false
+
+if (condition is met) {
+  perform an action
+}
+
+```
+
+Let's look at an example using a column from `mtcars`
+
+```{r control1_5}
+#| eval: false
+
+if (mtcars$mpg[1] > 15) {
+  print("Good")
+}
+
+if (mtcars$mpg[1] < 15) {
+  print("Bad")
+}
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+}
+
+```
+
+## `if - else` Structure
+
+```{r control1_6}
+#| eval: false
+
+if (condition is met) {
+  perform an action
+} else {
+  perform another action
+}
+
+```
+
+For example
+
+```{r control2}
+
+if (mtcars$mpg[1] > 15) {
+  print("Good")
+} else {
+  print("Bad")
+}
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+} else {
+  mtcars$mpg[1] - 5
+}
+
+```
+
+## `if` - `else if` - `else` Structure
+
+```{r control3_5}
+#| eval: false
+
+if (condition is met) {
+  perform an action
+} else if (this condition is met) {
+  perform another action
+} else {
+  perform yet another action
+}
+
+```
+
+For example
+
+```{r control4_5}
+
+mtcars$mpg[15]
+
+if (mtcars$mpg[15] >= 25) {
+  print("Large")
+} else if (mtcars$mpg[15] > 15 & mtcars$mpg[15] < 25) {
+  print("Medium")
+} else {
+  print("Small")
+}
+
+```
+
+R provides us with a very useful function, especially when working with data frames or complex workflows, the `ifelse()` function, which saves us from writing the entire `if` structure.
+
+```{r control5}
+
+ifelse(mtcars$mpg[1] > 15, "Large", "Small")
+
+```
