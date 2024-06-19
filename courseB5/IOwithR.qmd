@@ -2394,8 +2394,8 @@ sort(total, decreasing = TRUE)
 ## Environmental extensions (CO2 emissions)
 
 ::: {#fig-mrio}
-![](MRIO.jpg)
-
+![](images/MRIO.jpg)
+Multi-country input-output tables with environmental extensions
 :::
 
 
@@ -2504,8 +2504,9 @@ sort(total, decreasing = TRUE)
 
 ### Emissions extension
 
-::: {#fig-mrio}
+::: {#fig-mrio2}
 ![](images/footprint.jpg)
+Consumption footprint
 :::
 
 We extract the emissions vector 
@@ -2514,6 +2515,7 @@ We extract the emissions vector
 
 co2 <- matrixData["C02", 1:9]
 
+co2
 ```
 
 
@@ -2523,6 +2525,7 @@ We obtain the emissions intensities (per unit of output) or direct impact coeffi
 
 g <- co2 / x
 
+g
 ```
 
 That is:
@@ -2537,7 +2540,7 @@ In matrix form:
 $$M = \hat{g}(I-A)^{-1}$$
 where $\hat{g}$ is a diagonal matrix with the elements of $g$ in the main diagonal
 
-$M$ tell us how the emissions change as response of a unit change in the final demand
+$M$ tell us how the emissions change in response of a unit change in the final demand
 
 <!-- $$M = \hat{g}(I-A)^{-1} = \hat{g} \frac{\Delta x}{\Delta y} = \hat{g}B$$ -->
 
@@ -2548,6 +2551,8 @@ M <- diag(g)%*%B
 ```
 
 The element $M_{1,1}$ indicates that in order to meet a 1 unit increase in demand for industry 1 products, `r M[1, 1]` units of industry 1 emissions are generated.
+
+Where does this figure comes from? The element $B_{1,1}$ indicates that in order to meet a 1 unit increase in demand for industry 1 products, `r B[1, 1]` units of industry 1 input are required. This number times `r g[1]` results in `r M[1, 1]`
 
 Similarly, the element $M_{2,1}$ shows that to satisfy a 1 unit increase in demand industry 1 products, `r M[2, 1]` units of emissions in industry 2 are generated as consequence of the higher output in that sector needed to satisfy the higher demand.
 
@@ -2563,7 +2568,7 @@ sort(m, decreasing = TRUE)
 
 ```
 
-In order to obtain the total pollution impact generated per unit of product $j$ for final use in the economy, we need the final demand matrix
+To obtain the total pollution impact generated per unit of product $j$ for final use in the economy, we need the final demand matrix
 
 ```{r mrio10}
 
