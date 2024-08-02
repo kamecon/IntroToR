@@ -1,0 +1,407 @@
+---
+title: "Programming basics"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Control Structures in R
+
+The purpose of conditional structures is to make our process contingent on certain situations.
+
+For example, to transform a variable only if its value is negative, assign a label only to people who are over 25 years old, or run a forecasting algorithm according to the characteristics of the data.
+
+Conditional structures in R do not differ much from those in other programming languages, but there are some changes in syntax.
+
+##`if` Structure
+
+```{r control1}
+#| eval: false
+
+if (condition is met) {
+  perform an action
+}
+
+```
+
+Let's look at an example using a column from `mtcars`
+
+```{r control1_5}
+#| eval: false
+
+if (mtcars$mpg[1] > 15) {
+  print("Good")
+}
+
+if (mtcars$mpg[1] < 15) {
+  print("Bad")
+}
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+}
+
+```
+
+##`if - else` Structure
+
+```{r control1_6}
+#| eval: false
+
+if (condition is met) {
+  perform an action
+} else {
+  perform another action
+}
+
+```
+
+For example
+
+```{r control2}
+
+if (mtcars$mpg[1] > 15) {
+  print("Good")
+} else {
+  print("Bad")
+}
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+} else {
+  mtcars$mpg[1] - 5
+}
+
+```
+
+##`if` - `else if` - `else` Structure
+
+```{r control3_5}
+#| eval: false
+
+if (condition is met) {
+  perform an action
+} else if (this condition is met) {
+  perform another action
+} else {
+  perform yet another action
+}
+
+```
+
+For example
+
+```{r control4_5}
+
+mtcars$mpg[15]
+
+if (mtcars$mpg[15] >= 25) {
+  print("Large")
+} else if (mtcars$mpg[15] > 15 & mtcars$mpg[15] < 25) {
+  print("Medium")
+} else {
+  print("Small")
+}
+
+```
+
+R provides us with a very useful function, especially when working with data frames or complex workflows, the `ifelse()` function, which saves us from writing the entire `if` structure.
+
+```{r control5}
+
+ifelse(mtcars$mpg[1] > 15, "Large", "Small")
+
+```
+
+
+
+# Iterative Structure in R
+
+It is common to have to apply the same operation a number of times, where this number is large enough to make it unfeasible, or at least, inconvenient.
+
+Generally, we will apply functions in this iterative scheme, or a few lines of code that we want to execute several times.
+
+The basic iterative structure is a loop that takes the following form:
+
+
+```{r loop1}
+#| eval: false
+
+for (variable in vector) {
+  Execute this action
+  Execute this action
+  ...
+  Execute this action
+}
+
+```
+
+
+Examples
+
+```{r loop2}
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+}
+
+
+```
+
+```{r loop2_5}
+
+counter <- 1
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+  counter <- counter + 1
+  if (counter >10){
+    break
+  }
+}
+
+
+```
+
+```{r loop3}
+
+mtcars_small <- mtcars[1:20,]
+
+for (i in seq_along(mtcars_small$cyl)) {
+  if (mtcars_small$cyl[i] >= 8){
+    mtcars_small$cyl[i] <- "Large"
+  } else{
+    mtcars_small$cyl[i] <- "Small"
+  }
+}
+
+mtcars_small
+
+```
+
+
+```{r loop4}
+
+for (i in seq_along(mtcars_small$cyl)) {
+  if (mtcars_small$cyl[i] >= 6) {
+    mtcars_small$cyl[i] <- "Large"
+  } else if (mtcars_small$cyl[i] > 4 & mtcars_small$cyl[i] < 6) {
+    mtcars_small$cyl[i] <- "Medium"
+  } else {
+    mtcars_small$cyl[i] <-"Small"
+  }
+}
+
+mtcars_small
+
+```
+
+# Functions
+
+We have already worked with several R functions, such as `length()`, `sum()`, `summary()`.
+
+But in this section, we are not focusing on the different functions that we can call in R and its libraries, which are numerous, but on how we can define our own functions.
+
+It is quite common in the data workflow to need to repeat a non-trivial type of operation (whose execution involves the use of a code script) several times. In this case, instead of copying and pasting the instructions repeatedly, we can write a function that encapsulates those instructions and call it each time we need to perform the operation.
+
+Following this [advice](https://r4ds.had.co.nz/functions.html#when-should-you-write-a-function), we should turn any block of code that we have copied and pasted at least 3 times in our workflow into a function.
+
+Let's consider a very simple example. We want to write a function that normalizes a variable belonging to a data set by subtracting its mean and dividing it by its standard deviation.
+
+First, we generate some random data to serve as an example
+
+```{r fun01}
+
+set.seed(154)
+data_1 <- rnorm(n = 100, mean = 50, sd = 15)
+
+```
+
+We then select one at random
+
+```{r fun02}
+
+datum_1 <- sample(x = data_1, size = 1, replace = TRUE)
+
+datum_1
+
+```
+
+Next, we normalize the variable
+
+```{r fun03}
+
+normalized_1 <- (datum_1 - mean(data_1)) / sd(data_1)
+
+normalized_1
+
+```
+
+We want to repeat this operation with another piece of data from the set
+
+```{r fun04}
+
+datum_2 <- sample(x = data_1, size = 1, replace = TRUE)
+
+datum_2
+
+normalized_2 <- (datum_2 - mean(data_1)) / sd(data_1)
+
+normalized_2
+```
+
+And again
+
+```{r fun05}
+
+datum_3 <- sample(x = data_1, size = 1, replace = TRUE)
+
+datum_3
+
+normalized_3 <- (datum_3 - mean(data_1)) / sd(data_1)
+
+normalized_3
+
+```
+
+If we need to perform this operation again with another data from the set, we will have to copy and paste the code each time, which does not make sense.
+
+To avoid that, we define a *user defined function*.
+
+In R, functions are defined as follows:
+
+```{r fun06}
+#| eval: false
+
+function_name <- function(arguments) {
+  
+  Body of the function
+}
+
+```
+
+We can identify three parts of the function:
+
+* Name of the function
+
+* Arguments
+
+* Body of the function
+
+The function name should be informative (see these [tips](https://r4ds.had.co.nz/functions.html#functions-are-for-humans-and-computers)).
+
+The body of the function is the code that we want to reuse
+
+The arguments are the variables (they can be of any type: vectors, matrices, dataframes, etc.) needed by the body to execute the code.
+
+We implement our example
+
+```{r fun07}
+
+normalize <- function(datum, data) {
+  
+  (datum - mean(data)) / sd(data)
+  
+}
+
+```
+
+Once we run the above statement, the function is available within the working environment.
+
+We can try out the function with the values used before
+
+```{r fun08}
+
+normalize(datum = datum_1, data = data_1)
+
+normalize(datum = datum_2, data = data_1)
+
+normalize(datum = datum_2, data = data_1)
+
+```
+
+Of course, we can assign the result of the function to a variable (object)
+
+```{r fun09}
+
+normalized_1_2 <- normalize(datum = datum_1, data = data_1)
+
+normalized_2_2 <- normalize(datum = datum_2, data = data_1)
+
+normalized_3_2 <- normalize(datum = datum_2, data = data_1)
+
+normalized_1_2
+normalized_2_2
+normalized_3_2
+
+```
+
+We can pass a vector as an argument
+
+```{r fun10}
+
+input_data <- c(datum_1, datum_2, datum_3)
+
+normalized_vector <- normalize(datum = input_data, data = data_1)
+
+normalized_vector
+
+```
+
+And therefore, a column of a data frame
+
+```{r fun11}
+
+input_data_2 <- mtcars$mpg
+
+normalized_mpg <- normalize(datum = input_data_2, data = input_data_2)
+
+normalized_mpg
+
+```
+
+Writing functions is a vast topic and an art. For the previous function, for example, we would have to add some checks that verify, for example, if the input vectors are numeric, how to act in the case of missing data, print informative errors in case of errors, possibility of calling other functions, etc.
+
+# The apply family
+
+We will explore the `lapply()` and `sapply()` functions, which are powerful tools for applying a function to each element of a list or vector
+
+This combines two previously discussed concepts: user-defined functions and loops
+
+These functions minimize the need to create an explicit loop, making the code more concise and efficient
+
+With `lapply()`, you can apply a function to each element of a list and obtain a list as a result
+
+
+```{r apply01}
+
+#input_data <- c(datum_1, datum_2, datum_3)
+
+#normalized_vector <- normalize(datum = input_data, data = data_1)
+
+normalized_vector
+
+```
+
+```{r apply02}
+
+normalized_vector02 <- lapply(input_data, normalize, data = data_1)
+
+normalized_vector02
+
+```
+
+On the other hand, sapply simplifies the result to a vector or matrix when possible.
+
+```{r apply03}
+
+normalized_vector03 <- sapply(input_data, normalize, data = data_1)
+
+normalized_vector03
+
+```
+
+We will not be able to extensively cover the full scope of these functions and their various applications in this course

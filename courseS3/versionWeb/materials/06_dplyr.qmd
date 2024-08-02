@@ -1,0 +1,447 @@
+---
+title: "Data Frames"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Beyond Data Frames
+
+Data frames are an extremely useful structure with the significant advantage of being part of the base R ecosystem, meaning they do not rely on third-party libraries. However, this also poses certain limitations, which has led to the development of libraries that enhance and extend the capabilities of data frames.
+
+## The Tidyverse Universe
+
+::: {#fig-tidyverse}
+![](images/tidyverse_website.png)
+
+Collection of packages from the Tidyverse ecosystem. See their [website](https://www.tidyverse.org/)
+:::
+
+The main reference for this section will be this [chapter](https://r4ds.had.co.nz/transform.html) from the book [R for Data Science](https://r4ds.had.co.nz/index.html).
+
+In this first part of the presentation, we will focus on the [dplyr](https://dplyr.tidyverse.org/) package for data manipulation and introduce the pipe command
+
+## Dplyr
+
+::: {#fig-dplyr}
+![](images/logo.png){width=200}
+
+dplyr hex sticker
+:::
+
+On its website, the dplyr library is presented as “*dplyr is a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges.*”
+
+
+The “set of verbs” is as follows:
+
+* `mutate()` adds new variables that are functions of existing variables
+* `select()` picks variables based on their names.
+* `filter()` picks cases based on their values.
+* `summarise()` reduces multiple values down to a single summary.
+* `arrange()` changes the ordering of the rows
+
+Being a third-party library, you need to install the library (done only once) and load it.
+
+```{r dplyr01}
+
+#install.packages("dplyr")
+library(dplyr)
+
+```
+
+
+We will work with the `starwars` dataset.
+
+```{r dplyr02}
+
+starwars
+
+```
+
+Notice that our data frame has changed its name, it is now a tibble.  
+
+Notice that our data frame has *changed* its name, it is now a `tibble`. Read this chapter from the  [book](https://es.r4ds.hadley.nz/10-tibble.html) for a detailed explanation.
+
+We inspect the data frame (yes, the tibble is still a data frame) with `glimpse`
+
+
+```{r dplyr03}
+
+glimpse(starwars)
+
+```
+
+Before continuing, it is helpful to introduce the *pipe*. We will start with a simple example: calculating the logarithm of the square root of the sum of a sequence of 20 realizations from a uniform distribution.
+
+The steps would be as follows:
+
+* Generate the sequence of 20 realizations of a uniform distribution `runif(20)`
+* Calculate the sum `sum(runif(20)))`
+* Compute the square root `sqrt(sum(runif(20)))`
+* Apply the logarithm `log(sqrt(sum(runif(20))))` 
+
+
+```{r dplyr04}
+
+set.seed(356)
+log(sqrt(sum(runif(20))))
+
+```
+
+The function is somewhat difficult to read, and it becomes even more complex as we add more functions.
+
+The R **pipe** `|>` (with the magrittr library offering its version `%>%`) operates similarly to the bash pipe `|`, passing the output of one function to the next in a chained manner.
+
+A “clean” way to execute multiple verbs sequentially is through the use of the pipe.
+
+According to its website, this tool makes our code more readable for the following reasons:
+
+* Structuring sequences of data operations from left to right (instead of inside out)
+
+* Avoiding nested function calls
+
+* Minimizing the need for local variables and function definitions
+
+* Making it easier to add steps at any point in the sequence of operations
+
+The previous operation would look like this with pipes:
+
+
+```{r dplyr05}
+
+set.seed(356)
+
+runif(20) |> 
+  sum() |> 
+  sqrt() |> 
+  log()
+
+
+```
+
+This approach is more natural and easier to read. We will apply this intensive function chaining with the pipe in dplyr.
+
+
+
+
+We will select rows that meet a certain condition using the `filter()` verb.
+
+For example, we will only keep the Star Wars characters who are from Tatooine.
+
+
+```{r dplyr06}
+starwars |> 
+  dplyr::filter(homeworld == "Tatooine")
+
+
+```
+
+Or who live on Tatooine and are male
+
+```{r dplyr07}
+starwars |>
+  dplyr::filter(homeworld == "Tatooine" & gender == "masculine") 
+
+```
+
+
+Or we want to keep those records that are not human
+
+```{r dplyr08}
+
+starwars |> 
+  dplyr::filter(species != "Human")
+
+```
+If we want to select columns, we use the verb `select()`
+
+Continuing with the first example, we want to know which Star Wars characters are from Tatooine, but we only want to see the name column
+
+```{r dplyr09}
+
+starwars |> 
+  dplyr::filter(homeworld == "Tatooine") |>
+  select(name)
+
+
+```
+
+In addition to the name, we want to know their height and species
+
+```{r dplyr10}
+
+starwars |> 
+  dplyr::filter(homeworld == "Tatooine") |>
+  select(name, height, species)
+
+```
+
+Suppose we don't know in advance how many types of species there are, and we need this information to apply appropriate filters. In base R, we would extract the column and use the `unique()` function (`unique(starwars$species)`). In dplyr, we can use the `distinct()` function for this purpose.
+
+
+```{r dplyr11}
+
+starwars |> 
+  select(species) |> 
+  distinct()
+
+```
+
+If we want to count the number of records per species, we use the `count()` function.
+
+```{r dplyr12}
+
+starwars |> 
+  count(species)
+
+```
+
+If we wish to display the information in descending order
+
+
+```{r dplyr12_5}
+
+starwars |> 
+  count(species, sort = TRUE)
+
+```
+
+If once the desired column is chosen, we want to sort it as in the previous case, we use the verb `arrange()`. In this case, we select the mass and name columns
+
+```{r dplyr13}
+
+starwars |>
+  select(name, mass) |>
+  arrange(mass)
+
+```
+
+We use the `desc()` function within `arrange()` to sort it from highest to lowest.
+
+```{r dplyr14}
+
+starwars |>
+  select(name, mass) |>
+  arrange(desc(mass))
+
+```
+
+If we want to choose only the columns that satisfy a specific condition, we can achieve this by using the `where()` function within the `select()` verb. For instance, if we specifically want columns containing numeric variables.
+
+
+```{r dplyr14_2}
+
+starwars |>
+  select(where(is.numeric))
+
+```
+
+There are more specific variants of `select()` available. In this case, we could have also utilized `select_if()` along with the condition.
+
+
+```{r dplyr14_3}
+
+starwars |>
+  select_if(is.numeric)
+
+```
+
+::: {.callout-note}
+
+There are several *helpers* functions that allow for finer column selection. To take a look, run `?select`
+
+:::
+
+A common task is creating new columns by transforming existing ones, which can be accomplished using the verb `mutate()`
+
+```{r dplyr15}
+
+starwars |> 
+  mutate(H_W = height / mass)
+
+```
+
+It is possible to create several columns at the same time
+
+```{r dplyr16}
+
+starwars |> 
+  mutate(H_W = height / mass,
+         fakeVar = sqrt(mass))
+
+```
+
+To conclude this brief overview of dplyr, we introduce two of the most frequently used verbs in the data analysis cycle: `group_by()` and `summarise()`
+
+For example, suppose we want to get the average height by gender
+
+```{r dplyr17}
+
+starwars |> 
+  group_by(gender) |> 
+  summarise(average_height = mean(height, na.rm = TRUE))
+
+
+```
+
+Or the average weight by home planet
+
+```{r dplyr18}
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(average_weight = mean(mass, na.rm = TRUE))
+
+```
+
+Remember that we can sort it
+
+```{r dplyr19}
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(average_weight = mean(mass, na.rm = TRUE)) |> 
+  arrange(desc(average_weight))
+
+```
+Number of records by planet sorted from highest to lowest
+
+```{r dplyr20}
+
+starwars |> 
+  group_by(homeworld) |> 
+  summarise(registros = n()) |> 
+  arrange(desc(registros))
+
+```
+
+And finally, if we wish to change the name of a column, we can use the `rename()` function, and to change the order of the columns, we use `relocate()`
+
+```{r dplyr21}
+
+starwars |> 
+  rename(planeta = homeworld)
+
+```
+
+```{r dplyr22}
+
+starwars |> 
+  relocate(species, .after = mass)
+
+```
+
+Another important thing to note, which pairs well with the `map` functions, are nested tibbles. Nested tibbles are created using the `nest_by()` verb.
+
+```{r dplyr23}
+
+starwars_nested <- starwars |>
+  nest_by(homeworld)
+
+starwars_nested
+
+```
+
+You can access the nested tibble using the syntax of a list.
+
+```{r dplyr23_5}
+
+starwars_nested$data[[40]]
+
+```
+
+## Beyond tibbles: joins
+
+We conclude this section by addressing a common issue that you may have encountered in previous modules, which is the need to work with more than one data table that are related to each other. Therefore, we resort to the well-known JOINS and their variants.
+
+These operations can also be performed in tidyverse with the following functions:
+
+* left_join()
+
+* right_join() 
+
+* inner_join() 
+
+* full_join() 
+
+* anti_join()
+
+* semi_join() 
+
+
+::: {.callout-note}
+
+For a good introduction to joins with dplyr, check [this](https://es.r4ds.hadley.nz/13-relational-data.html#mutating-joins). And for a comparison with base R and SQL, refer to [this](https://es.r4ds.hadley.nz/13-relational-data.html#otras-implementaciones)
+
+:::
+
+Let's use a toy example to show the most basic joins. We create two data sets using the `tibble()` function
+
+```{r joins00}
+
+df_A <- tribble(
+  ~ID, ~y,
+   "A", 5,
+   "B", 5,
+   "C", 8,
+   "D", 0,
+   "F", 9)
+df_B <- tribble(
+  ~ID, ~z,
+   "A", 30,
+   "B", 21,
+   "C", 22,
+   "D", 25,
+   "E", 29)
+
+df_A
+
+df_B
+
+```
+
+
+* Left join
+
+```{r joins01}
+
+left_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+* Right join
+
+```{r joins02}
+
+right_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+* Inner join
+
+```{r joins03}
+
+inner_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+* Full join
+
+```{r joins04}
+
+full_join(x = df_A, y = df_B, by = "ID")
+
+```
+
+What happens if the columns have different names?
+
+```{r joins05}
+
+colnames(df_B)[1] <- "KL"
+
+full_join(x = df_A, y = df_B, by = c("ID"="KL"))
+
+```

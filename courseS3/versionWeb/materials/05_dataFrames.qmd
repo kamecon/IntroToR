@@ -1,0 +1,228 @@
+---
+title: "Data Frames"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Data Frames
+
+The `data.frame` will be one of the most commonly used objects in R for data analysis.
+
+Data frames are *tables* or rectangular arrays, we can treat them as if they were an Excel sheet in which we organise the data we want to analyse.
+
+As in Excel, we can do calculations with the tables, create new columns (variables), perform statistical analysis, etc.
+
+### Inspecting the data
+
+In general, we usually inspect the data in a table to familiarise ourselves with it and see what kind of analysis we can do with it.
+
+Let's use one of the datasets that already comes with the basic R installation, `mtcars`.
+
+We can view a user friendly version of the table in RStudio
+
+```{r df1}
+
+mtcars
+
+```
+
+There are several ways to take a quick look at the data without having to view the whole table.
+
+For example we can see the first 6 rows
+
+```{r df2}
+
+head(mtcars)
+
+```
+
+Or the last 6
+
+```{r df3}
+
+tail(mtcars)
+
+```
+
+If instead of 6, we want to see a certain number of rows, we simply tell the `head` and `tail` functions to do so
+
+```{r df4}
+
+head(mtcars, n = 3)
+
+tail(mtcars, n = 2)
+
+```
+
+Sometimes we use very large tables that store many variables, in this case before displaying even a fraction of the table, it is useful to inspect the column names of the data frame
+
+```{r df5}
+
+colnames(mtcars)
+
+```
+
+
+In general, in order to determine how many variables and how many observations we have, we use the `dim` function, which gives the number of columns and rows in the table
+
+```{r df6}
+
+dim(mtcars)
+
+```
+
+We can see the number of rows and columns separately with `nrow` and `ncol`.
+
+```{r df7}
+
+ncol(mtcars)
+
+nrow(mtcars)
+
+```
+
+
+
+Another way is to use the `str` function. Although it is not intuitive and even intimidating at first glance, it is not that complicated and provides useful information. 
+
+```{r df8}
+
+str(mtcars)
+
+```
+
+A version that provides statistical information is ``summary``.
+
+```{r df9}
+
+summary(mtcars)
+
+```
+
+
+Now that we have our data in a data frame, the next step is to access subsets of data in the table (a column or group of rows that meet a condition), manipulate it and create new variables.
+
+We can access the data in the data frame in the same way as we did with vectors, data frames are a kind of set of vectors.
+
+Remember that we could access elements of vectors by position or name
+
+```{r df12}
+
+mtcars[1,2]
+
+mtcars[1,4]
+
+```
+
+In the first case we tell R that we want it to show us the data of the first row and the second column, in the second case the data of the first row and the fourth column.
+
+In the case that we want to see a specific column or row, we leave one of the dimensions blank.
+
+If we want to access the information of the second row
+
+```{r df13}
+
+mtcars[2, ]
+
+```
+
+If we want to access the information in the fourth column
+
+```{r df14}
+
+mtcars[ , 4]
+
+```
+
+We can also get the information per column using the column name
+
+```{r df15}
+
+mtcars[ , "cyl"]
+
+```
+
+Likewise, we can inspect a data frame column by typing the data frame name followed by a `$` sign and the column name.
+
+The advantage of this method is that the column names are autocompleted
+
+```{r df16}
+
+mtcars$cyl
+
+```
+
+With position, like vectors, we can access sets of rows and columns (slices).
+
+For example, if we want to keep only the first 3 rows and the fourth and fifth columns, we can access the following position sets
+
+```{r df17}
+
+mtcars[1:3, 4:5]
+
+```
+
+We can build a new table from this sub-table, assigning a name to the latter
+
+```{r df18}
+
+mtcars_peque <- mtcars[1:3, 4:5]
+
+mtcars_peque
+
+```
+
+Sub-table with first 10 rows only
+
+```{r df19}
+
+mtcars[1:10, ]
+
+```
+
+Sub-table with last 2 columns only
+
+```{r df20}
+
+mtcars[, 4:5]
+
+```
+
+
+We can select data with criteria based on meeting a condition
+
+```{r df21}
+
+mtcars[mtcars$cyl > 4 , ]
+
+```
+
+```{r df22}
+
+mtcars[mtcars$cyl == 6 , ]
+
+```
+
+We can complicate it
+
+```{r df23}
+
+mtcars[mtcars$cyl == 6 & mtcars$mpg > 18, ]
+
+```
+
+We have asked R to show us the data in the table corresponding to cars with 6 cylinders and miles per gallon greater that 18.
+
+Both conditions are fulfilled at the same time.
+
+In case you need that only one of the condition holds:
+
+```{r df23_1}
+
+mtcars[mtcars$cyl == 6 | mtcars$mpg > 18, ]
+
+```

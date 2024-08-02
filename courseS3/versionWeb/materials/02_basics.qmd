@@ -1,0 +1,153 @@
+---
+title: "R basics"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Basic functioning
+
+Next, we are going to introduce the basic handling of the working environment, such as defining variables, making comments to the code, etc. In this process, we will be introducing language concepts that we will be defining in a formal way later on.
+
+## Arithmetic operations
+
+To introduce us to the use of the editor and the command line of Rstudio, we will start with some very basic operations
+
+```{r operaciones}
+
+2 + 2
+
+5 - 3
+
+3 * 2
+
+6 / 3
+
+```
+
+It is possible to apply standard association rules as well as operations beyond the basic ones (power, logarithm, etc.)
+
+```{r operaciones 2}
+
+(5 + 3) / 4
+
+3^2
+
+log(100, base = 10)
+
+5 %% 3
+
+sqrt(9)
+
+
+```
+
+## Assigning variables
+
+We can store *values* by assigning a name to them, so that we can access the value later.
+
+```{r asigna}
+
+x <- 4
+
+x
+
+y <- (5 + 3) / 4
+
+y
+
+```
+
+You create variables, or create new *objects* with the `<-` operator. You can also do this in the more conventional way with `=` but this is not standard practice.
+
+```{r}
+
+Employees <- 150
+
+Employees
+
+```
+
+With names you have to respect certain conventions: they must start with a letter and can only contain letters, numbers, `_` and `.`.
+
+You are free to name variables as you like, but there are some rules of style, for example
+
+```{r}
+#| eval: false
+
+i_use_snake_case
+otherPeopleUseCamelCase
+some.people.use.periods
+What_EVer.I.wha_NT
+
+```
+
+::: {#fig-style}
+[![](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/dbb99049-2916-4bc8-824f-1816f5c4f06d_rw_1920.png?h=f0b45a30ba31ad414562d1085cd6c172)](https://allisonhorst.com/everything-else)
+
+An illustration of variable naming styles by the great [Allison Horst](https://allisonhorst.com/allison-horst). [Source](https://allisonhorst.com/everything-else). 
+:::
+
+```{r}
+
+New_analysts_January <- 5
+
+New_analysts_February <- 3
+
+Analysts <- New_analysts_January + New_analysts_February
+
+Analysts
+
+```
+
+## Introduce comments
+
+Comments are initiated with `#`
+
+```{r}
+
+# Calculation of number of analysts
+Analysts <- New_analysts_January + New_analysts_February
+
+Analysts
+
+```
+
+## Errors
+
+Throughout the course we will talk about R runtime errors, but it is worth getting used to them, as they will always be with us 😢, but they give us a guide to solve them 😊
+
+
+```{r errorexample}
+#| eval: false
+
+## analyst_number_calculation
+Analysts_update <- New_analysts_January + New_analysts_February + New_analysts_March
+
+Analyst_update
+
+```
+
+## Libraries
+
+Libraries or packages are perhaps the most commonly used elements in R for practical work.
+
+A formal definition of a library from the book [R Packages](https://r-pkgs.org/) by Hadley Wickham and Jennifer Bryan is as follows:
+
+"*In R, the fundamental unit of shareable code is the package. A package bundles together code, data, documentation, and tests, and is easy to share with others. As of March 2023, there were over 19,000 packages available on the Comprehensive R Archive Network, or CRAN, the public clearing house for R packages*".
+
+An R package is a way to share code in an organised way that expands the possibilities of R by extending its functionality.
+
+Libraries are installed using the `install.packages()` command, and libraries are loaded with `library()`.
+
+```{r libreria}
+#| eval: false
+
+install.packages(emoji)
+library(emoji)
+
+
+```

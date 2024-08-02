@@ -1,0 +1,453 @@
+---
+title: "Visualition: ggplot2"
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Introduction to Data Visualization in R with `ggplot2`
+
+Data visualization stands as a cornerstone in the data analysis cycle, permeating its beginning, middle, and end stages.
+
+In this module, emphasis lies on practical, hands-on code sessions over theoretical discussions, fostering an interactive learning experience.
+
+We will delve into the visualization capabilities of the ggplot2 library within the tidyverse ecosystem, a versatile tool favored by renowned entities such as the [BBC](https://bbc.github.io/rcookbook/) and the [Financial Times](https://blog.revolutionanalytics.com/2018/06/ft-bbc-uses-r.html).
+
+
+::: {#fig-ggplot}
+![](images/logo5.png){width=200}
+
+Hex sticker de ggplot2
+:::
+
+::: {.callout-note}
+
+**Bibliographical References**
+
+For those eager to delve deeper into data visualization with ggplot2, I recommend the following resources:
+
++ Foundational
+
+  - [R Graphics Cookbook](https://r-graphics.org/), 2nd edition by Winston Chang: This cookbook-style reference is invaluable for resolving both basic and advanced visualization queries.
+
+  - [Data Visualization A practical introduction](https://socviz.co/) by Kieran Healy: Offering a comprehensive exploration beyond mere tool proficiency, this work delves into the principles of effective visualization.
+
++ Supplementary
+
+  - [ggplot2: Elegant Graphics for Data Analysis (3e)](https://ggplot2-book.org/) by Hadley Wickham, Danielle Navarro, and Thomas Lin Pedersen: An essential read for understanding the philosophy underpinning ggplot2, known as the Grammar of Graphics. 
+  
+  - [The Grammar of Graphics](https://link.springer.com/book/10.1007/0-387-28695-0?source=post_page-----1f92b4ed4149--------------------------------)  by Leland Wilkinson: A foundational text on the principles of _The Grammar of Graphics_, highly recommended for enthusiasts of visualization.
+
+:::
+
+Let's proceed by installing and loading the ggplot2 library.
+
+```{r ggplot01}
+#install.packages(ggplot2)
+library(ggplot2)
+
+```
+
+We're going to use datasets provided by the ggplot2 library as examples. Let's start with `mpg`.
+
+```{r ggplot02}
+
+mpg
+
+```
+
+
+Similar to how language grammar organizes language using a set of rules, the grammar of graphics delineates a set of rules for structuring graphs.
+
+At its core, the **grammar of graphics** revolves around the concept of layers. A coherent combination of layers culminates in the formation of a graph
+
+## Layers
+
+* _Data_: source dataset being visualized
+* _Aesthetics_: links variables in the dataset to visual properties like color, size, and shape
+* _Geometries_: visual representation used for the data (line, points, bars)
+* _Facets_: divides the data into subsets based on one or more categorical variables (country, gender, age)
+* _Statistics_: computed geometries based on statistical measures
+* _Coordinates_: specifies the type of coordinate system, such as cartesian, polar, etc.
+* _Themes_: appearance of plot decorations (axis, grid lines, background)
+
+::: {#fig-layers}
+![](images/gglayers.png){width=400}
+
+Image adapted from The Grammar of Graphics. [Source](https://r.qcbs.ca/workshop03/book-en/grammar-of-graphics-gg-basics.html). 
+:::
+
+Fundamentally, every plot necessitates a dataset, a geometric representation, and aesthetic specifications.
+
+
+```{r ggplot03}
+#| eval: false
+
+ggplot(data = <DATA>, mapping = aes(<MAP>)) + <GEOMETRY>(OPTIONS)
+
+```
+
+The Geometry refers to the type of plot (scatter, line, bar, etc.), and aesthetics describe how we map data onto the axes, essentially what we place on the axes.
+
+The function for creating a plot is `ggplot()`.
+
+Let's construct a plot that relates the variables `displ` and `hwy`. The first step is to call the data and specify the variables we want to represent; this latter aspect is what ggplot refers to as *aesthetics*
+
+## Data and aesthetics
+
+```{r ggplot035_0}
+
+graph <- ggplot(mpg) 
+
+graph
+
+```
+
+```{r ggplot035}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) 
+
+graph
+
+```
+
+
+## Geometries
+
+We see that it represents a sort of canvas where the variables to be represented are displayed. We need a geometry *layer*. Yo can see a list of ggplot2 geometries [here](https://ggplot2.tidyverse.org/reference/#geoms)
+
+```{r ggplot04}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+
+graph
+
+```
+
+Within aesthetics, we can incorporate additional options:
+
+* `color`: Specifies the color of the geometry and can vary depending on a third variable if such a dependency exists
+
+* `fill` Specifies the fill color of the geometry if it's a shape that can be filled (such as bars, points, polygons, etc.).
+
+* `shape` Indicates the shape of the points (ordered pairs or n-tuples of the represented variables) or the lines connecting them.
+
+* `size` Defines the size of the geometry.
+
+* `alpha` Controls the transparency of the geometry.
+
+We add a color to the geometry that depends on the discrete variable `class` from the dataset.
+
+```{r ggplot05}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = class)) +
+  geom_point()
+
+graph
+
+```
+
+This is what we called a a _non fixed_ aesthetic, in this case it should appear as a argument if the `aes()` function.
+
+Look at what happens if we include the color argument in `geom_point()`
+
+```{r ggplot055}
+#| eval: false
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = class)
+
+graph
+
+```
+
+We obtain a error, let us substitute the `class` variable by a color name
+
+```{r ggplot056}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = "blue")
+
+graph
+
+```
+
+This is what we call a _fixed aesthetic_, the color is the same for all the points.
+
+Likewise, we can include a shape for each ordered pair that depends on another variable, in this case `cyl`. Before adding it, we convert it into a factor
+
+```{r ggplot06}
+
+graph <- ggplot(mpg, aes(x = displ,
+                         y = hwy,
+                         color = class,
+                         shape = factor(cyl))
+                ) +
+  geom_point()
+
+graph
+
+```
+
+We can modify the size of the aesthetics
+
+```{r ggplot065}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = class, shape = factor(cyl))) +
+  geom_point(size = 3)
+
+graph
+
+```
+
+Honestly, this chart introduces more confusion than it resolves. Let’s simplify our approach by returning to the basic version, and we will select the shape of the aesthetic elements using the `shape` attribute. Each shape option is assigned a specific number, which you can reference [here](https://ggplot2.tidyverse.org/articles/ggplot2-specs.html#point)
+
+```{r ggplot07}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 3, shape = 23)
+
+graph
+
+```
+
+Let's stick with slightly larger circles
+
+```{r ggplot08}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21)
+
+graph
+
+```
+
+We are going to exclude cars with 5 cylinders (as there are very few), and this way we see how we can manipulate the dataset within the plot instructions.
+
+```{r ggplot09}
+#| class-source: "numberLines"
+#| source-line-numbers: "1"
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21)
+
+graph
+
+```
+
+Changing the geom, bar graph
+
+```{r ggplot092}
+#| class-source: "numberLines"
+#| source-line-numbers: "1"
+
+graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
+  geom_bar()
+
+graph
+
+```
+
+We will explore a different dataset that is well-suited for creating line graphs, the `economics` dataset
+
+```{r ggplotecon}
+
+economics
+
+
+```
+
+Line graph
+
+```{r ggplot082}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line()
+
+graph
+
+```
+
+```{r ggplot083}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line(color = "blue", size = 1.2)
+
+graph
+
+```
+
+Histograms
+
+```{r ggplot14}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram()
+
+graph_h
+
+```
+
+Not that nice, let us change the default parameters, the bindwith
+
+```{r ggplot15}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(binwidth = 3)
+
+graph_h
+
+```
+
+Or the number of bins
+
+```{r ggplot152}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(bins = 8)
+
+graph_h
+
+```
+
+Or use some colors
+
+```{r ggplot16}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(binwidth = 3, fill = "blue", color = "black")
+
+graph_h
+
+```
+
+
+A boxplot
+
+```{r ggplot17}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot()
+
+graph_b
+
+```
+
+Change the color
+
+```{r ggplot172}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot(color= "black", fill = "cornsilk")
+
+graph_b
+
+```
+
+```{r ggplot173}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy, fill = factor(class) )) +
+  geom_boxplot()
+
+graph_b
+
+```
+
+
+## Facets
+
+It may not be easy to view everything on a single graph, in this case we can create a sub plot for each categorical variable. In such cases, we can define facets with `facet_wrap()`.
+
+```{r ggplot12}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  facet_wrap( ~ cyl)
+
+graph
+
+```
+
+You can also facet by two categorical variables using `facet_grid()`
+
+```{r ggplot13}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(manufacturer))) +
+  geom_point(size = 4, shape = 21) +
+  facet_grid(class ~ cyl)
+
+graph
+
+```
+
+```{r ggplot17f}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot(color= "black", fill = "cornsilk")+
+  facet_wrap(~year)
+
+graph_b
+
+```
+
+## Statistics
+
+Now, let’s estimate a linear relationship between the variables `hwy` and `disp` by cylinders.
+
+```{r ggplot10}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth(method = lm)
+
+graph
+
+```
+
+We have the ability to adjust the appearance of the smoothing functions. For instance, we can remove the confidence interval and change the line thickness.
+
+```{r ggplot105}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth(method = lm, se = FALSE, size = 3)
+
+graph
+
+```
+
+And if we want the relationship to be nonlinear, we do not specify the method (nonlinear is the default)
+
+```{r ggplot11}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth()
+
+graph
+
+```
+
+## Themes

@@ -1,0 +1,513 @@
+---
+title: "Vectors"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Basic types in R ([Data Types](http://www.statmethods.net/input/datatypes.html))
+
+In order to work with data, it is necessary to understand how data is stored in the computer by each programming language.
+
+The structures that store numerical information, and the way they are accessed, differ from Python to R, or from R to other languages.
+
+The most important family of variable types in R are vectors, which can be classified as either atomic or list.
+
+
+The common data objects in R are:
+
++ Vectors: one dimensional array 
+  + Types: numeric, integer, character, factor, logical
++ Matrices: two dimensional array
+  + Each column must have the same type
++ **Data Frames**: two dimensional array
+  + Columns may have different types
++ Lists
+  + Items don't need to be the same size.
+
+The structure of atomic vectors is as follows:
+
+::: {#fig-style}
+![](images/summary-tree-atomic.png){width=300}
+
+
+Atomic vectors. Source: [Advanced R](https://adv-r.hadley.nz/index.html)
+:::
+
+
+```{r types}
+
+Number <- 1.0 # (real, floating)
+Integer <- 1
+Character <- "ab"   
+Logical <- TRUE  
+
+Number
+Integer
+Character
+Logical
+
+```
+
+Be careful when working with different types
+
+```{r types2}
+#| eval: false
+
+Number + Character
+
+```
+
+When we perform an operation with two different numeric types (real + integer), R *forces* (coerces) the result to the type with the highest precision, in this case the real type.
+
+```{r types3}
+
+Sum <- Number + Integer
+
+Sum
+
+typeof(Sum)
+
+```
+
+Several things here, we've had our first approximation to a function in R, a topic we'll explore in more detail later. Like the intuitive idea we have of a function from high school mathematics, a function in R has an argument (variable in parentheses) and gives us a result.
+
+In R, functions have their name followed by parentheses, where we place the argument variable(s): `a_function(x)`.
+
+The `typeof()` function tells us the type of the variable (numeric, integer or logical).
+
+```{r types3-5}
+
+typeof(Number)
+typeof(Integer)
+typeof(Character)
+typeof(Logical)
+
+```
+
+There are also specific functions to determine whether a variable is of a specific type
+
+```{r types4}
+is.numeric(Number)
+is.integer(Integer) 
+is.character(Character)
+is.logical(Logical)
+```
+
+We see that R tells us that `Integer` is not an integer, to specify an integer we have to put a letter L at the end of the number
+
+```{r types5}
+Integer_2 <- 1L
+Integer_2
+is.integer(Integer_2)
+typeof(Integer_2)
+
+```
+
+# Vectors
+
+We are going to use R to analyse data and create statistical or algorithmic models from it.
+
+Most data is represented in *tables*: spreadsheets, relational databases tables, .csv files, etc.
+
+Most statistical models use as input data in table form.
+
+The most commonly used objects for working with tables in R are **data frames** and other variants (tibble or data.tables for example).
+
+Before understanding how to work with tables, let's review the concept of vector, which is the basic type on which data frames are built.
+
+What characterises a vector is that it can store only data of the **same type**.
+
+```{r vectors}
+
+vector_numeric <- c(1, 10, 49)
+vector_character <- c("a", "b", "c")
+
+vector_numeric
+vector_character
+
+```
+
+Vectors are one-dimensional arrays (row or column) that can store numbers, characters or logical variables.
+
+As we have seen above, vectors are created with the `c()` command where the c stands for *combine*.
+
+**Be careful not to confuse** this structure with vectors as elements of a vector space (more on this later).
+
+```{r vectors2}
+
+vector_mixed <- c(1,2, "a")
+vector_mixed
+
+```
+
+In the previous example we wanted to create a vector with elements of different types, numeric and character. R has converted all the elements to character.
+
+If there are characters in a vector R converts all the elements to character, if they are all numeric but of different types, R converts them to the type with the highest precision (double). What happens with logical vectors?
+
+```{r vectors3}
+
+vector_mixed2 <- c(1,2,TRUE)
+vector_mixed2
+typeof(vector_mixed2)
+
+```
+
+In this case R has converted the elements of the vector to numeric.
+
+We observe something that later will be very useful, R has assigned to the logical variable `TRUE` the number 1. The variable `FALSE` has been assigned a zero.
+
+Can we change a variable or a vector type? YES
+
+```{r vectors4}
+
+vector_numeric
+
+as.character(vector_numeric)
+
+logic_vector <- c(TRUE, FALSE)
+
+logic_vector
+
+as.numeric(logic_vector)
+
+```
+
+There are several functions in R that allow for changes of type
+
+```{r vectors4_5}
+as.character(logic_vector)
+
+```
+
+
+There are a couple of other ways to create vectors
+
+```{r vectors5}
+
+vector_1 <- 1:5
+
+vector_2 <- seq(1,5)
+
+vector_1
+
+vector_2
+
+
+```
+
+where `seq` stands for sequence
+
+Since in this course the data we will use is external and not generated by us, we will not go into the different ways of generating vectors. The following box elaborates in more detail on this topic and is optional, you can follow the rest of the lecture without reading it.
+
+::: {.callout-note}
+
+## More vectors
+
+More complex sequences can be created with the `seq()` function.
+
+```{r vector6}
+
+vector_3 <- seq(1,10, by = 2)
+
+vector_4 <- seq(1,10, length.out = 20)
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_3
+
+vector_4
+
+vector_5
+
+```
+
+
+Another command to generate sequences is ``rep``.
+
+```{r vectors8}
+
+repeated <- rep(4,10)
+
+repeated
+
+```
+
+We can repeat not only a value but vectors
+
+```{r vectors9}
+
+repeat_2 <- rep(1:4, 4)
+
+repeat_2
+
+repeat_3 <- rep(1:4, each = 4)
+
+repeat_3
+
+repeat_4 <- rep(1:4, each=2, times=2)
+
+repeat_4
+
+repeat_5 <- rep(1:4, c(2,3,4,5))
+
+repeat_5
+
+```
+
+We can also create *random* vectors, i.e., realisations of a random variable from a given distribution
+
+```{r vectors10}
+
+random_normal <- rnorm(10)
+
+random_uniform <- runif(10)
+
+random_normal
+
+random_uniform
+
+```
+
+:::
+
+The elements of the vector can be assigned names
+
+```{r vectors7}
+
+names(vector_1)
+
+names_vec <- c("one", "two", "three", "four", "five")
+
+names(vector_1) <- names_vec
+
+names(vector_1)
+
+```
+
+Another characteristic of vectors besides their type, is their **length** or dimension, which we can determine with the `length()` function.
+
+```{r length}
+
+length(vector_1)
+
+length(vector_4)
+
+length(repeat_5)
+
+```
+
+## Arithmetic operations with vectors
+
+Arithmetic operations can be performed with vectors
+
+```{r vectors10_1}
+
+vector_1
+
+vector_2
+
+Vec_sum <- vector_1 +vector_2
+
+Vec_sum
+
+```
+
+```{r vectors11}
+vector_1
+
+vector_2
+
+Vec_product <- vector_1 * vector_2
+
+Vec_product
+
+
+```
+
+In this case, both vectors have the same dimension. What happens if the opposite is true?
+
+```{r vectors11_1}
+
+vector_1 
+
+seq(6,15)
+
+vector_1 + seq(6,15)
+
+
+```
+
+This peculiar behaviour is called **recycling**. Observe the result: what has R done in this case?
+
+
+## Vectorisation of operations
+
+An operation is said to be vectorised if it can be applied to all elements of a vector.
+
+```{r vectorisation}
+
+vector_numeric
+
+vector_numeric + 2
+
+vector_numeric * 2
+
+vector_numeric / 2
+
+vector_numeric^2
+
+sqrt(vector_numeric)
+
+log(vector_numeric)
+
+
+```
+
+We note that when an arithmetic operator (`+`, `*`, `-`, `/`, `^`) is applied to a vector, the operation is performed on each of the elements of the vector. Similarly, when we apply a function (`sqrt()`, `log()`) it uses all the elements of the vector as arguments and its output is a vector of dimension equal to the dimension of the original vector. 
+
+
+## Vector inspection
+
+It is possible to apply certain functions to analyse some characteristics of vectors.
+
+Remember that the ultimate goal is to perform data analysis, some of these functions will be used on a regular basis when we want to inspect data in a table. 
+
+Basic statistics of a vector
+
+```{r inspect1}
+
+summary(vector_4)
+
+```
+
+
+Values at the beginning and at the end
+
+```{r inspect2}
+
+head(vector_4)
+
+tail(vector_4)
+
+```
+
+
+## Selections
+
+It is possible to construct new vectors from a vector
+
+```{r select1}
+
+vector_1
+
+vector_square <- vector_1^2
+
+vector_square
+
+```
+
+How do we access the elements of a vector?
+
+```{r select2}
+
+vector_square[1]
+
+vector_square[3]
+
+```
+
+Several elements in a row (slice)
+
+```{r select3}
+
+vector_square[1:3] 
+
+vector_square[3:1]
+
+```
+
+Non consecutive elements of a vector
+
+```{r select4}
+
+vector_square[c(1,3)]
+
+vector_square[c(3,1)]
+
+```
+
+All elements except some
+
+```{r select5}
+
+vector_square[-c(1,3)] 
+
+vector_square[-length(vector_square)]
+
+```
+
+All elements satisfying a condition
+
+```{r select6}
+
+vector_5
+
+vector_5[vector_5 < 5]
+
+vector_5[vector_5 > 5]
+
+```
+
+The condition can be an equality
+
+```{r select7}
+
+vector_5[vector_5 == 5.5]
+
+```
+
+These conditions are very important for data analysis. Suppose you want to locate in a table with the financial data from a sample of bank costumers, those customers whose income is greater than 30,000 per year.
+
+It is also useful to locate data and replace it with another value. Following the example above, replace the income column for customers whose annual income is less than 12,000 per year with zero, as we will not be working with that segment.
+
+```{r select8}
+
+vector_5
+
+vector_5[vector_5 < 5] <- 0
+
+vector_5
+
+```
+
+In case the vectors have names, we can use these to select elements 
+
+```{r select9}
+
+vector_square["two"]
+
+vector_square[c("one", "three")]
+
+```
+
+More functions applied to vectors
+
+```{r select10}
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_5
+
+max(vector_5)
+
+min(vector_5)
+
+sum(vector_5)
+
+prod(vector_5)
+
+```

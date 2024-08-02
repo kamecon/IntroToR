@@ -1,0 +1,102 @@
+---
+title: "R and RStudio"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# R programming language: A (very) brief introduction 
+
+## What Is R?
+
+The following definition is from the book [Learning R de Richard Cotton](https://www.oreilly.com/library/view/learning-r/9781449357160/):
+
+"*Just to confuse you, R refers to two things. There is R, the programming language, and R, the piece of software that you use to run programs written in R. Fortunately, most of the time it should be clear from the context which R is being referred to.*"
+
+"*R (the language) was created in the early 1990s by Ross Ihaka and Robert Gentleman, then both working at the University of Auckland. It is based upon the S language that was developed at Bell Laboratories in the 1970s, primarily by John Chambers. R (the software) is a GNU project, reflecting its status as important free and open source software.*"
+
+## Strengths of R
+
+* Free and open source
+
+* Platform independent
+
+* Foster's a reproducible workflow
+
+* Active community of users and programmers making R better
+
+## Working environment
+
+In this course we will use [Rstudio](https://posit.co/download/rstudio-desktop/).
+
+Rstudio is an IDE (integrated development environment) that works as a graphical interface that facilitates the use of the R language.
+
+You have a online version, [Posit cloud](https://login.rstudio.cloud/login?redirect=%2F) 
+
+## R vs RStudio
+
+The following image and sentence is taken from the book [Statistical Inference via Data Science: A ModernDive into R and the Tidyverse](https://moderndive.com/index.html)
+
+::: {#fig-rvsrstudio}
+![](https://moderndive.com/images/shutterstock/R_vs_RStudio_1.png)
+
+R vs Studio [Source](https://moderndive.com/1-getting-started.html). 
+
+:::
+
+"*More precisely, R is a programming language that runs computations, while RStudio is an integrated development environment (IDE) that provides an interface by adding many convenient features and tools. So just as the way of having access to a speedometer, rear-view mirrors, and a navigation system makes driving much easier, using RStudio’s interface makes using R much easier as well.*"
+
+## Alternatives
+
+There are alternatives to Rstudio, but Rstudio is the de facto R IDE for many.
+
+An alternative that is gaining a lot of popularity is the well-known [Visual Studio Code](https://code.visualstudio.com/).
+
+If you don't want to use Rstudio, this would be the suggested alternative
+
+
+## Highlights of RStudio
+
+::: {#fig-rstdio}
+![](images/rstudio-panes-labeled.jpeg)
+
+RStudio pane layout. [Source](https://docs.posit.co/ide/user/ide/guide/ui/ui-panes.html). 
+:::
+
+* Lower Right:
+    + Files, Plots, Packages, Help
+
+* Upper Right: 
+    + Environment, History
+
+* Lower Left: Console
+
+* Upper Left: Text editor
+
+* Nice Features:
+    + Importing Data
+    + Tab completion
+    + **ChatGTP**
+    
+## Projects, directories and libraries: Organising the working environment
+
+To keep all our files organised, including databases we load or graphics we create, we are going to work in what RStudio calls projects.
+
+Essentially, a RStudio project is a folder or directory on your computer that contains all the elements of your project.
+
+::: {#fig-project}
+![](images/create RProject.gif)
+
+Create a R project
+:::
+
+The use of projects in RStudio is a good practice that allows you to keep control of all the files used in a project.
+
+Projects are often not only complex but also dynamic, and the management of all the elements that make up a project is often an essential part of the workflow.
+
+Furthermore, the organisation into projects facilitates reproducibility.
+
+For a more detailed discussion, read this [section](https://r4ds.hadley.nz/workflow-scripts.html#projects) of this [good book](https://r4ds.hadley.nz/).
