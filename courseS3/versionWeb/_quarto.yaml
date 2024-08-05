@@ -7,20 +7,22 @@ website:
   title: "Introduction to R"
   navbar:
     background: dark
-    logo: "materials/images/R_logo.svg"
-    # right:
+    logo: "materials/images/R_logo.svg.png"
+    right:
     #   - icon: cloud-fill
     #     href: https://posit.cloud/spaces/397258
     #     text: Posit Cloud
     #   - icon: file-certificate
     #     href: license-web.qmd
-    #   - icon: github
-    #     href: https://github.com/posit-conf-2023/arrow
-    #     text: GitHub
+       - icon: github
+         href: https://github.com/kamecon/IntroToR/tree/master/courseS3/versionWeb
+         text: GitHub
+       - icon: envelope
+         href: mailto:Kamal.ROMERO-SOOKOO@ext.ec.europa.eu
 
     left:
-      # - href: index.qmd
-      #   text: Home
+      - href: index.qmd
+        text: Home
       # - href: setup.qmd
       #   text: Packages & Data
       - text: Sections
@@ -68,9 +70,9 @@ website:
 
 format:
   html:
-    theme: cosmo
-    css: styles.css
-    toc: true
+    theme: journal
+    #css: styles.css
+    #toc: true
     link-external-newwindow: true
 
 # editor: visual
