@@ -1,0 +1,153 @@
+---
+title: "Statistical summaries"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Descriptive statistics
+
+The first step of nearly every data analysis, is to describe the data through the use of basic (or sophisticated) descriptive measures.
+
+R base have a family of functions that provide allow us to compute descriptive statistics to individual (usually represented by a vector) or grouped data.
+
+In this section we will describe the main functions:
+
+## Numerical data
+
+Using the mtcars data
+
+```{r data}
+
+mtcars
+
+```
+
+We introduce the function `summary()`
+
+```{r summary}
+
+summary(mtcars)
+
+```
+
+
+This function give a set of basic statistics for each column of the data frame
+
+If we applied the function to a vector instead
+
+```{r summary2}
+
+summary(mtcars$mpg)
+
+```
+
+
+In a data analysis pipeline, most times we want to compute just one of these measures, the following is a non-exahustive list of functions that estimate basic descriptive statistics:
+
+```{r descriptive}
+
+mean(mtcars$mpg)      # Mean
+median(mtcars$mpg)    # Median
+min(mtcars$mpg)       # Minimum
+max(mtcars$mpg)       # Maximum
+range(mtcars$mpg)     # Minimum and maximum value
+var(mtcars$mpg)       # Variance
+sd(mtcars$mpg)        # Standard deviation
+IQR(mtcars$mpg)       # Interquartile range
+quantile(x = mtcars$mpg, probs = 0.5)        # Percentile 50
+quantile(x = mtcars$mpg, probs = 0.25)       # Percentile 25
+quantile(x = mtcars$mpg, probs = 0.75)       # Percentile 75
+quantile(x = mtcars$mpg)                     # Quantiles
+quantile(x = mtcars$mpg, probs = c(0.15, 0.68, 0.83))   # Custom quantiles
+
+```
+
+
+The `mean()` function have two additional arguments, one of them, `trim` allow use to use just a fraction (0 to 0.5) of observations. These observations are  _trimmed_ from each end before the mean is computed. For example, the following don not take into account the 10% of greatest and lowest values
+
+```{r mean}
+
+mean(mtcars$mpg, trim = 0.1)
+
+mean(mtcars$mpg)
+
+```
+
+We are going to use a new dataset, `airquality`, to introduce how to handle _missing numbers_ 
+
+```{r airquality}
+
+airquality
+
+```
+
+We apply the function `summary()` to the dataset
+
+```{r airquality 2}
+
+summary(airquality)
+
+```
+
+We have `NA's` or missing values in two columns. As you can notice, the `summary()` function allow us to detect missing values on a column and the number of them.
+
+In R, most statistic functions take into account the missing values in their calculations.
+
+```{r mean2}
+
+mean(airquality$Ozone)
+median(airquality$Ozone)
+sd(airquality$Ozone)
+
+```
+
+In order to avoid this, not only with the `mean()` function, most statistical function in R have a `na.rm` argument, that tells the function to ignore the `NA` values
+
+
+```{r mean3}
+
+mean(airquality$Ozone, na.rm = TRUE)
+median(airquality$Ozone, na.rm = TRUE)
+sd(airquality$Ozone, na.rm = TRUE)
+
+```
+
+The `mean()` function computes the arithmetic mean, but we can also compute the weighted mean with the function `weighted.mean()`. This function needs a numerical vector of weights the same length as the number of elements of the vector, giving the weights to use for each element.
+
+```{r mean4}
+
+set.seed(123)
+vector_one <- rnorm(n = 5, mean = 10, sd = 2)
+w <- runif(n = 5, min = 0, max = 0.2)
+
+vector_one
+w
+
+mean(vector_one)
+weighted.mean(x = vector_one, w = w)
+
+```
+
+Other way to summarize data is analysing the absolute and relative frequency, in base R, we compute both using the `table()` and `prop.table()` functions
+
+```{r prop}
+
+table(mtcars$cyl)
+prop.table(mtcars$cyl)
+
+```
+
+`prop.table()` give us the relative proportion for each element of a vector, that's not the standard view we are accustomed to use. For the standard view (proportion by element class), we use as argument the output of the `table()` function.
+
+```{r prop2}
+
+prop.table(table(mtcars$cyl))
+
+```
+
+
+

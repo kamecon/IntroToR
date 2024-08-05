@@ -45,6 +45,8 @@ website:
         - text: "dplyr"
           href: materials/06_dplyr.qmd
           target: "_blank"
+        - text: "Statistics"
+          href: materials/07_statistics.qmd
         - text: "Programming"
           href: materials/08_programming.qmd
           target: "_blank"
@@ -72,7 +74,7 @@ format:
   html:
     theme: journal
     #css: styles.css
-    #toc: true
+    toc: true
     link-external-newwindow: true
 
 # editor: visual
