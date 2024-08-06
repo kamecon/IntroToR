@@ -16,7 +16,7 @@ For example, to transform a variable only if its value is negative, assign a lab
 
 Conditional structures in R do not differ much from those in other programming languages, but there are some changes in syntax.
 
-##`if` Structure
+## `if` Structure
 
 ```{r control1}
 #| eval: false
@@ -46,7 +46,7 @@ if (mtcars$mpg[1] > 15) {
 
 ```
 
-##`if - else` Structure
+## `if - else` Structure
 
 ```{r control1_6}
 #| eval: false
@@ -77,7 +77,7 @@ if (mtcars$mpg[1] > 15) {
 
 ```
 
-##`if` - `else if` - `else` Structure
+## `if` - `else if` - `else` Structure
 
 ```{r control3_5}
 #| eval: false
