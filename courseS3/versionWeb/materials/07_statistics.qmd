@@ -10,11 +10,11 @@ editor: source
 
 # Descriptive statistics
 
-The first step of nearly every data analysis, is to describe the data through the use of basic (or sophisticated) descriptive measures.
+The first step in nearly every data analysis is to describe the data using basic (or sophisticated) descriptive measures.
 
-R base have a family of functions that provide allow us to compute descriptive statistics to individual (usually represented by a vector) or grouped data.
+The base R package includes a family of functions that allow us to compute descriptive statistics for individual data (typically represented by a vector) or grouped data.
 
-In this section we will describe the main functions:
+In this section, we will cover the main functions
 
 ## Numerical data
 
@@ -35,9 +35,9 @@ summary(mtcars)
 ```
 
 
-This function give a set of basic statistics for each column of the data frame
+This function provides a set of basic statistics for each column of a data frame.
 
-If we applied the function to a vector instead
+If we apply the function to a vector instead, it gives basic statistics for that vector.
 
 ```{r summary2}
 
@@ -46,7 +46,8 @@ summary(mtcars$mpg)
 ```
 
 
-In a data analysis pipeline, most times we want to compute just one of these measures, the following is a non-exahustive list of functions that estimate basic descriptive statistics:
+n a data analysis pipeline, we often need to compute individual descriptive measures. Below is a non-exhaustive list of functions that estimate basic descriptive statistics:
+
 
 ```{r descriptive}
 
@@ -67,7 +68,7 @@ quantile(x = mtcars$mpg, probs = c(0.15, 0.68, 0.83))   # Custom quantiles
 ```
 
 
-The `mean()` function have two additional arguments, one of them, `trim` allow use to use just a fraction (0 to 0.5) of observations. These observations are  _trimmed_ from each end before the mean is computed. For example, the following don not take into account the 10% of greatest and lowest values
+The `mean()` function has two additional arguments. One of them, `trim`, allows us to use just a fraction (between 0 and 0.5) of the observations. These observations are _trimmed_ from each end before the mean is computed. For example, the following code does not take into account the 10% of the greatest and lowest values:
 
 ```{r mean}
 
@@ -81,7 +82,7 @@ We are going to use a new dataset, `airquality`, to introduce how to handle _mis
 
 ```{r airquality}
 
-airquality
+head(airquality)
 
 ```
 
@@ -93,9 +94,9 @@ summary(airquality)
 
 ```
 
-We have `NA's` or missing values in two columns. As you can notice, the `summary()` function allow us to detect missing values on a column and the number of them.
+We have `NA` or missing values in two columns. As you can see, the `summary()` function helps us identify missing values in a column and provides the count of them
 
-In R, most statistic functions take into account the missing values in their calculations.
+In R, most statistical functions do not handle missing values by default in their calculations
 
 ```{r mean2}
 
@@ -105,7 +106,8 @@ sd(airquality$Ozone)
 
 ```
 
-In order to avoid this, not only with the `mean()` function, most statistical function in R have a `na.rm` argument, that tells the function to ignore the `NA` values
+
+To address this, most statistical functions in R have an `na.rm` argument, which instructs the function to ignore `NA` values. This applies not only to the `mean()` function but also to many other functions.
 
 
 ```{r mean3}
@@ -116,7 +118,7 @@ sd(airquality$Ozone, na.rm = TRUE)
 
 ```
 
-The `mean()` function computes the arithmetic mean, but we can also compute the weighted mean with the function `weighted.mean()`. This function needs a numerical vector of weights the same length as the number of elements of the vector, giving the weights to use for each element.
+The `mean()` function computes the arithmetic mean, but we can also compute the weighted mean using the `weighted.mean()` function. This function requires a numerical vector of weights that is the same length as the input vector, specifying the weight for each element.
 
 ```{r mean4}
 
@@ -149,5 +151,166 @@ prop.table(table(mtcars$cyl))
 
 ```
 
+The function `cor()` quantify the correlation between two variables
 
+```{r cor}
+
+cor(mtcars$mpg, mtcars$hp)
+
+```
+
+Or for a numerical table
+
+```{r cor2}
+
+cor(mtcars)
+
+```
+
+When we have `NA` values
+
+```{r cor3}
+
+cor(airquality)
+
+```
+
+We can ignore the `NA` observations with the `use` argument
+
+```{r cor4}
+
+cor(airquality, use = "complete.obs")
+
+```
+
+## Categorical data
+
+For categorical data there makes no sense to compute statistics such as means and standard deviations, we rather analize this data using _proportions_ 
+
+We will use the `HMDA` dataset from Stock and Watson´s introductory econometrics textbook
+
+```{r hmda}
+
+library(AER)
+data("HMDA", package = "AER")
+head(HMDA)
+
+```
+
+We can construct a cross-table that shows the counts for different combinations of two categorical variables
+
+```{r hmda2}
+
+table(HMDA$deny, HMDA$hschool)
+
+```
+
+In terms of proportions
+
+```{r hmda3}
+
+prop.table(table(HMDA$deny, HMDA$hschool))
+
+```
+
+By row
+
+```{r hmda4}
+
+prop.table(table(HMDA$deny, HMDA$hschool), margin = 1)
+
+```
+
+By column
+
+```{r hmda5}
+
+prop.table(table(HMDA$deny, HMDA$hschool), margin = 2)
+
+```
+
+## (Quick) Descriptive graphical analysis
+
+Histograms
+
+```{r graph1}
+
+hist(x = airquality$Temp)
+
+```
+
+More breakpoints
+
+```{r graph2}
+
+hist(x = airquality$Temp, breaks = 25) 
+
+```
+
+Densities
+
+```{r graph3}
+
+plot(density(airquality$Temp))
+
+```
+
+Change bandwidth
+
+```{r graph4}
+
+plot(density(airquality$Temp, bw = 100))
+
+```
+
+Change kernel
+
+```{r graph5}
+
+plot(density(airquality$Temp, kernel = "epanechnikov"))
+
+```
+
+Boxplots
+
+```{r graph6}
+
+boxplot(formula = mpg ~ cyl, data = mtcars)
+
+```
+
+
+Bar charts: counts
+
+```{r graph7}
+
+barplot(table(mtcars$cyl))
+
+```
+
+Bar charts: proportions
+
+```{r graph8}
+
+barplot(prop.table(table(mtcars$cyl)))
+
+```
+
+Empirical Cumulative Distribution Function: Discrete data
+
+```{r graph9}
+
+plot.ecdf(mtcars$hp)
+
+```
+
+Empirical Cumulative Distribution Function: Continuous data
+
+```{r graph10}
+
+data_ecdf <- rnorm(n = 10e3)
+
+plot.ecdf(data_ecdf)
+
+```
 
