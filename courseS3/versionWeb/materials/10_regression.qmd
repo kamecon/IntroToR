@@ -1,0 +1,221 @@
+---
+title: "Regression analysis"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Regression analysis
+
+## Linear regression
+
+Linear estimation in base R is performed using the `lm()` function.
+
+The basic arguments for this function are a dataset and a formula that specifies which variables we want to relate.
+
+Let's use the same dataset as in the matrices section for our example.
+
+We load and inspect the data from the `Wooldridge` library.
+
+```{r lm01}
+
+library(wooldridge)
+
+data("wage1")
+
+head(wage1)
+
+summary(wage1)
+
+str(wage1)
+
+```
+
+We estimate a linear model that explains the logarithm of the salary as a function of years of education, experience, and years at the current company.
+
+
+```{r lm02}
+
+model_1 <- lm(data = wage1, lwage ~ educ + exper + tenure)
+
+summary(model_1)
+
+```
+
+In this example:
+- `model_1` contains the fitted linear model
+- `model_summary` holds the summary of the fitted model, which includes various statistical measures
+
+### Linear Regression Results: The `summary` Function
+
+We want to extract the numerical information from the output of the `summary()` function
+
+#### Estimated Coefficients
+
+The object `model_1` is a list, and one of its elements contains the estimated coefficients
+
+
+```{r lm025}
+model_1$coefficients
+```
+
+`coefficients` extracts the estimated coefficients from the model summary, providing the numerical output we are interested in
+
+What we are extracting is a vector
+
+```{r lm03}
+is.vector(model_1$coefficients)
+```
+
+Since it is a vector, we can access its elements in the usual way using the `[` operator
+
+```{r lm04}
+model_1$coefficients[1]
+model_1$coefficients[2]
+```
+
+Le podemos asignar un nombre por si los queremos utilizar luego
+
+```{r lm05}
+beta_0 <- model_1$coefficients[1]
+beta_1 <- model_1$coefficients[2]
+beta_0
+beta_1
+```
+
+Aunque aparezca el nombre, podemos operar con ellos sin problema
+
+```{r lm06}
+beta_1 + beta_0
+beta_0 + beta_1
+```
+
+Vemos que _hereda_ el nombre del primer elemento, podemos prescindir de los nombres si queremos
+ 
+```{r lm07}
+beta_0 <- unname(model_1$coefficients[1])
+beta_1 <- unname(model_1$coefficients[2])
+beta_0
+beta_1
+```
+
+También podemos extraer los coeficientes con la función `coef()`
+
+```{r lm08}
+coef(model_1)
+```
+## Acceder al $R^2$ y al ESR
+
+En este caso, tenemos que acceder a los atributos del objeto `summary(model_1)`
+
+```{r lm09}
+attributes(summary(model_1))
+```
+
+Accedemos al $R^2$ 
+
+```{r rsquared}
+summary(model_1)$r.squared
+```
+
+Accedemos al ESR
+
+```{r ESR}
+summary(model_1)$sigma
+```
+
+## Acceder a los errores estándar, t-valor y p-valor
+
+Inspeccionamos el atributo `coefficients` del objeto `summary(model_1)` 
+
+```{r coef01}
+summary(model_1)$coefficients
+```
+
+Observamos que además de los coeficientes estimados de la regresión, tenemos todo lo demás que estamos buscando, los errores estándar, los t-valores y los p-valores
+
+`summary(model_1)$coefficients` es una matriz de dimensión 2x4
+
+```{r coef02}
+class(summary(model_1)$coefficients)
+dim(summary(model_1)$coefficients)
+
+```
+
+Sabiendo esto, podemos extraer los elementos deseados
+
+Error estándar de $\beta_0$
+```{r coef03}
+summary(model_1)$coefficients[1,2]
+```
+
+Error estándar de $\beta_1$
+```{r coef04}
+summary(model_1)$coefficients[2,2]
+```
+
+Estadístico t para contrastar que $\beta_1 = 0$
+```{r coef05}
+summary(model_1)$coefficients[2,3]
+```
+
+p-valor del contraste de $\beta_1$
+```{r coef06}
+summary(model_1)$coefficients[2,4]
+```
+
+# Intervalos de confianza de los coeficientes estimados
+
+Con la función `confint()`se obtienen los intervalos de confianza para los coeficientes estimados de la función `lm()`
+
+```{r conf01}
+confint(model_1)
+```
+
+Por defecto la función `confint()`calcula el intervalo para un 95% de confianza. Podemos modificar el nivel de confianza con el argumento `level`. Por ejemplo, para un 99% de confianza:
+
+```{r conf02}
+confint(model_1, level = 0.99)
+```
+
+
+
+
+## Logistic regression
+
+
+Logistic regression can be interpreted as a non-linear regression model that handles binary dependent variables, or as a classification model that aims to predict a qualitative response.
+
+In base R, we use the `glm()` function to estimate generalized linear models.
+
+We will present an example using a dataset on bank loan approvals. Let's explore the data:
+
+
+```{r glm01}
+
+library(AER)
+
+data("HMDA")
+
+head(HMDA)
+
+summary(HMDA)
+
+str(HMDA)
+
+```
+
+
+We estimate a logistic regression that attempts to explain the factors determining the probability of a loan being rejected as a function of the payment-to-income ratio and ethnicity, in this case, whether the individual is African American or not.
+
+
+```{r glm02}
+
+model_2 <- glm(data = HMDA, formula = deny ~ pirat + afam , family = binomial(link = logit))
+
+summary(model_2)
+
+```
