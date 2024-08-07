@@ -54,6 +54,8 @@ website:
         - text: "ggplot"
           href: materials/09_ggplot.qmd
           #target: "_blank"
+        - text: "Regression analysis"
+          href: materials/10_regression.qmd
       #   - text: "Thank you 👋"
       #     href: materials/8_closing.qmd
       #     target: "_blank"
