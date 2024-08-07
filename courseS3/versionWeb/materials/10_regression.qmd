@@ -46,8 +46,9 @@ summary(model_1)
 ```
 
 In this example:
-- `model_1` contains the fitted linear model
-- `model_summary` holds the summary of the fitted model, which includes various statistical measures
+
+* `model_1` contains the fitted linear model
+* `model_summary` holds the summary of the fitted model, which includes various statistical measures
 
 ### Linear Regression Results: The `summary` Function
 
@@ -171,7 +172,7 @@ p-value of the test for $\beta_1$
 summary(model_1)$coefficients[2,4]
 ```
 
-# Confidence intervals for the estimated coefficients
+#### Confidence intervals for the estimated coefficients
 
 The `confint()` function provides confidence intervals for the estimated coefficients of the `lm()` function.
 
