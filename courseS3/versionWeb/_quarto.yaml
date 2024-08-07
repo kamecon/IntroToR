@@ -78,6 +78,7 @@ format:
     theme: journal
     #css: styles.css
     toc: true
+    toc-depth: 4
     link-external-newwindow: true
 
 # editor: visual
