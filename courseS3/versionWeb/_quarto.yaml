@@ -29,31 +29,31 @@ website:
         menu:
         - text: "Introduction"
           href: materials/01_introIde.qmd
-          target: "_blank"
+          #target: "_blank"
         - text: "R Basics"
           href: materials/02_basics.qmd
-          target: "_blank"
-        - text: "Vectors"
+          #target: "_blank"
+        - text: "Vectors and matrices"
           href: materials/03_vectors.qmd
-          target: "_blank"
-        - text: "Matrices"
-          href: materials/04_matrices.qmd
-          target: "_blank"
+          #target: "_blank"
+        # - text: "Matrices"
+        #   href: materials/04_matrices.qmd
+          #target: "_blank"
         - text: "Data frames"
           href: materials/05_dataFrames.qmd
-          target: "_blank"
+          #target: "_blank"
         - text: "dplyr"
           href: materials/06_dplyr.qmd
-          target: "_blank"
+          #target: "_blank"
         - text: "Statistics"
           href: materials/07_statistics.qmd
-          target: "_blank"
+          #target: "_blank"
         - text: "Programming"
           href: materials/08_programming.qmd
-          target: "_blank"
+          #target: "_blank"
         - text: "ggplot"
           href: materials/09_ggplot.qmd
-          target: "_blank"
+          #target: "_blank"
       #   - text: "Thank you 👋"
       #     href: materials/8_closing.qmd
       #     target: "_blank"
