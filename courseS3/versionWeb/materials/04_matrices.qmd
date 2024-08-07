@@ -12,8 +12,6 @@ editor: source
 
 So far we have been working with a one-dimensional data structure, but in data analysis we are sometimes interested in *discovering* or finding relationships between variables, so it is necessary to look at them as a whole in order to capture interrelationships.
 
-In our particular case, we will represent subsets of the input output table as matrices, and apply linear algebra operations to them.
-
 This forces us to have to work in more than one dimension, in R we can do that with **matrices** and **arrays**.
 
 A matrix is nothing more than a two-dimensional structure that allows us to store homogeneous data. To construct a matrix we use the `matrix()` function
@@ -211,9 +209,9 @@ The `diag(n)` command generates a square diagonal matrix of ones whit dimension 
 
 The `%*%` operator performs products of matrices, as we will see in the practical examples
 
-::: {.callout-note}
+::: {.callout-tip}
 
-**Example: Linear regression**
+## Example: Linear regression
 
 Let's calculate the estimated coefficients of a simple linear regression using the analytical solution to the problem of minimizing the sum of squared residuals $\sum_{i=1}^n(y_i - \hat{y}_i)^2$
 
@@ -262,7 +260,7 @@ beta_hat
 The `solve` command inverts the matrix, the `t()` function transposes a matrix, and the `%*%` operator performs matrix multiplication, so `solve(t(X) %*% X)` executes the operation. $(X'X)^{-1}$
 
 
-::: {.callout-note}
+::: {.callout-tip title="Linear algebra functions"}
 
 Use the help to determine what the following linear algebra functions do
 
