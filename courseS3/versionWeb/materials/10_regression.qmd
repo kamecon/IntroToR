@@ -39,7 +39,7 @@ We estimate a linear model that explains the logarithm of the salary as a functi
 
 ```{r lm02}
 
-model_1 <- lm(data = wage1, lwage ~ educ + exper + tenure)
+model_1 <- lm(data = wage1, formula = lwage ~ educ + exper + tenure)
 
 summary(model_1)
 
@@ -48,7 +48,96 @@ summary(model_1)
 In this example:
 
 * `model_1` contains the fitted linear model
+* The `formula` argument is a expression of the form `y ~ x1 + x2 + ...` that describe our regression equation. This specification includes the constant term by default
 * `model_summary` holds the summary of the fitted model, which includes various statistical measures
+
+::: {.callout-tip}
+
+## Excercise
+
+Use the help function `?lm` and search how to exclude the constant term from the regression formula 
+
+:::
+
+
+### Model Formula
+
+Sometimes we need to change the scale of a variable or apply a non-linear transformation. While one approach is to modify the data frame directly (using functions like `mutate`), it's also possible to apply these transformations directly within the formula, eliminating the need to alter the data frame itself^[The examples of this section are taken from this [textbook](https://www.cengage.uk/c/introductory-econometrics-a-modern-approach-7e-wooldridge/9781337558860/)]
+
+
+#### Data scaling
+
+At times, you may need to represent data in different units, such as weight, temperature, exchange rates, and so on. In the following example, we estimate a model that relates the birth weight to cigarette smoking of the mother during pregnancy and the family income $\tt{bwght}=\beta_0+\beta_1\tt{cigs}+\beta_2{faminc}+u$
+
+```{r formula1}
+
+data(bwght, package='wooldridge') #Load the data
+
+lm(formula = bwght ~ cigs+faminc, data=bwght)
+
+```
+
+Assume you want the weight to be expressed in pounds rather than ounces. We can create a new variable in the source data frame and rerun the regression
+ 
+ 
+```{r formula2} 
+
+bwght$bwghtlbs <- bwght$bwght/16
+
+lm(formula = bwghtlbs ~ cigs+faminc, data = bwght)
+
+```
+
+Or, apply the change directly in the formula
+
+```{r formula3} 
+
+lm(formula = I(bwght/16) ~ cigs+faminc, data = bwght)
+
+```
+
+
+#### Quadratics and Logarithms
+
+If we want to estimate a model in the following form $y=\beta_0 +\beta_1x+\beta_2x^2++\beta_3x^3+u$, we should write the formula as `y ~ x + I(x^2)+ I(x^3)` in R sintax.
+
+For example, we estimate a model that relates the average housing prices (`price`) in a community to various characteristics of that community: `nox` is the amount of nitrogen oxide in the air, given in parts per million; `dist` is the weighted distance of the community to five employment centers, given in miles; `rooms` is the average number of rooms in the houses within the community, and `stratio` is the average student-teacher ratio in the community's schools.
+
+Including a quadratic term in the `rooms` variable `I(rooms^2)`
+
+We may also need to express certain variables in logarithms. Similar to the scaling example, we can apply the transformation directly in the formula argument of `lm()` using the `log()` function.
+
+Combining both concepts in the house prices model:
+
+
+```{r formula4}
+
+data(hprice2, package='wooldridge')
+
+model_house <- lm(log(price) ~ log(nox) + log(dist) + rooms + I(rooms^2) + stratio, data = hprice2)
+summary(model_house)
+
+```
+
+#### Interactions 
+
+To handle models with interaction terms of the form $y=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_1x_2+u$, we should write the formula as `y ~ x1 + x2+ x1:x2` or `y ~ x1*x2` in R sintax. `x1*x2` adds not only the interaction but also both original variables
+
+We estimate a model of standardized scores in the final exam are explained by class attendance, prior performance and an interaction term:
+
+```{r formula5}
+
+data(attend, package='wooldridge')
+
+model_score <- lm(stndfnl ~ atndrte*priGPA + ACT + I(priGPA^2) + I(ACT^2), data=attend)
+summary(model_score)
+
+# Estimate for partial effect at priGPA=2.59:
+b <- coef(model_score)
+b["atndrte"] + 2.59*b["atndrte:priGPA"] 
+
+```
+
 
 ### Linear Regression Results: The `summary` Function
 
