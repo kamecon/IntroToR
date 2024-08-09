@@ -59,6 +59,21 @@ Use the help function `?lm` and search how to exclude the constant term from the
 
 :::
 
+If you want to calculate robust standard errors, you can use the `summ` function from the `jtools` package
+
+```{r lm03}
+
+library(jtools)
+
+summ(model_1) # non-robust standard errors
+
+summ(model_1, robust = "HC1") # robust standard errors
+
+summ(model_1, robust = "HC1", confint = TRUE) # confidence interval
+
+summ(model_1, robust = "HC1", confint = TRUE, , digits = 3) # more digits
+
+```
 
 ### Model Formula
 
@@ -275,11 +290,75 @@ By default, the `confint()` function computes the interval for a 95% confidence 
 confint(model_1, level = 0.99)
 ```
 
+### Prediction
 
+To forecast using a linear model, we use the function `predict()`
+
+We divide the sample, leaving some observations out, and then predict using the characteristics of these observations. We randomly determine which elements to remove from the sample
+
+```{r pred01}
+
+set.seed(1234)
+
+rows <- sample(x = rownames(wage1), size = round(0.2*nrow(wage1))) # 20% of the sample
+
+rows
+
+```
+
+We divide the sample in two sub samples
+
+```{r pred02}
+
+wage_train <- wage1[-as.numeric(rows),]
+wage_test <- wage1[as.numeric(rows),]
+
+```
+
+We estimate the model with the subsample, excluding the omitted data
+
+```{r pred03}
+
+model_subwage <- lm(data = wage_train, formula = lwage ~ educ + exper + tenure)
+summ(model_subwage, robust = "HC1", digits = 3)
+
+```
+
+We predict the values of the observations we have left out
+
+```{r pred04}
+
+forecast <-  predict(object = model_subwage, newdata = wage_test, interval = "prediction", level = 0.95)
+
+forecast
+
+```
+
+We construct a table with the actual values of the dependent variable
+
+```{r pred05}
+
+forecast2 <-  cbind(forecast, wage_test$lwage)
+
+forecast2
+
+
+```
+
+We assign a name to the last column
+
+```{r pred06}
+
+colnames(forecast2)
+
+colnames(forecast2)[4] <- "real"
+
+forecast2
+
+```
 
 
 ## Logistic regression
-
 
 Logistic regression can be interpreted as a non-linear regression model that handles binary dependent variables, or as a classification model that aims to predict a qualitative response.
 
