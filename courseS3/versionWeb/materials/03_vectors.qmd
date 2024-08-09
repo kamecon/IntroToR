@@ -758,10 +758,40 @@ beta_hat
 
 ```
 
+The `solve` command inverts the matrix, the `t()` function transposes a matrix, and the `%*%` operator performs matrix multiplication, so `solve(t(X) %*% X)` executes the operation. $(X'X)^{-1}$
+
+We compute the residuals
+
+```{r sw_4_12}
+uhat <- y - X %*% beta_hat
+```
+
+We calculate the estimated variance of $u$ and the RSE
+
+$$\sigma^2=\frac{\sum\hat{u^2_i}}{n-k-1}=\frac{u'u}{n-k-1}$$
+
+```{r sw_4_13}
+sigsqhat <- as.numeric( t(uhat) %*% uhat / (n-k-1) )
+ESR <- sqrt(sigsqhat) 
+sigsqhat
+ESR
+
+```
+
+Estimated variance of the betas (variance-covariance matrix $VCV(\hat{\beta})$) and their standard error
+
+$$MVC(\hat{\beta})=\hat{\sigma^2}(X'X)^{-1}$$
+
+```{r sw_4_14}
+Vbetahat <- sigsqhat * solve( t(X)%*%X )
+Vbetahat
+seBeta_hat <- sqrt( diag(Vbetahat))
+seBeta_hat
+
+```
+
 
 :::
-
-The `solve` command inverts the matrix, the `t()` function transposes a matrix, and the `%*%` operator performs matrix multiplication, so `solve(t(X) %*% X)` executes the operation. $(X'X)^{-1}$
 
 
 ::: {.callout-tip title="Linear algebra functions"}
