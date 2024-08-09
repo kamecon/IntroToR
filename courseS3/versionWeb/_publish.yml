@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 3c03de66-2a1f-4fe9-a606-7f77ef63a90e
+      url: 'https://kamecon.quarto.pub/course-r'
