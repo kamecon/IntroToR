@@ -16,7 +16,7 @@ Data frames are *tables* or rectangular arrays, we can treat them as if they wer
 
 As in Excel, we can do calculations with the tables, create new columns (variables), perform statistical analysis, etc.
 
-### Inspecting the data
+## Inspecting the data
 
 In general, we usually inspect the data in a table to familiarise ourselves with it and see what kind of analysis we can do with it.
 
@@ -86,7 +86,6 @@ nrow(mtcars)
 ```
 
 
-
 Another way is to use the `str` function. Although it is not intuitive and even intimidating at first glance, it is not that complicated and provides useful information. 
 
 ```{r df8}
@@ -103,6 +102,40 @@ summary(mtcars)
 
 ```
 
+To sort a column we use the `order()` function
+
+```{r df26}
+
+mtcars[order(mtcars$mpg),]
+
+```
+
+We have sorted from smallest to largest. If we wanted to do the opposite, we would simply put a minus sign `-` in front of the column name
+
+
+```{r df27}
+
+mtcars[order(-mtcars$mpg),]
+
+```
+
+We have noticed that there are a few rows with `NA` values. These types of variables are used to denote data that is missing
+
+If we want to remove these rows, we can use the `na.omit()` function
+
+```{r df28}
+
+head(airquality)
+
+dim(airquality)
+
+air_clean <- na.omit(airquality)
+
+dim(air_clean)
+
+```
+
+## Subset data
 
 Now that we have our data in a data frame, the next step is to access subsets of data in the table (a column or group of rows that meet a condition), manipulate it and create new variables.
 
@@ -146,6 +179,13 @@ mtcars[ , "cyl"]
 
 ```
 
+```{r df152}
+
+mtcars[ , c("cyl", "mpg", "hp")]
+
+```
+
+
 Likewise, we can inspect a data frame column by typing the data frame name followed by a `$` sign and the column name.
 
 The advantage of this method is that the column names are autocompleted
@@ -170,9 +210,9 @@ We can build a new table from this sub-table, assigning a name to the latter
 
 ```{r df18}
 
-mtcars_peque <- mtcars[1:3, 4:5]
+mtcars_small <- mtcars[1:3, 4:5]
 
-mtcars_peque
+mtcars_small
 
 ```
 
@@ -224,5 +264,117 @@ In case you need that only one of the condition holds:
 ```{r df23_1}
 
 mtcars[mtcars$cyl == 6 | mtcars$mpg > 18, ]
+
+```
+
+Let's review the previous section where we identified `NA` values and filtered out those values to only remain with complete values. However, there are times when we want to filter tables based on the NA's in only a subset of columns.
+
+We can accomplish this by using the `is.na()` function along with the filtering principles we have learned.
+
+```{r dfnas}
+
+airquality[is.na(airquality$Ozone), ]
+
+```
+
+We obtain the complete data frame for those rows where the variable/column `Ozone` has `NA` values
+
+If we wanted the opposite, we use the negation operator `!`
+
+```{r dfnas2}
+
+airquality[!is.na(airquality$Ozone), ]
+
+```
+
+For more columns
+
+```{r dfnas2}
+
+airquality[!(is.na(airquality$Ozone) | is.na(airquality$Solar.R)), ]
+
+```
+
+Sometimes we don't want to delete the rows, but rather we want to replace missing values with a specific value.
+
+```{r df29}
+
+airquality[is.na(airquality$Ozone)] <- 0
+
+```
+
+If you wish to modify a specific column
+
+```{r df295}
+
+mtcars_small$hp[mtcars_small$hp < 100] <- "small"
+
+```
+
+
+## Create new variable (colums)
+
+We can add columns to a data frame. Let's use a reduced version of `mtcars`:
+
+```{r add01}
+
+mtcars_mini <- mtcars[1:10, ]
+
+```
+
+We create a named character vector of length 10:
+
+```{r add02}
+
+new_column <- letters[1:10]
+
+```
+
+Then, we add this vector as a new column to `mtcars_mini`:
+
+```{r add03}
+
+mtcars_mini$new <- new_column
+
+mtcars_mini
+
+```
+
+Another way to add new column(s) is by using the `cbind()` function:
+
+```{r add04}
+
+new2 <- letters[11:20]
+mtcars_mini <- cbind(mtcars_mini, new2)
+
+```
+
+Additionally, we can use `rbind()` to add new rows to the data frame:
+
+```{r add05}
+
+rbind(mtcars_mini[, 1:(ncol(mtcars_mini)-2)], mtcars[11:15, ])
+
+```
+
+It's important to pay attention to ensure that `mtcars_mini` is adapted to the number of columns in the subset of `mtcars`. When applying the `cbind()` function, make sure that the data frames have the same number of rows, and for `rbind()`, they should have the same number of columns.
+
+If we want to change the order of the columns, we can pass a character vector as a mask in the column dimension:
+
+```{r add06}
+
+orden_nuevo <- c("carb", "mpg",  "cyl",  "disp", "hp", "drat", "wt", "qsec", "vs",  "am", "gear")
+
+mtcars[, orden_nuevo]
+
+```
+
+If we want to create a new column based on others:
+
+```{r add07}
+
+mtcars_mini$mpgOvercyl <- mtcars_mini$mpg / mtcars_mini$cyl
+
+mtcars_mini
 
 ```
