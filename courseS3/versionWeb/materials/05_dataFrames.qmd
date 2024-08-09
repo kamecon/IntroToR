@@ -135,6 +135,25 @@ dim(air_clean)
 
 ```
 
+What is the purpose of the `is.na()` function in R? How does it work when applied to the `airquality` dataset?
+
+```{r df30}
+
+head(is.na(airquality))
+
+```
+
+The output of the `is.na()` function applied to a dataset is a logical matrix, where a logic vector is represented as an integer vector of zeros (`FALSE`) and ones (`TRUE`). The function returns `TRUE` if the value is `NA` and `FALSE` otherwise. When the columns are summed, the result will give us the number of NA values per column.
+
+To sum the columns, we will use the `colSums()` function
+
+```{r df31}
+
+colSums(is.na(airquality))
+
+```
+
+
 ## Subset data
 
 Now that we have our data in a data frame, the next step is to access subsets of data in the table (a column or group of rows that meet a condition), manipulate it and create new variables.
@@ -204,7 +223,22 @@ For example, if we want to keep only the first 3 rows and the fourth and fifth c
 
 mtcars[1:3, 4:5]
 
+mtcars[c(1:5), c(1,3)]
+
 ```
+
+We can exclude rows and columns
+
+```{r df175}
+
+mtcars[, -1]
+
+mtcars[, -c(1,3,5)]
+
+mtcars[-c(1:22), ]
+
+```
+
 
 We can build a new table from this sub-table, assigning a name to the latter
 
@@ -299,7 +333,7 @@ Sometimes we don't want to delete the rows, but rather we want to replace missin
 
 ```{r df29}
 
-airquality[is.na(airquality$Ozone)] <- 0
+airquality[is.na(airquality$Ozone), ] <- 0
 
 ```
 
@@ -345,8 +379,10 @@ Another way to add new column(s) is by using the `cbind()` function:
 ```{r add04}
 
 new2 <- letters[11:20]
+
 mtcars_mini <- cbind(mtcars_mini, new2)
 
+mtcars_mini
 ```
 
 Additionally, we can use `rbind()` to add new rows to the data frame:
