@@ -289,7 +289,7 @@ airquality[!is.na(airquality$Ozone), ]
 
 For more columns
 
-```{r dfnas2}
+```{r dfnas3}
 
 airquality[!(is.na(airquality$Ozone) | is.na(airquality$Solar.R)), ]
 
