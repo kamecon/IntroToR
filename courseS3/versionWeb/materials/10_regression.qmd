@@ -171,7 +171,7 @@ model_1$coefficients
 
 What we are extracting is a vector
 
-```{r lm03}
+```{r lm035}
 is.vector(model_1$coefficients)
 ```
 
@@ -330,7 +330,7 @@ We predict the values of the observations we have left out
 
 forecast <-  predict(object = model_subwage, newdata = wage_test, interval = "prediction", level = 0.95)
 
-forecast
+head(forecast)
 
 ```
 
@@ -340,7 +340,7 @@ We construct a table with the actual values of the dependent variable
 
 forecast2 <-  cbind(forecast, wage_test$lwage)
 
-forecast2
+head(forecast2)
 
 
 ```
@@ -353,7 +353,7 @@ colnames(forecast2)
 
 colnames(forecast2)[4] <- "real"
 
-forecast2
+head(forecast2)
 
 ```
 
