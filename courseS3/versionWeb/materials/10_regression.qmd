@@ -12,7 +12,7 @@ editor: source
 
 ## Linear regression
 
-Linear estimation in base R is performed using the `lm()` function.
+Linear estimation in base R is performed using the `lm()` function. **lm** stands for **l**inear **m**odels
 
 The basic arguments for this function are a dataset and a formula that specifies which variables we want to relate.
 
@@ -47,19 +47,109 @@ summary(model_1)
 
 In this example:
 
-* `model_1` contains the fitted linear model
+* `model_1` contains the fitted linear model (and much more information, type the command `View(model_1)`)
 * The `formula` argument is a expression of the form `y ~ x1 + x2 + ...` that describe our regression equation. This specification includes the constant term by default
+* The `data` argument specify where the regression variables in the above formula comes from. Many objects (e.g. data frames) **can exist in your R environment at the same time**^[This is a key difference from STATA that users should be aware of.], so we need to be specific about which dataset we are using in our regression
 * `model_summary` holds the summary of the fitted model, which includes various statistical measures
 
-::: {.callout-tip}
-
-## Excercise
+::: {.callout-tip title="Excercise"}
 
 Use the help function `?lm` and search how to exclude the constant term from the regression formula 
 
 :::
 
-If you want to calculate robust standard errors, you can use the `summ` function from the `jtools` package
+If you are interested in calculating robust standard errors, you can use the `estimatr` library. This topic is covered in these notes: [Robust standard errors](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html#Robust_standard_errors)"
+
+
+```{r robust1}
+
+library(estimatr)
+
+model_1_robust <- lm_robust(data = wage1, formula = lwage ~ educ + exper + tenure)
+
+model_1_robust
+
+```
+
+The package defaults to using _HC2_ standard errors. You can change this default using the `se_type` argument, with options including _HC0_, _HC1_ (or _stata_, the equivalent), _HC2_ (default), _HC3_, or _classical_
+
+
+```{r robust1}
+
+library(estimatr)
+
+model_1_robust_1 <- lm_robust(data = wage1, formula = lwage ~ educ + exper + tenure, se_type = "stata")
+
+model_1_robust_1
+
+```
+
+An alternative option is to use the `lmtest` and `sandwich` libraries
+
+```{r robust2}
+
+library(lmtest)
+library(sandwich)
+
+model_1_robust_2 <- coeftest(model_1, vcov = vcovHC(model_1, type = "HC2"))
+
+model_1_robust_2
+
+```
+
+::: {.callout-tip title="Excercise"}
+
+Use the help function `?vcovHC` and search how many methods are supported in the `type` argument
+
+:::
+
+The `model_1_robust_2` object is a matrix
+
+```{r robust3}
+
+is.matrix(model_1_robust_2)
+
+```
+
+You can access the information as you would in any matrix. For example, to access the estimated coefficients
+
+```{r robust4}
+
+model_1_robust_2[,1]
+
+```
+
+The standard errors, p-values, etc.
+
+```{r robust5}
+
+model_1_robust_2[,2] # standard errors
+
+model_1_robust_2[,3] # t statistic
+
+model_1_robust_2[,4] # p-values
+
+```
+
+The information for the education variable
+
+```{r robust5}
+
+model_1_robust_2[2,] 
+
+```
+
+The `estimatr` library does not yet offer support for HAC (i.e. heteroskedasticity and autocorrelation consistent standard errors a la Newey-West). To compute the HAC standard errors, the `NeweyWest` function of the `sandwich` library can be used.
+
+```{r robust6}
+
+model_1_robust_3 <- coeftest(model_1, vcov = NeweyWest(model_1))
+
+model_1_robust_3
+
+```
+
+Finally, there is also the`summ` function from the `jtools` package, which provides a more user-friendly summary print
 
 ```{r lm03}
 
@@ -67,13 +157,15 @@ library(jtools)
 
 summ(model_1) # non-robust standard errors
 
-summ(model_1, robust = "HC1") # robust standard errors
+summ(model_1, robust = "HC2") # robust standard errors
 
-summ(model_1, robust = "HC1", confint = TRUE) # confidence interval
+summ(model_1, robust = "HC2", confint = TRUE) # confidence interval
 
-summ(model_1, robust = "HC1", confint = TRUE, , digits = 3) # more digits
+summ(model_1, robust = "HC2", confint = TRUE, digits = 3) # more digits
 
 ```
+
+The options for the `robust` argument match those of `sandwich::vcovHC()`
 
 ### Model Formula
 
@@ -112,6 +204,22 @@ lm(formula = I(bwght/16) ~ cigs+faminc, data = bwght)
 ```
 
 
+#### Dummy variables
+
+As in the previous sub section, we can construct the dummy variable in the source data frame, using a if - else statement (1 if employed, 0 otherwise), or work directly in the `lm` function `formula`argument
+
+We can define the variables as `factors` in the `formula` expression, in the following way `y ~ as.factor(x1) + x2`
+
+In practice, when the `lm()` function detects that a variable is a string, it treats is a factor
+
+
+::: {.callout-tip title="Excercise"}
+
+Type `?AER::HMDA` in the console. How are the categorical variables treated in the dataset?
+
+:::
+
+
 #### Quadratics and Logarithms
 
 If we want to estimate a model in the following form $y=\beta_0 +\beta_1x+\beta_2x^2++\beta_3x^3+u$, we should write the formula as `y ~ x + I(x^2)+ I(x^3)` in R sintax.
@@ -136,7 +244,7 @@ summary(model_house)
 
 #### Interactions 
 
-To handle models with interaction terms of the form $y=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_1x_2+u$, we should write the formula as `y ~ x1 + x2+ x1:x2` or `y ~ x1*x2` in R sintax. `x1*x2` adds not only the interaction but also both original variables
+To handle models with interaction terms of the form $y=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_1x_2+u$, we should write the formula as `y ~ x1 + x2 + x1:x2` or `y ~ x1*x2` in R sintax. `x1*x2` adds not only the interaction but also both original variables. `x1/x2` _nests_ the second variable within the first, equivalent to `y ~ x1 + x1:x2`
 
 We estimate a model of standardized scores in the final exam are explained by class attendance, prior performance and an interaction term:
 
@@ -212,6 +320,7 @@ We can also extract the coefficients using the `coef()` function
 ```{r lm08}
 coef(model_1)
 ```
+
 #### Access the $R^2$ and the RSE
 
 In this case, we have to access the attributes of the `summary(model_1)` object
@@ -290,6 +399,29 @@ By default, the `confint()` function computes the interval for a 95% confidence 
 confint(model_1, level = 0.99)
 ```
 
+#### "Tidy" regression coefficients
+
+The `tidy()` function from the `broom` package enables us to conveniently view the regression results in a standard data frame.
+
+```{r regtidy1}
+#| warning: false
+
+library(broom)
+
+tidy(model_1, conf.int = TRUE)
+
+```
+
+The `glance()` function summarises the model “meta” data (R2, AIC, etc.) in a data frame
+
+```{r regtidy1}
+#| warning: false
+
+glance(model_1)
+
+```
+
+
 ### Prediction
 
 To forecast using a linear model, we use the function `predict()`
@@ -357,6 +489,32 @@ head(forecast2)
 
 ```
 
+### Model evaluation
+
+As a final stage in the analysis, it is important to visually check the assumptions related to the residuals. The `plot()` function provides a set of plots for this purpose.
+
+```{r eval1}
+
+oldpar <- par(mfrow=c(2,2))
+plot(model_1)
+par(oldpar)
+
+
+```
+
+The `performance` library also provides indices of model quality and goodness of fit.
+
+```{r eval2}
+
+library(performance)
+
+check_model(model_1)
+check_autocorrelation(model_1)
+check_collinearity(model_1)
+check_heteroscedasticity(model_1)
+check_normality(model_1)
+
+```
 
 ## Logistic regression
 
@@ -392,3 +550,40 @@ model_2 <- glm(data = HMDA, formula = deny ~ pirat + afam , family = binomial(li
 summary(model_2)
 
 ```
+
+### Marginal Effects
+
+The `mfx` package, through its `logitmfx` function, provides the estimated logit and presents the marginal effects instead of displaying the $\beta$ coefficients directly. To obtain the _average marginal effect_, we should use the `atmean` argument and assign it the value `FALSE`, indicating that we do not want the marginal effect _at the average_.
+
+
+```{r marginal2}
+
+library(mfx)
+
+model_2_marg <- logitmfx(data = HMDA, deny ~ pirat + afam, atmean = FALSE, robust = TRUE)
+
+model_2_marg
+
+```
+
+According to these results, an increase of one unit in the payment-to-income ratio increases the probability of not obtaining the credit by 52%, while being African American increases the probability of not receiving the credit by 17%.
+
+Finally, the `margins` library also compute the marginal effects
+
+```{r marginal3}
+
+library(margins)
+
+model_2_marg_2 <- margins(model_2)
+
+summary(model_2_marg_2)
+
+```
+
+<!-- And to visualize the effects, we use the function `cplot` -->
+
+<!-- ```{r marginal4} -->
+
+<!-- cplot(model_2, x = "pirat", what = "effect", data = HMDA) -->
+
+<!-- ``` -->
