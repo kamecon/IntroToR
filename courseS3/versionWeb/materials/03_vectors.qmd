@@ -369,6 +369,31 @@ log(vector_numeric)
 
 We note that when an arithmetic operator (`+`, `*`, `-`, `/`, `^`) is applied to a vector, the operation is performed on each of the elements of the vector. Similarly, when we apply a function (`sqrt()`, `log()`) it uses all the elements of the vector as arguments and its output is a vector of dimension equal to the dimension of the original vector. 
 
+## Factors
+
+In R, the factor type is used to represent categorical variables (gender, marital status, job title, etc.)
+
+There are categorical variables that have *levels*, for example when referring to sizes, medium is greater than small, and both are below large
+
+The factor type allows us to conduct statistical analysis on categorical variables whether or not they have levels or hierarchical orderings
+
+Factors are created using the `factor()` function
+
+
+```{r factor1}
+
+factor(1:3)
+
+```
+
+If we want to specify levels for the factor
+
+```{r factor2}
+
+factor(1:3, levels = 1:5)
+
+```
+
 
 ## Vector inspection
 
