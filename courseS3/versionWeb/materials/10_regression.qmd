@@ -58,7 +58,7 @@ Use the help function `?lm` and search how to exclude the constant term from the
 
 :::
 
-If you are interested in calculating robust standard errors, you can use the `estimatr` library. This topic is covered in these notes: [Robust standard errors](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html#Robust_standard_errors)"
+If you are interested in calculating robust standard errors^[This topic is based in these notes [Robust standard errors](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html#Robust_standard_errors)], you can use the [`estimatr`](https://declaredesign.org/r/estimatr/) library.
 
 
 ```{r robust1}
@@ -67,7 +67,7 @@ library(estimatr)
 
 model_1_robust <- lm_robust(data = wage1, formula = lwage ~ educ + exper + tenure)
 
-model_1_robust
+summary(model_1_robust)
 
 ```
 
@@ -80,7 +80,7 @@ library(estimatr)
 
 model_1_robust_1 <- lm_robust(data = wage1, formula = lwage ~ educ + exper + tenure, se_type = "stata")
 
-model_1_robust_1
+summary(model_1_robust_1)
 
 ```
 
@@ -266,9 +266,18 @@ b["atndrte"] + 2.59*b["atndrte:priGPA"]
 
 We want to extract the numerical information from the output of the `summary()` function
 
+The object `model_1` is a list. What can we access from this list?
+
+```{r sumlist1}
+
+names(model_1)
+
+```
+
+
 #### Estimated Coefficients
 
-The object `model_1` is a list, and one of its elements contains the estimated coefficients
+As we can see above, one of the list elements contains the estimated coefficients
 
 
 ```{r lm025}
@@ -323,22 +332,29 @@ coef(model_1)
 
 #### Access the $R^2$ and the RSE
 
-In this case, we have to access the attributes of the `summary(model_1)` object
+In this case, what we can extract from the `summary(model_1)` object?
 
 ```{r lm09}
-attributes(summary(model_1))
+names(summary(model_1))
 ```
 
 Access the $R^2$ 
 
 ```{r rsquared}
 summary(model_1)$r.squared
+summary(model_1)$adj.r.squared
 ```
 
 Access the RSE
 
 ```{r ESR}
 summary(model_1)$sigma
+```
+
+Access the F statistic
+
+```{r Fstat}
+summary(model_1)$fstatistic
 ```
 
 #### Access the standard errors, t-values, and p-values.
@@ -460,7 +476,10 @@ We predict the values of the observations we have left out
 
 ```{r pred04}
 
-forecast <-  predict(object = model_subwage, newdata = wage_test, interval = "prediction", level = 0.95)
+forecast <-  predict(object = model_subwage,
+                     newdata = wage_test,
+                     interval = "prediction",
+                     level = 0.95)
 
 head(forecast)
 
@@ -580,7 +599,7 @@ model_2_marg
 
 According to these results, an increase of one unit in the payment-to-income ratio increases the probability of not obtaining the credit by 52%, while being African American increases the probability of not receiving the credit by 17%.
 
-Finally, the `margins` library also compute the marginal effects
+Finally, the [`margins`](https://cran.r-project.org/web/packages/margins/vignettes/Introduction.html) library also compute the marginal effects
 
 ```{r marginal3}
 
@@ -589,6 +608,8 @@ library(margins)
 model_2_marg_2 <- margins(model_2)
 
 summary(model_2_marg_2)
+
+plot(model_2_marg_2)
 
 ```
 
