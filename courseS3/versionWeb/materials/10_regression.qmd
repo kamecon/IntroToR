@@ -620,3 +620,71 @@ plot(model_2_marg_2)
 <!-- cplot(model_2, x = "pirat", what = "effect", data = HMDA) -->
 
 <!-- ``` -->
+
+## Differences in differences
+
+Without entering in theoretical details aboy desing and others, we will introduce the `feols()` function from the [`fixest`](https://lrberge.github.io/fixest/index.html) library.
+
+This library _offers a family of functions to perform estimations with multiple fixed-effects in both an OLS and a GLM context_. It also supports efficient instrumental variables (IV) estimation, as well as a wide range of GLM models like logit, probit, Poisson, and negative binomial
+
+Given that this library handle well fixed effect estimation, it's well suited for diff in diff analysis
+
+Using the organ donors case treated in [Kessler and Roth (2014)](https://www.nber.org/papers/w20378) paper
+
+```{r did1}
+
+library(causaldata)
+
+od <- organ_donations
+
+od
+
+unique(od$Quarter)
+
+unique(od$State)
+
+```
+
+The treated group is the state of California, and the treatment period the 3 quarters from July 2011 to March 2012
+
+We create the treatment variable
+
+```{r did2}
+
+library(dplyr)
+
+od <- od %>%
+     mutate(Treated = State == 'California' & 
+            Quarter %in% c('Q32011','Q42011','Q12012'))
+
+
+```
+
+We run the following equation: 
+
+$$Y = \beta_0  + \beta_1\text{TreatedGroup} + \beta_2\text{AfterTreatment} + \beta_3\text{TreatedGroup}\times\text{AfterTreatment}$$
+
+The `feols` function  automatically clusters SEs by the first fixed effect (if there are any)
+
+```{r did3}
+
+library(fixest)
+
+clfe <- feols(Rate ~ Treated | State + Quarter, data = od)
+
+clfe
+
+msummary(clfe, stars = c('*' = .1, '**' = .05, '***' = .01))
+
+```
+
+We use the `modelsummary` library to elaborate a user friendly regression table
+
+```{r did4}
+
+library(modelsummary)
+
+msummary(clfe, stars = c('*' = .1, '**' = .05, '***' = .01))
+
+```
+
