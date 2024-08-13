@@ -74,7 +74,7 @@ model_1_robust
 The package defaults to using _HC2_ standard errors. You can change this default using the `se_type` argument, with options including _HC0_, _HC1_ (or _stata_, the equivalent), _HC2_ (default), _HC3_, or _classical_
 
 
-```{r robust1}
+```{r robust15}
 
 library(estimatr)
 
@@ -133,7 +133,7 @@ model_1_robust_2[,4] # p-values
 
 The information for the education variable
 
-```{r robust5}
+```{r robust52}
 
 model_1_robust_2[2,] 
 
@@ -414,7 +414,7 @@ tidy(model_1, conf.int = TRUE)
 
 The `glance()` function summarises the model “meta” data (R2, AIC, etc.) in a data frame
 
-```{r regtidy1}
+```{r regtidy2}
 #| warning: false
 
 glance(model_1)
@@ -502,9 +502,21 @@ par(oldpar)
 
 ```
 
-The `performance` library also provides indices of model quality and goodness of fit.
+In a clockwise direction, the first graph is a residual plot, which represents the residuals $u_i=y_i-\hat{y}_i$ versus the values estimated by the model $\hat{y}_i$. If the assumption of a linear relationship between the response or dependent variable and the regressors holds, the scatter plot should not have any systematic pattern and the red line should be horizontal.
+
+The second graph is the QQ (quantile-quantile) Plot. This graph compares specific data, in this case the standardized residuals, with where these data should be located in a normal distribution. If all or most of the points are on the straight line, then we can say that the residuals follow a normal distribution.
+
+In the third graph, where the square root of the standardized residuals and the values estimated by the model are represented, it is used to detect heteroscedasticity. We should observe if the residuals are equally dispersed as we move from left to right. If so, the red line should be horizontal.
+
+The last graph is used to detect outliers or influential values. On the vertical axis, we have the standardized residuals, and their values indicate how far they are from the mean. If the residuals are far from the mean (greater than 3), we will have outliers.
+
+All the graphs indicate the most extreme points (440, 28, and 128 in this case).
+
+
+The `performance` library also provides indices of model quality and goodness of fit, with a more user-friendly graph.
 
 ```{r eval2}
+#| fig-height: 9
 
 library(performance)
 
