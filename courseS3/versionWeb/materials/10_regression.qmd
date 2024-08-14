@@ -613,23 +613,20 @@ plot(model_2_marg_2)
 
 ```
 
-<!-- And to visualize the effects, we use the function `cplot` -->
-
-<!-- ```{r marginal4} -->
-
-<!-- cplot(model_2, x = "pirat", what = "effect", data = HMDA) -->
-
-<!-- ``` -->
 
 ## Differences in differences
 
-Without entering in theoretical details aboy desing and others, we will introduce the `feols()` function from the [`fixest`](https://lrberge.github.io/fixest/index.html) library.
+Without delving into the theoretical intricacies of design and other related concepts, we will introduce the `feols()` function from the [`fixest`](https://lrberge.github.io/fixest/index.html) library in this lecture.
 
-This library _offers a family of functions to perform estimations with multiple fixed-effects in both an OLS and a GLM context_. It also supports efficient instrumental variables (IV) estimation, as well as a wide range of GLM models like logit, probit, Poisson, and negative binomial
+The `fixest` library _offers a range of functions for conducting estimations with multiple fixed-effects in both OLS and GLM context_. Additionally, it facilitates efficient instrumental variables (IV) estimation and supports a variety of GLM models such as logit, probit, Poisson, and negative binomial.
 
-Given that this library handle well fixed effect estimation, it's well suited for diff in diff analysis
+Given the library's proficiency in handling fixed effect estimation, it is particularly well-suited for conducting difference-in-differences analysis.
 
-Using the organ donors case treated in [Kessler and Roth (2014)](https://www.nber.org/papers/w20378) paper
+For our practical application, we will use the organ donors case discussed in the paper by [Kessler and Roth (2014)](https://www.nber.org/papers/w20378).
+
+We will import the `causaldata` library, which houses datasets from [The Effect](https://theeffectbook.net/) by Huntington-Klein, [Causal Inference: The Mixtape](https://mixtape.scunning.com/index.html) by Scott Cunningham, and [Causal Inference: What If?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) by Hernán and Robins.
+
+We load the dataset that corresponds to Kessler and Roth's paper
 
 ```{r did1}
 
@@ -645,9 +642,7 @@ unique(od$State)
 
 ```
 
-The treated group is the state of California, and the treatment period the 3 quarters from July 2011 to March 2012
-
-We create the treatment variable
+We will create the treatment variable for the state of California during the treatment period, which spans three quarters from July 2011 to March 2012.
 
 ```{r did2}
 
@@ -660,11 +655,11 @@ od <- od %>%
 
 ```
 
-We run the following equation: 
+We estimate the following equation: 
 
 $$Y = \beta_0  + \beta_1\text{TreatedGroup} + \beta_2\text{AfterTreatment} + \beta_3\text{TreatedGroup}\times\text{AfterTreatment}$$
 
-The `feols` function  automatically clusters SEs by the first fixed effect (if there are any)
+The `feols` function  automatically clusters standard errors by the first fixed effect (if there are any). Set `se = 'standard'` to not do this
 
 ```{r did3}
 
@@ -674,11 +669,11 @@ clfe <- feols(Rate ~ Treated | State + Quarter, data = od)
 
 clfe
 
-msummary(clfe, stars = c('*' = .1, '**' = .05, '***' = .01))
-
 ```
 
-We use the `modelsummary` library to elaborate a user friendly regression table
+You can also explicitly indicate the cluster variable using the argument `cluster`, with the variable preceded by a tilde (~) before the name `feols( ..., cluster = ~Variable)`
+
+We will use the `modelsummary` library to generate a user-friendly regression table.
 
 ```{r did4}
 
@@ -688,3 +683,4 @@ msummary(clfe, stars = c('*' = .1, '**' = .05, '***' = .01))
 
 ```
 
+In general, to run a two-way fixed effects model (TWFE), you should first specify the non-fixed effects part of the model, followed by a vertical bar (|), and then indicate the fixed effects you wish to include.
