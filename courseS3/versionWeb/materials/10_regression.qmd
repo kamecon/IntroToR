@@ -428,7 +428,7 @@ tidy(model_1, conf.int = TRUE)
 
 ```
 
-The `glance()` function summarises the model “meta” data (R2, AIC, etc.) in a data frame
+The `glance()` function summarises the model _meta_ data (R2, AIC, etc.) in a data frame
 
 ```{r regtidy2}
 #| warning: false
@@ -613,12 +613,165 @@ plot(model_2_marg_2)
 
 ```
 
+## Panel data
 
-## Differences in differences
+The following example are based on this [book](https://www.pearson.com/en-us/subject-catalog/p/Stock-Introduction-to-Econometrics-Plus-My-Lab-Economics-with-Pearson-e-Text-Access-Card-Package-4th-Edition/P200000006421?view=educator)
 
-Without delving into the theoretical intricacies of design and other related concepts, we will introduce the `feols()` function from the [`fixest`](https://lrberge.github.io/fixest/index.html) library in this lecture.
+We load a dataset on US traffic fatalities panel data for the “lower 48” US states (i.e., excluding Alaska and Hawaii), annually for 1982 through 1988
 
-The `fixest` library _offers a range of functions for conducting estimations with multiple fixed-effects in both OLS and GLM context_. Additionally, it facilitates efficient instrumental variables (IV) estimation and supports a variety of GLM models such as logit, probit, Poisson, and negative binomial.
+```{r panel1}
+
+data("Fatalities", package = "AER")
+
+head(Fatalities)
+
+?Fatalities
+
+```
+
+We estimate two separate single-year regressions to examine the relationship between the fatality rate (the number of traffic deaths per 10,000 people living in a state in a specific year) and a beer tax
+
+
+```{r panel2}
+
+library(dplyr)
+
+lm(data = Fatalities |> filter(year == 1982), formula = I(fatal/pop * 10000) ~ beertax)
+
+lm(data = Fatalities |> filter(year == 1988), formula = I(fatal/pop * 10000) ~ beertax)
+
+```
+
+The observed coefficient sign on the beer tax is not intuitive. To address this issue, we conducted a panel regression by incorporating state _fixed effects_, which involved the inclusion of a dummy variable for each state in our analysis.
+
+
+```{r panel3}
+
+panel_1 <- lm(data = Fatalities, formula = I(fatal/pop * 10000) ~ beertax + state - 1)
+
+summary(panel_1)
+
+```
+
+For robust standard errors
+
+```{r panel32}
+
+coeftest(panel_1, vcov = vcovHC(panel_1, type = "HC1"))
+
+```
+
+
+In R, the _classic_ library for estimating panel data models is the `plm` package
+
+```{r panel4}
+
+library(plm)
+
+Fatalities_panel <- Fatalities |>
+                    mutate(frate = fatal/pop * 10000) |>
+                    pdata.frame(index = c("state", "year"))
+
+head(Fatalities_panel)
+
+```
+
+The `pdata.frame()` function in R creates a data frame with individual and time dimensions
+
+To estimate a within model equivalent to `panel_1`, we use the `plm()` function
+
+
+```{r panel5}
+
+panel_2 <- plm(data = Fatalities_panel, formula = frate ~ beertax, model = "within")
+
+summary(panel_2)
+
+```
+
+We have the option to define a panel dataset directly within the `plm()` function instead of predefining it
+
+```{r panel6}
+
+Fatalities_2 <- Fatalities |>
+                    mutate(frate = fatal/pop * 10000)
+
+plm(data = Fatalities_2, formula = frate ~ beertax, index = c("state", "year"), model = "within")
+
+```
+
+For robust standard errors
+
+```{r panel162}
+
+coeftest(panel_2, vcov = vcovHC(panel_2, type = "HC1"))
+
+```
+
+
+Another option is to use the `feols()` function from the [`fixest`](https://lrberge.github.io/fixest/index.html) library
+
+The `fixest` library _offers a range of functions for conducting estimations with multiple fixed-effects in both OLS and GLM context_. Additionally, it facilitates efficient instrumental variables (IV) estimation and supports a variety of GLM models such as logit, probit, Poisson, and negative binomial
+
+We estimate the same model using the state as a fixed effect. To run a fixed effects model (also two-way fixed effects), you should first specify the non-fixed effects part of the model, followed by a vertical bar `|`, and then indicate the fixed effects you wish to include.
+
+
+```{r panel7}
+
+library(fixest)
+
+panel_3 <- feols(data = Fatalities, fml = I(fatal/pop * 10000) ~ beertax | state)
+
+panel_3
+
+```
+
+The `feols()` function  automatically clusters standard errors by the first fixed effect (if there are any). Set `se = 'standard'` to not do this
+
+You can also explicitly indicate the cluster variable using the argument `cluster`, with the variable preceded by a tilde (~) before the name `feols( ..., cluster = ~Variable)`
+
+### Two way fixed effect
+
+We can also include time (in this case, the year) as an additional fixed effect
+
+Using `lm()`
+
+```{r panel9}
+
+panel_1_twfe <- lm(data = Fatalities, formula = I(fatal/pop * 10000) ~ beertax + state + year - 1)
+
+summary(panel_1_twfe)
+
+coeftest(panel_1_twfe, vcov = vcovHC(panel_1_twfe, type = "HC1"))
+
+```
+
+Using `plm()`
+
+```{r panel10}
+
+panel_2_twfe <- plm(data = Fatalities_panel, formula = frate ~ beertax, model = "within", effect = "twoways")
+
+summary(panel_2_twfe)
+
+coeftest(panel_2_twfe, vcov = vcovHC(panel_2_twfe, type = "HC2", cluster="group"))
+
+```
+
+Using `feols()`
+
+```{r panel11}
+
+panel_3_twfe <- feols(data = Fatalities, fml = I(fatal/pop * 10000) ~ beertax | state + year)
+
+panel_3_twfe
+
+```
+
+
+## Difference in differences
+
+Without delving into the theoretical intricacies of design and other related concepts, we use the `feols()` function estimate a difference-in-differences model.
 
 Given the library's proficiency in handling fixed effect estimation, it is particularly well-suited for conducting difference-in-differences analysis.
 
@@ -646,8 +799,6 @@ We will create the treatment variable for the state of California during the tre
 
 ```{r did2}
 
-library(dplyr)
-
 od <- od %>%
      mutate(Treated = State == 'California' & 
             Quarter %in% c('Q32011','Q42011','Q12012'))
@@ -659,19 +810,13 @@ We estimate the following equation:
 
 $$Y = \beta_0  + \beta_1\text{TreatedGroup} + \beta_2\text{AfterTreatment} + \beta_3\text{TreatedGroup}\times\text{AfterTreatment}$$
 
-The `feols` function  automatically clusters standard errors by the first fixed effect (if there are any). Set `se = 'standard'` to not do this
-
 ```{r did3}
-
-library(fixest)
 
 clfe <- feols(Rate ~ Treated | State + Quarter, data = od)
 
 clfe
 
 ```
-
-You can also explicitly indicate the cluster variable using the argument `cluster`, with the variable preceded by a tilde (~) before the name `feols( ..., cluster = ~Variable)`
 
 We will use the `modelsummary` library to generate a user-friendly regression table.
 
@@ -683,4 +828,5 @@ msummary(clfe, stars = c('*' = .1, '**' = .05, '***' = .01))
 
 ```
 
-In general, to run a two-way fixed effects model (TWFE), you should first specify the non-fixed effects part of the model, followed by a vertical bar (|), and then indicate the fixed effects you wish to include.
+
+
