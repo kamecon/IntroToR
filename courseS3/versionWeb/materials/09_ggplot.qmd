@@ -1,5 +1,5 @@
 ---
-title: "Visualition: ggplot2"
+title: "Visualization: ggplot2"
 execute:
   echo: true
   messages: false
