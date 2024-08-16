@@ -769,7 +769,7 @@ panel_3_twfe
 ```
 
 
-## Difference in differences
+## Difference in differences^[The examples used in this section and the following are taken from this [book](https://theeffectbook.net/)]
 
 Without delving into the theoretical intricacies of design and other related concepts, we use the `feols()` function estimate a difference-in-differences model.
 
@@ -828,5 +828,64 @@ msummary(clfe, stars = c('*' = .1, '**' = .05, '***' = .01))
 
 ```
 
+## Regression discontinuity 
 
+Basic regression discontinuity linear estimation takes the following form:
 
+$$Y = \beta_0+\beta_1(\text{Running - Cutoff}) +\beta_2\text{Treated} + \beta_3(\text{Running - Cutoff})\times\text{Treated}+\epsilon$$
+
+Or in a non-linear specification (order 2):
+
+$$Y = \beta_0+\beta_1(\text{Running - Cutoff}) +\beta_2(\text{Running - Cutoff})^2 + \beta_3\text{Treated} + \beta_4(\text{Running - Cutoff})\times\text{Treated}+\beta_5(\text{Running - Cutoff})^2\times\text{Treated}+\epsilon$$
+
+Where $\text{Running}$ is the variable that determines whether the individual is treated or not, $\text{Cutoff}$ is the value of the running variable that determines whether the individual gets the treatment, and $\text{Treated}$ a indicator value that is equal to one if the individual is treated (above the cutoff)
+
+This regressions can be performed with `lm()` and the other functions presented in this section
+
+Using the data from data from [Government Transfers and Political Support](https://www.aeaweb.org/articles?id=10.1257/app.3.3.1) by Manacorda, Miguel, and Vigorito (2011), we will estimate a simple version of the model developed in the paper _manually_ with the use of `lm()`, and with the _ready to use_ function `rdrobust()` from the package `rdrobust`
+
+We load the data
+
+```{r rd1}
+
+gov_tra <- gov_transfers
+
+head(gov_tra)
+
+```
+
+`lm()` simple non-linear estimation (linear term and a squared term with treated interactions)
+
+```{r rd2}
+
+rd_1 <- lm(data = gt, formula = Support ~ Income_Centered*Participation + I(Income_Centered^2)*Participation)
+
+summary(rd_1)
+
+```
+
+According to the `Participation` coefficient, receiving payments increased support for the government by 9.3 percentage points
+
+`rdrobust()` _automatic_ version that selects the polynomial order, bandwidth, weights, applies bias correction and uses robust standard errors applying the nearest neighbors method
+
+```{r rd3}
+
+rd_2 <- rdrobust(gt$Support, gt$Income_Centered, c = 0)
+
+summary(rd_2)
+
+```
+
+The result differ a lot! That's because of the _optimal_ selection of parameters. In this specific case, the bandwidth selection is to narrow, given that of the nature of the research design in the paper, the bandwidth should be the whole range
+
+If we set the bandwidth manually acording the range if the running variable (`Income_Centered` in this case)   `gt$Income_Centered |> range()`
+
+```{r rd4}
+
+rd_3 <- rdrobust(gt$Support, gt$Income_Centered, c = 0, h = 0.02)
+
+summary(rd_3)
+
+```
+
+We obtain a result nearer to the _manual_ estimation. Negative coefficients are interpreted as positive effects in this case, given that the treatment is at the left of the cutoff
