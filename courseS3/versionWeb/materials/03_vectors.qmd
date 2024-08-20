@@ -738,15 +738,12 @@ The `diag(n)` command generates a square diagonal matrix of ones whit dimension 
 
 The `%*%` operator performs products of matrices, as we will see in the practical examples
 
-::: {.callout-tip}
-
-## Example: Linear regression
+::: {.callout-tip title = Example: Linear regression}
 
 Let's calculate the estimated coefficients of a simple linear regression using the analytical solution to the problem of minimizing the sum of squared residuals $\sum_{i=1}^n(y_i - \hat{y}_i)^2$
 
 ```{r matriz7}
 
-#install.packages("wooldridge")
 library(wooldridge)
 
 data(gpa1)
