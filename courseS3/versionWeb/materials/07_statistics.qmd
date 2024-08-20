@@ -183,52 +183,6 @@ cor(airquality, use = "complete.obs")
 
 ```
 
-## Categorical data
-
-For categorical data there makes no sense to compute statistics such as means and standard deviations, we rather analize this data using _proportions_ 
-
-We will use the `HMDA` dataset from Stock and Watson´s introductory econometrics textbook
-
-```{r hmda}
-
-library(AER)
-data("HMDA", package = "AER")
-head(HMDA)
-
-```
-
-We can construct a cross-table that shows the counts for different combinations of two categorical variables
-
-```{r hmda2}
-
-table(HMDA$deny, HMDA$hschool)
-
-```
-
-In terms of proportions
-
-```{r hmda3}
-
-prop.table(table(HMDA$deny, HMDA$hschool))
-
-```
-
-By row
-
-```{r hmda4}
-
-prop.table(table(HMDA$deny, HMDA$hschool), margin = 1)
-
-```
-
-By column
-
-```{r hmda5}
-
-prop.table(table(HMDA$deny, HMDA$hschool), margin = 2)
-
-```
-
 ## (Quick) Descriptive graphical analysis
 
 Histograms
@@ -314,3 +268,48 @@ plot.ecdf(data_ecdf)
 
 ```
 
+## Categorical data
+
+For categorical data there makes no sense to compute statistics such as means and standard deviations, we rather analize this data using _proportions_ 
+
+We will use the `HMDA` dataset from Stock and Watson´s introductory econometrics textbook
+
+```{r hmda}
+
+library(AER)
+data("HMDA", package = "AER")
+head(HMDA)
+
+```
+
+We can construct a cross-table that shows the counts for different combinations of two categorical variables
+
+```{r hmda2}
+
+table(HMDA$deny, HMDA$hschool)
+
+```
+
+In terms of proportions
+
+```{r hmda3}
+
+prop.table(table(HMDA$deny, HMDA$hschool))
+
+```
+
+By row
+
+```{r hmda4}
+
+prop.table(table(HMDA$deny, HMDA$hschool), margin = 1)
+
+```
+
+By column
+
+```{r hmda5}
+
+prop.table(table(HMDA$deny, HMDA$hschool), margin = 2)
+
+```

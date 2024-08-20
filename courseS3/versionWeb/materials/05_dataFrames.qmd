@@ -399,9 +399,9 @@ If we want to change the order of the columns, we can pass a character vector as
 
 ```{r add06}
 
-orden_nuevo <- c("carb", "mpg",  "cyl",  "disp", "hp", "drat", "wt", "qsec", "vs",  "am", "gear")
+order_new <- c("carb", "mpg",  "cyl",  "disp", "hp", "drat", "wt", "qsec", "vs",  "am", "gear")
 
-mtcars[, orden_nuevo]
+mtcars[, order_new]
 
 ```
 
