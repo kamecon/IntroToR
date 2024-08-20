@@ -617,15 +617,13 @@ plot(model_2_marg_2)
 
 The following example are based on this [book](https://www.pearson.com/en-us/subject-catalog/p/Stock-Introduction-to-Econometrics-Plus-My-Lab-Economics-with-Pearson-e-Text-Access-Card-Package-4th-Edition/P200000006421?view=educator)
 
-We load a dataset on US traffic fatalities panel data for the “lower 48” US states (i.e., excluding Alaska and Hawaii), annually for 1982 through 1988
+We load a dataset on US traffic fatalities panel data for the “lower 48” US states (i.e., excluding Alaska and Hawaii), annually for 1982 through 1988 (?Fatalities for more details)
 
 ```{r panel1}
 
 data("Fatalities", package = "AER")
 
 head(Fatalities)
-
-?Fatalities
 
 ```
 
@@ -830,21 +828,22 @@ msummary(clfe, stars = c('*' = .1, '**' = .05, '***' = .01))
 
 ## Regression discontinuity 
 
-Basic regression discontinuity linear estimation takes the following form:
+In a basic regression discontinuity design (RDD), the linear estimation model takes the following form:
 
 $$Y = \beta_0+\beta_1(\text{Running - Cutoff}) +\beta_2\text{Treated} + \beta_3(\text{Running - Cutoff})\times\text{Treated}+\epsilon$$
 
-Or in a non-linear specification (order 2):
+Or, in a non-linear specification (e.g., quadratic order):
 
-$$Y = \beta_0+\beta_1(\text{Running - Cutoff}) +\beta_2(\text{Running - Cutoff})^2 + \beta_3\text{Treated} + \beta_4(\text{Running - Cutoff})\times\text{Treated}+\beta_5(\text{Running - Cutoff})^2\times\text{Treated}+\epsilon$$
+$$Y = \beta_0+\beta_1(\text{Running - Cutoff}) +\beta_2(\text{Running - Cutoff})^2 + \beta_3\text{Treated} + \beta_4(\text{Running - Cutoff})\times\text{Treated}+ \ldots$$ 
+$$+\ldots \beta_5(\text{Running - Cutoff})^2\times\text{Treated}+\epsilon$$
 
-Where $\text{Running}$ is the variable that determines whether the individual is treated or not, $\text{Cutoff}$ is the value of the running variable that determines whether the individual gets the treatment, and $\text{Treated}$ a indicator value that is equal to one if the individual is treated (above the cutoff)
+Here, `Running` is the variable that determines whether an individual is eligible for treatment, `Cutoff` is the threshold value of the running variable that determines treatment eligibility, and `Treated` is an indicator variable equal to 1 if the individual receives the treatment (i.e., is above the cutoff)
 
-This regressions can be performed with `lm()` and the other functions presented in this section
+These regressions can be performed using the `lm()` function, as well as other functions introduced in this section
 
-Using the data from data from [Government Transfers and Political Support](https://www.aeaweb.org/articles?id=10.1257/app.3.3.1) by Manacorda, Miguel, and Vigorito (2011), we will estimate a simple version of the model developed in the paper _manually_ with the use of `lm()`, and with the _ready to use_ function `rdrobust()` from the package `rdrobust`
+Using data from the study [Government Transfers and Political Support](https://www.aeaweb.org/articles?id=10.1257/app.3.3.1) by Manacorda, Miguel, and Vigorito (2011), we will estimate a simplified version of the model presented in the paper. We will do this both _manually_ using `lm()` and with the _pre-built_ function `rdrobust()` from the `rdrobust` package
 
-We load the data
+Let's start by loading the data
 
 ```{r rd1}
 
@@ -858,7 +857,7 @@ head(gov_tra)
 
 ```{r rd2}
 
-rd_1 <- lm(data = gt, formula = Support ~ Income_Centered*Participation + I(Income_Centered^2)*Participation)
+rd_1 <- lm(data = gov_tra, formula = Support ~ Income_Centered*Participation + I(Income_Centered^2)*Participation)
 
 summary(rd_1)
 
@@ -866,26 +865,31 @@ summary(rd_1)
 
 According to the `Participation` coefficient, receiving payments increased support for the government by 9.3 percentage points
 
-`rdrobust()` _automatic_ version that selects the polynomial order, bandwidth, weights, applies bias correction and uses robust standard errors applying the nearest neighbors method
+The `rdrobust()` function provides an automated approach that selects the appropriate polynomial order, bandwidth, and weights, applies bias correction, and calculates robust standard errors using the nearest neighbours method.
 
 ```{r rd3}
 
-rd_2 <- rdrobust(gt$Support, gt$Income_Centered, c = 0)
+library(rdrobust)
+
+rd_2 <- rdrobust(gov_tra$Support, gov_tra$Income_Centered, c = 0)
 
 summary(rd_2)
 
 ```
 
-The result differ a lot! That's because of the _optimal_ selection of parameters. In this specific case, the bandwidth selection is to narrow, given that of the nature of the research design in the paper, the bandwidth should be the whole range
+The results differ significantly! This discrepancy arises due to the _optimal_ selection of parameters by `rdrobust()`. In this specific case, the selected bandwidth is too narrow. Given the nature of the research design in the paper, the bandwidth should ideally encompass the entire range of the running variable
 
-If we set the bandwidth manually acording the range if the running variable (`Income_Centered` in this case)   `gt$Income_Centered |> range()`
+To address this, we can manually set the bandwidth according to the range of the running variable (`Income_Centered` in this case) using `gt$Income_Centered |> range()`
+
 
 ```{r rd4}
 
-rd_3 <- rdrobust(gt$Support, gt$Income_Centered, c = 0, h = 0.02)
+rd_3 <- rdrobust(gov_tra$Support, gov_tra$Income_Centered, c = 0, h = 0.02)
 
 summary(rd_3)
 
 ```
 
-We obtain a result nearer to the _manual_ estimation. Negative coefficients are interpreted as positive effects in this case, given that the treatment is at the left of the cutoff
+By manually setting the bandwidth, we obtain results closer to the _manual_ estimation. In this specific context, negative coefficients are interpreted as positive effects because the treatment is applied to observations on the left side of the cutoff.
+
+
