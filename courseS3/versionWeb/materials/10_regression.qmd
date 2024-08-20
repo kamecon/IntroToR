@@ -892,4 +892,64 @@ summary(rd_3)
 
 By manually setting the bandwidth, we obtain results closer to the _manual_ estimation. In this specific context, negative coefficients are interpreted as positive effects because the treatment is applied to observations on the left side of the cutoff.
 
+## Instrumental variables
+
+At this point, you may have noticed that it's possible to estimate instrumental variable regressions using many of the libraries we've discussed so far.
+
+In this section, we'll focus on using the `estimatr` and `fixest` libraries, and we'll also introduce the `ivreg` library.
+
+We'll start with `ivreg` by using its `CigaretteDemand` dataset. This dataset provides a classic example of an instrumental variables regression—a supply and demand model where price is endogenously determined by the interaction of both supply and demand. In this example, we'll use the sales tax as an instrument.
+
+```{r iv1}
+
+library(ivreg)
+
+data("CigaretteDemand", package = "ivreg")
+
+head(CigaretteDemand)
+
+```
+
+
+We aim to run the following two-stage IV regression that relates the number of cigarette packs consumed per capita to their average price and real income.
+
+$$\text{Price}_i=\pi_0+\pi_1\text{Sales Tax}_i+v_i$$
+$$\text{Packs}_i=\beta_0+\beta_1\widehat{Price_i}+\beta_2\text{Real income}_i+u_i$$
+
+The syntax for `ivreg()` takes the following form: `dependent variable ~ exogenous variable(s) | endogenous variable(s) | instrument`
+
+```{r iv2}
+
+model_iv = ivreg(data = CigaretteDemand, formula = log(packs) ~ log(rincome) | log(rprice) |  salestax) 
+    
+summary(model_iv)
+
+summary(model_iv, vcov. = vcovHC(model_iv, type = "HC2"))
+
+```
+
+When using `feols()` from the `fixest` package, the syntax changes slightly: `dependent variable ~ exogenous variable(s) | endogenous variable(s) ~ instrument (first stage regression)`
+
+```{r iv3}
+
+model_iv_feols = feols(data = CigaretteDemand, fml = log(packs) ~ log(rincome) | log(rprice) ~ salestax) 
+    
+summary(model_iv_feols, stage = 1)
+
+summary(model_iv_feols)
+
+```
+
+Finally, with the `iv_robust()` function from the `estimatr` library, the syntax takes the following form: `dependent variable ~ exogenous variable(s) + endogenous variable(s) | exogenous variable(s) + instrument`
+
+```{r iv4}
+
+model_iv_robust = iv_robust(data = CigaretteDemand, formula = log(packs) ~ log(rincome) + log(rprice) | log(rincome) + salestax) 
+    
+summary(model_iv_robust)
+
+```
+
+
+
 
