@@ -45,7 +45,7 @@ For those eager to delve deeper into data visualization with ggplot2, I recommen
 Let's proceed by installing and loading the ggplot2 library.
 
 ```{r ggplot01}
-#install.packages(ggplot2)
+
 library(ggplot2)
 
 ```
@@ -252,6 +252,41 @@ graph
 
 ```
 
+```{r ggplot0925}
+#| class-source: "numberLines"
+#| source-line-numbers: "1"
+
+graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
+  geom_bar() +
+  coord_flip()
+
+graph
+
+```
+
+```{r ggplot0926}
+#| class-source: "numberLines"
+#| source-line-numbers: "1"
+
+graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
+  geom_bar(position = "dodge")
+
+graph
+
+```
+
+```{r ggplot0927}
+#| class-source: "numberLines"
+#| source-line-numbers: "1"
+
+graph <- ggplot(mpg, aes(x = class, fill = factor(cyl))) +
+  geom_bar(position = "fill") +
+  labs(y = "Proportion")
+
+graph
+
+```
+
 We will explore a different dataset that is well-suited for creating line graphs, the `economics` dataset
 
 ```{r ggplotecon}
@@ -364,6 +399,30 @@ graph_b
 
 ```
 
+We can also compare distributions using densities
+
+```{r ggpplot174}
+
+ggplot(mpg |> dplyr::filter(cyl != 5),
+       aes(x = hwy, fill = factor(cyl))
+       ) +
+  geom_density(alpha = 0.4) 
+
+```
+
+Another way of representing densities using a _joyplot_ with the library `ggridges`
+
+```{r ggpplot175}
+
+library(ggridges)
+
+ggplot(mpg, 
+       aes(x = hwy, y = class, fill = class)) +
+  geom_density_ridges() + 
+  theme_ridges()
+
+```
+
 
 ## Facets
 
@@ -449,5 +508,18 @@ graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
 graph
 
 ```
+
+A simpler non-linear version
+
+```{r ggplot18}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(colour = "blue", size = 2) +  
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red")
+
+graph 
+
+```
+
 
 ## Themes
