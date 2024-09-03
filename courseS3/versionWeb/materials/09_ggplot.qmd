@@ -19,7 +19,7 @@ We will delve into the visualization capabilities of the ggplot2 library within 
 ::: {#fig-ggplot}
 ![](images/logo5.png){width=200}
 
-Hex sticker de ggplot2
+ggplot2 hex sticker
 :::
 
 ::: {.callout-note}
@@ -152,7 +152,7 @@ graph
 
 This is what we called a a _non fixed_ aesthetic, in this case it should appear as a argument if the `aes()` function.
 
-Look at what happens if we include the color argument in `geom_point()`
+Look at what happens if we include the `color` argument in `geom_point()`
 
 ```{r ggplot055}
 #| eval: false
@@ -228,8 +228,8 @@ graph
 We are going to exclude cars with 5 cylinders (as there are very few), and this way we see how we can manipulate the dataset within the plot instructions.
 
 ```{r ggplot09}
-#| class-source: "numberLines"
-#| source-line-numbers: "1"
+# #| class-source: "numberLines"
+# #| source-line-numbers: "1"
 
 graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
                   aes(x = displ, y = hwy, color = factor(cyl))) +
@@ -242,8 +242,6 @@ graph
 Changing the geom, bar graph
 
 ```{r ggplot092}
-#| class-source: "numberLines"
-#| source-line-numbers: "1"
 
 graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
   geom_bar()
@@ -253,8 +251,6 @@ graph
 ```
 
 ```{r ggplot0925}
-#| class-source: "numberLines"
-#| source-line-numbers: "1"
 
 graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
   geom_bar() +
@@ -265,8 +261,6 @@ graph
 ```
 
 ```{r ggplot0926}
-#| class-source: "numberLines"
-#| source-line-numbers: "1"
 
 graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
   geom_bar(position = "dodge")
@@ -276,8 +270,6 @@ graph
 ```
 
 ```{r ggplot0927}
-#| class-source: "numberLines"
-#| source-line-numbers: "1"
 
 graph <- ggplot(mpg, aes(x = class, fill = factor(cyl))) +
   geom_bar(position = "fill") +
@@ -316,6 +308,26 @@ graph
 
 ```
 
+```{r ggplot084}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line(color = "blue", size = 1.2, linetype = "dashed")
+
+graph
+
+```
+
+```{r ggplot085}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line() +
+  geom_area(fill="lightblue", color="black")
+
+graph
+
+```
+
+
 Histograms
 
 ```{r ggplot14}
@@ -352,7 +364,7 @@ graph_h
 
 ```
 
-Or use some colors
+Or use some colours
 
 ```{r ggplot16}
 #| warning: false
@@ -401,6 +413,17 @@ graph_b
 
 We can also compare distributions using densities
 
+```{r ggpplot1745}
+
+ggplot(mpg |> dplyr::filter(cyl != 5),
+       aes(x = hwy)
+       ) +
+  geom_density(alpha = 0.4) +
+  facet_grid(~ cyl)
+
+```
+
+
 ```{r ggpplot174}
 
 ggplot(mpg |> dplyr::filter(cyl != 5),
@@ -410,7 +433,7 @@ ggplot(mpg |> dplyr::filter(cyl != 5),
 
 ```
 
-Another way of representing densities using a _joyplot_ with the library `ggridges`
+Another way to represent densities is by using a _joyplot_, which can be created with the `ggridges` library. A joyplot is a type of plot that displays multiple density plots stacked on top of each other, making it easier to compare the distributions of different groups or categories. 
 
 ```{r ggpplot175}
 
@@ -495,7 +518,7 @@ graph
 
 ```
 
-And if we want the relationship to be nonlinear, we do not specify the method (nonlinear is the default)
+And if we want the relationship to be non-linear, we do not specify the method (non-linear is the default)
 
 ```{r ggplot11}
 #| warning: false
@@ -523,3 +546,273 @@ graph
 
 
 ## Themes
+
+The `theme()` function in `ggplot2` allows you to customize the non-data components of your plots, such as axes, labels, backgrounds, and more.
+
+When you execute `?theme`, you'll notice there are numerous elements within a plot that can be modified. Before diving into a selection of these customizable elements, we'll first explore the theme functions that offer predefined theme settings for specific styles.
+
+### Default: Grey
+
+```{r themes1}
+
+graph +
+  theme_gray()
+
+```
+
+### Theme BW
+
+```{r themes2}
+
+graph +
+  theme_bw()
+
+```
+
+### Theme dark
+
+```{r themes3}
+
+graph +
+  theme_dark()
+
+```
+
+### Theme minimal
+
+```{r themes4}
+
+graph +
+  theme_minimal()
+
+```
+
+### Theme classic
+
+```{r themes5}
+
+graph +
+  theme_classic()
+
+```
+
+### Theme Light
+
+```{r themes6}
+
+graph +
+  theme_light()
+
+```
+
+### ggthemes
+
+The `ggthemes` package provides additional themes that extend the customization options in `ggplot2`, allowing you to apply a variety of predefined styles to your plots.
+
+```{r themes7}
+
+library(ggthemes)
+
+graph +
+  theme_economist()
+
+```
+
+```{r themes8}
+
+graph +
+  theme_fivethirtyeight()
+
+```
+
+ 
+```{r themes9}
+
+graph +
+  theme_stata()
+
+```
+
+Before we dive deeper into the `theme` function, let’s first add informative labels to our graph, such as a title, axis labels, and other relevant annotations.
+
+```{r themes10}
+
+graph <- graph +
+  labs(title = "My First Plot",
+       subtitle = "With ggplot",
+       caption = "Source: Me") +
+  xlab("Engine displacement") +
+  ylab("Highway miles per gallon")
+
+graph
+
+```
+
+[Here](https://ggplot2.tidyverse.org/reference/theme.html), you can find a comprehensive list of theme elements available in `ggplot2`. The following figure illustrates and helps you identify some of these key elements in a plot.
+
+::: {#fig-themes}
+![](images/themes.png){width=90%}
+
+ggplot2 Theme Elements Reference Sheet ([source](https://isabella-b.com/blog/ggplot2-theme-elements-reference/))
+
+:::
+
+
+Using the figure as a guideline, let's proceed to modify some of the plot elements to see how they impact the overall appearance of the graph.
+
+This is our base plot
+
+```{r themes11}
+
+graph <- graph +
+  theme_minimal()
+
+graph
+
+```
+
+We'll start by customizing the plot title. To do this, we'll refer to the `theme()` function documentation to understand how to structure the arguments correctly. This will help us control the appearance of the title, such as its font size, color, alignment, and position on the plot.
+
+
+```{r themes115}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown"))
+
+```
+
+Axis labels
+
+```{r themes12}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title.x = element_text(size = 15, colour = "purple", family = "mono"))
+
+```
+
+If we want to modify both axis labels
+
+```{r themes13}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono"))
+
+```
+
+The background
+
+```{r themes14}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1"))
+
+```
+
+We add an axis
+
+```{r themes15}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line())
+
+```
+
+Format axis text
+
+```{r themes16}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic"))
+
+```
+
+No grid lines
+
+```{r themes17}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank())
+
+```
+
+Custom grid lines
+
+```{r themes18}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) 
+
+```
+
+```{r themes19}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) +
+  theme(panel.grid.minor.x = element_line(colour = "black", linetype = "solid"))
+
+```
+
+```{r themes20}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) +
+  theme(panel.grid.minor.x = element_line(colour = "black", linetype = "solid")) +
+  theme(panel.grid.major.y = element_line(colour = "green", linetype = "dashed")) +
+  theme(panel.grid.minor.y = element_line(colour = "black", linetype = "solid"))
+
+
+```
+
+Change the panel background
+
+```{r themes21}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) +
+  theme(panel.grid.minor.x = element_line(colour = "black", linetype = "solid")) +
+  theme(panel.grid.major.y = element_line(colour = "green", linetype = "dashed")) +
+  theme(panel.grid.minor.y = element_line(colour = "black", linetype = "solid")) +
+  theme(panel.background = element_rect(fill = "bisque"))
+
+
+```
