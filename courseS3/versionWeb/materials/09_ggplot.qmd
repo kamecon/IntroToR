@@ -317,6 +317,16 @@ graph
 
 ```
 
+Different line types
+
+```{r ggplot0845}
+
+ggplot(economics_long, aes(date, value01)) +
+  geom_line(aes(linetype = variable))
+
+```
+
+
 ```{r ggplot085}
 
 graph <- ggplot(economics, aes(x = date, y = unemploy)) +
