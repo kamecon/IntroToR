@@ -236,6 +236,6 @@ eur21_3 %>%
 eur21_3 %>% 
   select(NUTS_ID, values)
 
-
+Sys.setenv("no_proxy"=".ec.europa.eu,.jrc.org,.jrc.cec.eu.int,.jrc.ec.europa.eu,.jrc.it,.jrc.es,localhost,127.0.0.1")
 
 
