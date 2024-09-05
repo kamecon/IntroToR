@@ -26,6 +26,9 @@ ggplot() +
 
 pacman::p_load(eurostat, sf, ggplot2, giscoR, dplyr)
 
+#Proxy
+Sys.setenv("no_proxy"=".jrc.org,.jrc.cec.eu.int,.jrc.ec.europa.eu,.jrc.it,.jrc.es,localhost,127.0.0.1")
+
 eur21 <- get_eurostat_geospatial(resolution = 10,
                                  nuts_level = 2,
                                  year = 2021)
@@ -40,7 +43,7 @@ ggplot(data = eur21_2 %>% dplyr::filter(name == "Italy")) +
 
 unemp <- get_eurostat(id = "tgs00010", select_time = "Y")
 
-unemp %>% filter(TIME_PERIOD == "2021-01-01" & sex == "T")
+unemp %>% filter(TIME_PERIOD == "2021-01-01" & sex == "T" & isced11 == "TOTAL")
 
 eur21_3 <- inner_join(x = eur21_2,
                       y = unemp %>% filter(TIME_PERIOD == "2021-01-01" & sex == "T" & isced11 == "TOTAL"),
@@ -138,6 +141,20 @@ eur21_3 %>%
                        mid = "orange",
                        midpoint = 10,
                        name = "Unemployment (%)") +
+  geom_sf_text(aes(label = values))
+
+
+eur21_3 %>%
+  dplyr::filter(name == "Italy") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 10,
+                       name = "Unemployment (%)") +
   geom_sf_text(aes(label = NAME_LATN))
 
 eur21_3 %>%
@@ -152,6 +169,20 @@ eur21_3 %>%
                        midpoint = 10,
                        name = "Unemployment (%)") +
   geom_sf_text(aes(label = NAME_LATN), size =2)
+
+
+# eur21_3 %>%
+#   dplyr::filter(name == "Italy") %>% 
+#   ggplot(aes(fill = values)) +
+#   geom_sf() +
+#   theme(axis.text = element_blank()) +
+#   theme(axis.ticks = element_blank()) +
+#   scale_fill_gradient2(low = "yellow",
+#                        high = "red",
+#                        mid = "orange",
+#                        midpoint = 10,
+#                        name = "Unemployment (%)") +
+#   geom_sf_text(aes(label = NAME_LATN), size =2)
 
 pacman::p_load(ggrepel)
 
