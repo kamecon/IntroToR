@@ -826,3 +826,14 @@ graph +
 
 
 ```
+
+## Maps
+
+Maps are very useful to represent data that are associated to geographical location, specially now with the appearance of high frequency data (mobile phones interactions, card payments, etc.)
+
+```{r maps1}
+
+
+
+```
+
