@@ -829,11 +829,91 @@ graph +
 
 ## Maps
 
-Maps are very useful to represent data that are associated to geographical location, specially now with the appearance of high frequency data (mobile phones interactions, card payments, etc.)
+Maps are highly valuable for representing data associated with geographical locations, particularly with the emergence of high-frequency data (such as mobile phone interactions, card payments, etc.)
+
+To plot a map, you require position information that links each observation to a specific location. This position can be represented as latitude and longitude (coordinate reference systems), special features (geometries), or raster data (regular grids)
+
+### Coordinate Reference Systems
+
+For the following example, we will load the `maps` library
+
+The `maps` package in R provides a collection of geographical maps that can be utilized for visualizing data. This includes maps of various countries, states, and regions around the world
 
 ```{r maps1}
 
+library(maps)
 
+usa <- map_data("state")
+
+head(usa)
+
+```
+
+The `map_data()` function converts the raw data into a data frame that can be read by ggplot.
+
+When checking the columns of the `usa` data frame, all are self-explanatory except for _order_ and _group_
+
+The _order_ column indicates the order in which ggplot should connect the dots
+
+The _group_ column defines which adjacent points should be connected by lines. It is essential to always include this column in the group argument of the corresponding geometry in ggplot
+
+We plot the data using `ggplot` with the polygon geometry
+
+```{r maps2}
+
+ggplot() +
+  geom_polygon(data = usa,
+               mapping = aes(x = long, y = lat, group=group), #Always include group!
+               color="black",
+               fill="lightblue")
+
+```
+Once we have geographic data, we typically want to associate this data with a statistic or numerical characteristic that corresponds to each region/observation
+
+Let's use an R dataset that records the number of arrests per 100,000 residents for assault, murder, and rape in each of the 50 US states in 1973
+
+```{r maps3}
+
+head(USArrests)
+
+```
+
+We will create a new column that contains the state names of the data frame row names. Once we add the column, we will join this dataset with our map data frame
+
+```{r maps4}
+
+library(dplyr)
+library(purrr)
+
+USArrests$region <- tolower(rownames(USArrests))
+
+usa2 <- left_join(x = usa, y = USArrests, by = "region")
+
+head(usa2)
+
+```
+
+We will repeat the same procedure, adding a `fill` argument in the geometry aesthetic to represent the arrests data in the map
+
+```{r maps5}
+
+ggplot() +
+  geom_polygon(data = usa2,
+               mapping = aes(x = long, y = lat, group=group, fill = Assault),
+               color="black")
+
+
+```
+
+We can also utilize the `geom_map` geometry from `ggplot`, eliminating the need for merging the two datasets
+
+```{r maps6}
+
+ggplot(USArrests, aes(map_id = region)) + # column region from the map dataframe
+  geom_map(aes(fill = Assault), # variable we want to represent from the arrests dataframe
+           map = usa) + # data frame that contains coordinates
+  expand_limits(x = usa$long, y = usa$lat) +
+  coord_map() 
 
 ```
 
