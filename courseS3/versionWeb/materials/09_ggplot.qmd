@@ -831,7 +831,7 @@ graph +
 
 Maps are highly valuable for representing data associated with geographical locations, particularly with the emergence of high-frequency data (such as mobile phone interactions, card payments, etc.)
 
-To plot a map, you require position information that links each observation to a specific location. This position can be represented as latitude and longitude (coordinate reference systems), special features (geometries), or raster data (regular grids)
+To plot a map, you require position information that links each observation to a specific location. This position can be represented as latitude and longitude (coordinate reference systems), special features (geometries), or raster data (regular rectangular grids)^[A good reference for this concepts in R is this [book](https://www.paulamoraga.com/book-spatial/spatial-data-in-r.html)]
 
 ### Coordinate Reference Systems
 
@@ -914,6 +914,92 @@ ggplot(USArrests, aes(map_id = region)) + # column region from the map dataframe
            map = usa) + # data frame that contains coordinates
   expand_limits(x = usa$long, y = usa$lat) +
   coord_map() 
+
+```
+
+### Simple Features
+
+We will introduces the [`sf` library](https://r-spatial.github.io/sf/)
+
+We are going download data in sf format from Eurostat using the `eurostat` library
+
+Load the libraries 
+
+```{r maps7}
+#| message: false
+
+library(sf)
+library(giscoR)
+library(eurostat)
+library(dplyr)
+
+```
+
+We download data from eurostat
+
+```{r maps8}
+#| message: false 
+
+#proxy setups
+Sys.setenv("no_proxy"=".jrc.org,.jrc.cec.eu.int,.jrc.ec.europa.eu,.jrc.it,.jrc.es,localhost,127.0.0.1")
+
+eur21 <- get_eurostat_geospatial(resolution = 10,
+                                 nuts_level = 2,
+                                 year = 2021)
+
+head(eur21)
+
+```
+
+Let us plot the data using the geometry `geom_sf` and see what we have
+
+```{r maps9}
+
+ggplot(data = eur21) +
+  geom_sf()
+
+```
+
+Let us plot a map of Italy
+
+```{r maps10}
+
+ggplot(data = eur21 |> filter(CNTR_CODE == "IT")) +
+  geom_sf()
+
+```
+
+As we mention in the previous example, we would link the geographical location with some numerical data. We will download unemployment data at NUTS2 level
+
+```{r maps11}
+#| message: false
+
+unemp <- get_eurostat(id = "tgs00010", select_time = "Y")
+
+head(unemp)
+
+```
+
+We will filter the unemployment rate for all gender and education level for 2021
+
+```{r maps12}
+
+unemp |> 
+  filter(TIME_PERIOD == "2021-01-01" & sex == "T" & isced11 == "TOTAL") |> 
+  head()
+
+```
+
+We join the unmeployment data with the geolocation data only for Italy
+
+```{r maps13}
+
+eur21_2 <- inner_join(x = eur21 |> filter(CNTR_CODE == "IT"),
+                      y = unemp |> filter(TIME_PERIOD == "2021-01-01" & sex == "T" & isced11 == "TOTAL"),
+                      by = c("NUTS_ID" = "geo")) %>% 
+  st_as_sf() #convert to sf object
+
+head(eur21_2)
 
 ```
 
