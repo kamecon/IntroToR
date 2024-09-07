@@ -27,11 +27,7 @@ September 19th
 |:--------------|:--------------------------------------------------------|
 | 09:00 - 10:30 | Session 1                                               |
 | 10:30 - 11:00 | *Coffee break*                                          |
-| 11:00 - 13:15 | Session 2                                               |
-<!-- | 13:00 - 14:00 | *Lunch break*                                           | -->
-<!-- | 14:00 - 15:00 | Session 3                                               | -->
-<!-- | 15:00 - 15:30 | *Coffee break*                                          | -->
-<!-- | 15:30 - 17:00 | Session 4                                               | -->
+| 11:00 - 13:00 | Session 2                                               |
 
 September 20th
 
@@ -39,13 +35,13 @@ September 20th
 |:--------------|:--------------------------------------------------------|
 | 09:00 - 10:30 | Session 3                                               |
 | 10:30 - 11:00 | *Coffee break*                                          |
-| 11:00 - 13:15 | Session 4                                               |
+| 11:00 - 13:00 | Session 4                                               |
 
 
 
 ### Instructor
 
-**Kamal Romero** is a data scientist and R developer (external) at the Advanced Computing & ICT Services (JRC.T.6) unit. He is currently working on his Ph.D. thesis where he  conducts research in the field of dynamic stochastic general equilibrium models with incomplete markets. He also teaches courses on economic theory and quantitative methods.
+**Kamal Romero** is a data scientist and R developer (external) at the Advanced Computing & ICT Services (JRC.T.6) unit.
 
 
 ------------------------------------------------------------------------
