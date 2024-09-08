@@ -827,6 +827,30 @@ graph +
 
 ```
 
+
+Finally, we can save our graph using the function `ggsave()`. You can choose the format of the output file
+
+By default, the `ggsave()` function saves the last graph
+
+```{r save1}
+#| warning: false
+#| eval: false
+
+ggsave(filename = "myPlot.pdf", device = "pdf")
+
+```
+
+The `device` argument controls the output file type
+
+```{r save2}
+#| warning: false
+#| eval: false
+
+ggsave(filename = "myPlot.jpeg", device = "jpeg")
+
+```
+
+
 ## Maps
 
 Maps are highly valuable for representing data associated with geographical locations, particularly with the emergence of high-frequency data (such as mobile phone interactions, card payments, etc.)
@@ -919,14 +943,15 @@ ggplot(USArrests, aes(map_id = region)) + # column region from the map dataframe
 
 ### Simple Features
 
-We will introduces the [`sf` library](https://r-spatial.github.io/sf/)
+We will introduce the [`sf` library](https://r-spatial.github.io/sf/) for working with spatial data
 
-We are going download data in sf format from Eurostat using the `eurostat` library
+We are going to download data in sf format from Eurostat using the `eurostat` library
 
-Load the libraries 
+Now let's load the necessary libraries
 
 ```{r maps7}
 #| message: false
+#| warning: false
 
 library(sf)
 library(giscoR)
@@ -935,7 +960,7 @@ library(dplyr)
 
 ```
 
-We download data from eurostat
+We will download data from Eurostat
 
 ```{r maps8}
 #| message: false 
@@ -951,7 +976,7 @@ head(eur21)
 
 ```
 
-Let us plot the data using the geometry `geom_sf` and see what we have
+Next, we will plot the data using the geometry `geom_sf` to visualize it
 
 ```{r maps9}
 
@@ -960,7 +985,7 @@ ggplot(data = eur21) +
 
 ```
 
-Let us plot a map of Italy
+Let's create a map of Italy
 
 ```{r maps10}
 
@@ -969,7 +994,8 @@ ggplot(data = eur21 |> filter(CNTR_CODE == "IT")) +
 
 ```
 
-As we mention in the previous example, we would link the geographical location with some numerical data. We will download unemployment data at NUTS2 level
+As mentioned in the previous example, we will associate geographical locations with numerical data. Specifically, we will download unemployment data at the NUTS2 level
+
 
 ```{r maps11}
 #| message: false
@@ -978,9 +1004,10 @@ unemp <- get_eurostat(id = "tgs00010", select_time = "Y")
 
 head(unemp)
 
+Sys.setenv("no_proxy"=".ec.europa.eu,.jrc.org,.jrc.cec.eu.int,.jrc.ec.europa.eu,.jrc.it,.jrc.es,localhost,127.0.0.1")
 ```
 
-We will filter the unemployment rate for all gender and education level for 2021
+We will then filter the unemployment rate for all genders and education levels for the year 2021
 
 ```{r maps12}
 
@@ -990,7 +1017,7 @@ unemp |>
 
 ```
 
-We join the unmeployment data with the geolocation data only for Italy
+After that, we will merge the unemployment data with the geolocation data for Italy only
 
 ```{r maps13}
 
@@ -1003,3 +1030,280 @@ head(eur21_2)
 
 ```
 
+Finally, we will generate a map representing the unemployment rate at the NUT2 level in Italy
+
+```{r maps14}
+
+eur21_2 %>% 
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf()
+
+
+```
+
+Let's customize the plot
+
+We will remove the axis text
+
+```{r maps15}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank())
+
+```
+
+We will remove the axis ticks
+
+```{r maps16}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank())
+
+```
+
+We will change the color scale
+
+```{r maps17}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_continuous(type = "viridis")
+
+```
+
+We will add an informative title to the legend
+
+```{r maps18}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_continuous(type = "viridis", name = "Unemployment (%)")
+
+
+```
+
+We can customize the color scale with `scale_fill_gradient()`
+
+```{r maps19}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient(low = "yellow", high = "red", name = "Unemployment (%)")
+
+
+```
+
+With `scale_fill_gradient2()` we can add a mid point in the color scale
+
+```{r maps20}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow", high = "red",mid = "orange", name = "Unemployment (%)")
+
+```
+
+We can also add a numerical value for the scale mid point
+
+```{r maps21}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 12,
+                       name = "Unemployment (%)")
+
+```
+
+If we want to choose a number that represents the mid point more accurately, we can check the maximum level of unemployment
+
+```{r maps22}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  select(values) %>% 
+  summarise(max(values))
+
+```
+
+With a maximum value of 19.3 and a minimum value around 4, we can choose a number around 8
+
+```{r maps23}
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 8,
+                       name = "Unemployment (%)")
+
+
+```
+
+We add value labels with `geom_sf_text()`
+
+```{r maps24}
+#| warning: false
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 10,
+                       name = "Unemployment (%)") +
+  geom_sf_text(aes(label = values))
+
+```
+
+We would like to add labels that indicate the region name
+
+```{r maps25}
+#| warning: false
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 10,
+                       name = "Unemployment (%)") +
+  geom_sf_text(aes(label = NAME_LATN))
+
+
+```
+
+The labels overlap each other, so we can change the font size in `geom_sf_text()`
+
+```{r maps26}
+#| warning: false
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 10,
+                       name = "Unemployment (%)") +
+  geom_sf_text(aes(label = NAME_LATN), size =2)
+
+
+```
+
+Well, not an improvement. The library [`ggrepel`](https://ggrepel.slowkow.com/) deals with overlapping labels
+
+```{r maps27}
+#| warning: false
+
+library(ggrepel)
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values, label= NAME_LATN)) + #Notice we include the label here
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 10,
+                       name = "Unemployment (%)") +
+  geom_text_repel(aes(geometry = geometry), stat = "sf_coordinates") #include geometry and stat
+
+
+```
+
+We can control the overlap and distance between labels
+
+```{r maps28}
+#| warning: false
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values, label= NAME_LATN)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 10,
+                       name = "Unemployment (%)") +
+  geom_text_repel(aes(geometry = geometry),
+                  stat = "sf_coordinates",
+                  max.overlaps = Inf,
+                  box.padding = 0.5)
+
+
+```
+
+We can further improve by adjusting the label size 
+
+```{r maps29}
+#| warning: false
+
+eur21_2 %>%
+  dplyr::filter(CNTR_CODE == "IT") %>% 
+  ggplot(aes(fill = values, label= NAME_LATN)) +
+  geom_sf() +
+  theme(axis.text = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  scale_fill_gradient2(low = "yellow",
+                       high = "red",
+                       mid = "orange",
+                       midpoint = 10,
+                       name = "Unemployment (%)") +
+  geom_text_repel(aes(geometry = geometry),
+                  stat = "sf_coordinates",
+                  max.overlaps = Inf,
+                  box.padding = 0.5, size =4)
+
+
+```
