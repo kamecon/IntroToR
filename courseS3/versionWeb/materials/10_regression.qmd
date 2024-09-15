@@ -76,8 +76,6 @@ The package defaults to using _HC2_ standard errors. You can change this default
 
 ```{r robust15}
 
-library(estimatr)
-
 model_1_robust_1 <- lm_robust(data = wage1, formula = lwage ~ educ + exper + tenure, se_type = "stata")
 
 summary(model_1_robust_1)
