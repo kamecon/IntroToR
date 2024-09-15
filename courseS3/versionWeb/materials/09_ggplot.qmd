@@ -956,7 +956,6 @@ Now let's load the necessary libraries
 library(sf)
 library(giscoR)
 library(eurostat)
-library(dplyr)
 
 ```
 
@@ -1156,7 +1155,7 @@ eur21_2 %>%
 
 ```
 
-With a maximum value of 19.3 and a minimum value around 4, we can choose a number around 8
+With a maximum value of 19.3 and a minimum value around 4, we can choose a number around 11
 
 ```{r maps23}
 
@@ -1169,7 +1168,7 @@ eur21_2 %>%
   scale_fill_gradient2(low = "yellow",
                        high = "red",
                        mid = "orange",
-                       midpoint = 8,
+                       midpoint = 11,
                        name = "Unemployment (%)")
 
 
@@ -1189,7 +1188,7 @@ eur21_2 %>%
   scale_fill_gradient2(low = "yellow",
                        high = "red",
                        mid = "orange",
-                       midpoint = 10,
+                       midpoint = 11,
                        name = "Unemployment (%)") +
   geom_sf_text(aes(label = values))
 
@@ -1209,7 +1208,7 @@ eur21_2 %>%
   scale_fill_gradient2(low = "yellow",
                        high = "red",
                        mid = "orange",
-                       midpoint = 10,
+                       midpoint = 11,
                        name = "Unemployment (%)") +
   geom_sf_text(aes(label = NAME_LATN))
 
@@ -1230,7 +1229,7 @@ eur21_2 %>%
   scale_fill_gradient2(low = "yellow",
                        high = "red",
                        mid = "orange",
-                       midpoint = 10,
+                       midpoint = 11,
                        name = "Unemployment (%)") +
   geom_sf_text(aes(label = NAME_LATN), size =2)
 
@@ -1253,7 +1252,7 @@ eur21_2 %>%
   scale_fill_gradient2(low = "yellow",
                        high = "red",
                        mid = "orange",
-                       midpoint = 10,
+                       midpoint = 11,
                        name = "Unemployment (%)") +
   geom_text_repel(aes(geometry = geometry), stat = "sf_coordinates") #include geometry and stat
 
@@ -1274,7 +1273,7 @@ eur21_2 %>%
   scale_fill_gradient2(low = "yellow",
                        high = "red",
                        mid = "orange",
-                       midpoint = 10,
+                       midpoint = 11,
                        name = "Unemployment (%)") +
   geom_text_repel(aes(geometry = geometry),
                   stat = "sf_coordinates",
@@ -1298,7 +1297,7 @@ eur21_2 %>%
   scale_fill_gradient2(low = "yellow",
                        high = "red",
                        mid = "orange",
-                       midpoint = 10,
+                       midpoint = 11,
                        name = "Unemployment (%)") +
   geom_text_repel(aes(geometry = geometry),
                   stat = "sf_coordinates",
