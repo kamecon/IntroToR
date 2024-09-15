@@ -117,7 +117,6 @@ ifelse(mtcars$mpg[1] > 15, "Large", "Small")
 ```
 
 
-
 # Iterative Structure in R
 
 It is common to have to apply the same operation a number of times, where this number is large enough to make it unfeasible, or at least, inconvenient.
@@ -198,6 +197,70 @@ for (i in seq_along(mtcars_small$cyl)) {
 mtcars_small
 
 ```
+
+::: {.callout-tip title="Example: Sampling distribution of a linear regression coefficients"}
+
+Load the data
+
+```{r loopex1}
+
+library(AER)
+data("CASchools")
+
+```
+
+Compute STR and append it to `CASchools`
+
+```{r loopex2}
+
+CASchools$STR <- CASchools$students/CASchools$teachers 
+
+```
+
+
+Compute the test score and append it to `CASchools`
+
+```{r loopex3}
+
+CASchools$score <- (CASchools$read + CASchools$math)/2
+
+```
+
+
+We create an empty vector of betas
+
+```{r loopex4}
+
+beta_1 <- vector(length = 1000)
+
+```
+
+
+To take a sample of a data frame, we do the following
+
+```{r loopex5}
+
+sample(nrow(CASchools),100)
+CASchools[sample(nrow(CASchools),100), ]
+
+```
+
+
+We fill the vector with the estimated betas by taking only a sample of the original data
+
+```{r loopex6}
+
+for (i in seq_along(beta_1)) {
+  estima <- lm(data =  CASchools[sample(nrow(CASchools),100),], formula = score ~ STR)
+  beta_1[i] <- estima$coefficients[2]
+}
+
+mean(beta_1)
+hist(beta_1)
+
+```
+
+:::
 
 # Functions
 
@@ -405,3 +468,20 @@ normalized_vector03
 ```
 
 We will not be able to extensively cover the full scope of these functions and their various applications in this course
+
+::: {.callout-tip title="Example: Sampling distribution with replicate"}
+
+Instead of using a loop you can use the `replicate` function, one of the `apply` family of functions, which apply a function to a vector of values, which is the same thing a loop does when it _applies_ repeatedly the same operation to a set of values represented by a vector. In this case we are doing something simpler, repeating a number of times an instruction encapsulated in a function, in this case repeatedly extracting a sample from a population and calculating a regression. So `replicate` in our example repeats 1000 times the operation described above.
+This type of operations is often performed in statistics, since in that way we do _simulations_, repeat many times realizations of a probability distribution or a phenomenon whose outcome is uncertain (roll a die 50,000 times)
+
+```{r loopex7}
+
+betas_1_2 <- replicate(expr = lm(data =  CASchools[sample(nrow(CASchools), 100),], formula = score ~ STR)$coefficients[2],
+                          n = 1000)
+
+mean(betas_1_2)
+hist(betas_1_2)
+
+```
+
+:::
