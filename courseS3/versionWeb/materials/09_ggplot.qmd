@@ -827,6 +827,7 @@ graph +
 
 ```
 
+## Saving graphs
 
 Finally, we can save our graph using the function `ggsave()`. You can choose the format of the output file
 
