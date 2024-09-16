@@ -46,8 +46,9 @@ The “set of verbs” is as follows:
 Being a third-party library, you need to install the library (done only once) and load it.
 
 ```{r dplyr01}
+#| message: false
+#| warning: false
 
-#install.packages("dplyr")
 library(dplyr)
 
 ```
@@ -353,7 +354,9 @@ starwars_nested$data[[40]]
 
 ```
 
-## Beyond tibbles: joins
+## Beyond tibbles
+
+### Joins
 
 We conclude this section by addressing a common issue that you may have encountered in previous modules, which is the need to work with more than one data table that are related to each other. Therefore, we resort to the well-known JOINS and their variants.
 
@@ -374,7 +377,7 @@ These operations can also be performed in tidyverse with the following functions
 
 ::: {.callout-note}
 
-For a good introduction to joins with dplyr, check [this](https://es.r4ds.hadley.nz/13-relational-data.html#mutating-joins). And for a comparison with base R and SQL, refer to [this](https://es.r4ds.hadley.nz/13-relational-data.html#otras-implementaciones)
+For a good introduction to joins with dplyr, check [this](https://r4ds.hadley.nz/joins.html).
 
 :::
 
@@ -445,3 +448,65 @@ colnames(df_B)[1] <- "KL"
 full_join(x = df_A, y = df_B, by = c("ID"="KL"))
 
 ```
+
+### Pivot tables (reshape)
+
+The `tidyr` package offers the functions `pivot_longer` and `pivot_wider`, which enable the transformation of wide datasets to long format and vice versa
+
+In R, the long format is often preferred for various tasks, such as efficient dataset filtering and creating data variable-based plots
+
+
+::: {.callout-note}
+
+For a good introduction to reshaping data with `tidyr`, check [this](https://r4ds.hadley.nz/data-tidy.html#sec-pivoting).
+
+:::
+
+We load the library
+
+```{r pivot1}
+
+library(tidyr)
+
+```
+
+We create a data frame
+
+```{r pivot2}
+
+wide <- inner_join(x = df_A, y = df_B, by = c("ID"="KL"))
+
+wide
+
+```
+
+From wide to long 
+
+::: {#fig-tidyverse}
+![](images/variables.png){width=600}
+
+Wide to long. [Source](https://r4ds.hadley.nz/data-tidy.html#fig-pivot-variables)
+:::
+
+
+```{r pivot3}
+
+long <- pivot_longer(data = wide, cols = c("y", "z"), names_to = "features", values_to = "value")
+
+long
+
+```
+
+
+We must specify to the function the columns we want to consolidate into a single column in our new dataset, the name of the new column, and the name of the data values column
+
+From long to wide
+
+```{r pivot4}
+
+wide_new <- pivot_wider(data = long, names_from = features, values_from = value)
+
+wide_new
+
+```
+
