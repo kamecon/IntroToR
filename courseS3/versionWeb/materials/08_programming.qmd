@@ -198,7 +198,7 @@ mtcars_small
 
 ```
 
-::: {.callout-tip title="Example: Sampling distribution of a linear regression coefficients"}
+::: {.callout-tip title="Example: Sampling Distribution of Linear Regression Coefficients"}
 
 Load the data
 
@@ -209,7 +209,7 @@ data("CASchools")
 
 ```
 
-Compute STR and append it to `CASchools`
+Compute the students to teachers ratio (STR) and append it to `CASchools`
 
 ```{r loopex2}
 
@@ -218,7 +218,7 @@ CASchools$STR <- CASchools$students/CASchools$teachers
 ```
 
 
-Compute the test score and append it to `CASchools`
+Compute the average test score and append it to `CASchools`
 
 ```{r loopex3}
 
@@ -241,12 +241,12 @@ To take a sample of a data frame, we do the following
 ```{r loopex5}
 
 sample(nrow(CASchools),100)
-CASchools[sample(nrow(CASchools),100), ]
+CASchools[sample(nrow(CASchools),100), ] |> head()
 
 ```
 
 
-We fill the vector with the estimated betas by taking only a sample of the original data
+We populate the vector with estimated betas obtained from a sample of the original data
 
 ```{r loopex6}
 
@@ -471,8 +471,10 @@ We will not be able to extensively cover the full scope of these functions and t
 
 ::: {.callout-tip title="Example: Sampling distribution with replicate"}
 
-Instead of using a loop you can use the `replicate` function, one of the `apply` family of functions, which apply a function to a vector of values, which is the same thing a loop does when it _applies_ repeatedly the same operation to a set of values represented by a vector. In this case we are doing something simpler, repeating a number of times an instruction encapsulated in a function, in this case repeatedly extracting a sample from a population and calculating a regression. So `replicate` in our example repeats 1000 times the operation described above.
-This type of operations is often performed in statistics, since in that way we do _simulations_, repeat many times realizations of a probability distribution or a phenomenon whose outcome is uncertain (roll a die 50,000 times)
+Instead of using a loop, you can utilize the `replicate` function from the `apply` family of functions. These functions apply a specific operation to a set of values represented by a vector. In this case, we are repeating a specific instruction encapsulated within a function a certain number of times, which involves extracting a sample from a population and conducting a regression analysis. In this example, `replicate` is used to repeat this operation 1000 times.
+
+This type of operation is commonly employed in statistics for conducting simulations, where realizations of a probability distribution or uncertain phenomena are repeated numerous times (e.g., rolling a die 50,000 times).
+
 
 ```{r loopex7}
 
