@@ -8,7 +8,7 @@ execute:
 editor: source
 ---
 
-# Basic types in R ([Data Types](http://www.statmethods.net/input/datatypes.html))
+# Basic types in R
 
 In order to work with data, it is necessary to understand how data is stored in the computer by each programming language.
 
