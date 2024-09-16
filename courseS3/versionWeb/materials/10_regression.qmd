@@ -529,7 +529,6 @@ The last graph is used to detect outliers or influential values. On the vertical
 
 All the graphs indicate the most extreme points (440, 28, and 128 in this case).
 
-
 The `performance` library also provides indices of model quality and goodness of fit, with a more user-friendly graph.
 
 ```{r eval2}
@@ -542,6 +541,89 @@ check_autocorrelation(model_1)
 check_collinearity(model_1)
 check_heteroscedasticity(model_1)
 check_normality(model_1)
+
+```
+
+### Saving the results
+
+You can use the `stargazer` library in R to save the regression summary in LaTeX format
+
+```{r latex1}
+
+library(stargazer)
+
+stargazer(model_1)
+
+```
+
+By default, the `stargazer()` function converts the summary table into LaTeX format. However, you can customize the output by adding additional parameters
+
+
+```{r latex2}
+
+stargazer(model_1, title = "Model Results", digits = 2)
+
+```
+
+And save the output as a .tex file
+
+```{r latex3}
+#| eval: false
+
+stargazer(model_1, title = "Model Results", digits = 4, out = "model1.tex")
+
+```
+
+
+Similarly, you can also save the output in text and HMTL format as well
+
+```{r latex4}
+
+stargazer(model_1, title = "Model Results", type = "html")
+
+```
+
+```{r latex5}
+
+stargazer(model_1, title = "Model Results", type = "text")
+
+```
+
+You have the option to include additional information
+
+```{r latex6}
+
+stargazer(model_1, title = "Model Results", type = "text", covariate.labels = c("Education", "Experience", "Tenure"))
+
+```
+
+You also have the flexibility to include more than one model
+
+```{r latex7}
+
+model1_V1 <- lm(data = wage1, formula = lwage ~ educ)
+model1_V2 <- lm(data = wage1, formula = lwage ~ educ + exper)
+model1_V3 <- lm(data = wage1, formula = lwage ~ educ + exper + tenure)
+
+stargazer(model1_V1, model1_V2, model1_V3,
+          title = "Model Results",
+          type = "text",
+          covariate.labels = c("Education", "Experience", "Tenure"))
+
+```
+
+
+You can also use the `stargazer` library to create summary tables for datasets
+
+```{r latex8}
+
+stargazer(wage1, title = "Descriptive statistics", digits = 2, type = "text")
+
+```
+
+```{r latex9}
+
+stargazer(mtcars, title = "Descriptive statistics", digits = 2, type = "text", flip = TRUE)
 
 ```
 
