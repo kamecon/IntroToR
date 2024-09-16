@@ -151,3 +151,62 @@ library(emoji)
 
 
 ```
+
+## Input / output data
+
+### Reading data in R
+
+#### csv files
+
+The R base function for reading csv files is `read.csv()`.
+
+We need to provide the function with the file's location path.
+
+```{r csv01}
+#| eval: false
+
+mtcars_csv <- read.csv(file = "mtcars.csv")
+
+head(mtcars_csv)
+
+```
+
+Inspecting the function, we can find additional arguments. Let us explore them using the tab button.
+
+In practice, we typically use the arguments  `header`, `sep` and `dec`
+
+#### xlsx files
+
+Base R does not have a function to read Excel files, so we must rely on a library. The most common choice is the `readxl` package. 
+
+Once we load the library, we will use the function `read_excel()`
+
+```{r xlsx01}
+#| eval: false
+
+library(readxl)
+
+mtcars_excel <- read_excel("mtcars.xlsx")
+
+head(mtcars_excel)
+
+```
+
+In the practice section, we will use some of the other arguments of the read_excel() function. It's worth mentioning the skip argument, which is used if we don't wish to read the first n lines of an Excel file.
+
+### Writing data in R
+
+Unsurprisingly, we write data from R using the functions `write.csv()` and `write_xlsx()`
+
+We must provide both functions with the object (data frame) we wish to save and the file path.
+
+```{r xlsx02}
+#| eval: false
+
+write.csv(x = airquality, file = "my_airquality.csv")
+
+library(writexl)
+
+write_xlsx(x = airquality, path = "my_airquality.xlsx")
+
+```
