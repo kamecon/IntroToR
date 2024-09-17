@@ -192,7 +192,30 @@ head(mtcars_excel)
 
 ```
 
-In the practice section, we will use some of the other arguments of the read_excel() function. It's worth mentioning the skip argument, which is used if we don't wish to read the first n lines of an Excel file.
+In the practice section, we will use some of the other arguments of the read_excel() function. It's worth mentioning the `skip` argument, which is used if we don't wish to read the first n lines of an Excel file.
+
+#### Other file types: library haven
+
+The [`haven`](https://haven.tidyverse.org/) library _enables R to read and write various data formats_
+
+It allows R to read data from SAS, SPSS and Stata formats
+
+```{r haven1}
+#| eval: false
+
+library(haven)
+
+# SAS
+read_sas("mtcars.sas7bdat")
+
+# SPSS
+read_sav("mtcars.sav")
+
+# Stata
+read_dta("mtcars.dta")
+
+```
+
 
 ### Writing data in R
 
@@ -208,5 +231,21 @@ write.csv(x = airquality, file = "my_airquality.csv")
 library(writexl)
 
 write_xlsx(x = airquality, path = "my_airquality.xlsx")
+
+```
+
+With `haven`
+
+```{r haven2}
+#| eval: false
+
+# SAS
+write_xpt(mtcars, "mtcars.xpt")
+
+# SPSS
+write_sav(mtcars, "mtcars.sav")
+
+# Stata
+write_dta(mtcars, "mtcars.dta")
 
 ```
