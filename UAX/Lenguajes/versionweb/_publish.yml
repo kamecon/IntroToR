@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 71f5bb60-0bf7-4fe3-b9ee-41f19d0114c8
+      url: 'https://kamecon.quarto.pub/lenguajes-de-programacion-r'

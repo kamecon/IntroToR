@@ -1,0 +1,288 @@
+---
+title: "Data Frames"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Data Frames
+
+El `data.frame` será uno de los objetos que más utilizaremos en R para el análisis de datos.
+
+Los data frames son *tablas* o arreglos rectangulares, podemos tratarlos como si fueran una hoja de Excel en la cual organizamos los datos que deseamos analizar.
+
+Al igual que en Excel, podemos hacer cálculos con las tablas, crear nuevas columnas (variables), realizar análisis estadísticos, etc.
+
+
+## Inspeccionar los datos
+
+Por lo general, solemos inspeccionar los datos de una tabla para familiarizarnos con ellos y ver que tipo de análisis podemos realizar con ellos.
+
+Vamos a usar uno de los conjuntos de datos que ya viene en la instalación básica de R, `mtcars`
+
+
+Podemos abrir una versión amigable de la tabla en RStudio
+
+```{r df1}
+
+mtcars
+
+```
+
+Existen varias formas de echar vistazos rápidos a los datos sin necesidad de visualizar la tabla entera
+
+Por ejemplo podemos ver las 6 primeras filas
+
+```{r df2}
+
+head(mtcars)
+
+```
+
+O las 6 últimas
+
+```{r df3}
+
+tail(mtcars)
+
+```
+
+Si en lugar de 6, queremos ver un determinado número de filas, simplemente se lo decimos a las funciones `head`y `tail`
+
+```{r df4}
+
+head(mtcars, n = 3)
+
+tail(mtcars, n = 2)
+
+```
+
+En ocasiones utilizamos tablas muy grandes que almacenan muchas variables, en este caso antes de visualizar aunque sea solo una fracción de la tabla, es útil ver el nombre las columnas o lo que es lo mismo, las variables
+
+```{r df5}
+
+colnames(mtcars)
+
+```
+
+
+En general, para poder determinar cuantas variables y cuantas observaciones tenemos, usamos la función `dim`, la cual nos da el número de columnas y filas de la tabla
+
+```{r df6}
+
+dim(mtcars)
+
+```
+
+Podemos ver por separado el número de filas y columnas con `nrow` y `ncol`
+
+```{r df7}
+
+ncol(mtcars)
+
+nrow(mtcars)
+
+```
+
+
+
+Otra forma es usando la función `str`. Aunque no es intuitiva e incluso intimida a primera vista, no es tan complicado y aporta información útil 
+
+```{r df8}
+
+str(mtcars)
+
+```
+
+Una versión que aporta información estadística es `summary`
+
+```{r df9}
+
+summary(mtcars)
+
+```
+
+Existen otras versiones de `summary` fuera de R base, elaboradas por otras personas (luego hablaremos de las librerías)
+
+La función`skim` de la librería `skimr` aporta más información que `summary`
+
+```{r df11, warning=FALSE}
+
+#install.packages("skimr")
+library(skimr)
+skim(mtcars)
+
+```
+
+## Manipulación de datos
+
+Ahora que tenemos nuestros datos en un data frame, el próximo paso es acceder a ciertos datos de la tabla (una columna o grupo de filas que cumplan una condición), manipular y crear nuevas variables.
+
+Podemos acceder a los datos del data frame del mismo modo que lo hacíamos con los vectores, los data frames no dejan de ser una especie de conjuntos de vectores
+
+Recordar que podíamos acceder a elementos de los vectores por posición o nombre
+
+```{r df12}
+
+head(mtcars, n = 1)
+
+mtcars[1,2]
+
+mtcars[1,4]
+
+```
+
+En el primer caso le decimos a R que queremos que nos muestre el dato de la primera fila y la segunda columna, en el segundo caso el dato de la primera fila y cuarta columna
+
+En el caso que deseemos ver una columna o fila específica, dejamos una de las dimensiones en blanco
+
+Si queremos acceder a la información de la segunda fila
+
+```{r df13}
+
+mtcars[2, ]
+
+```
+
+Si queremos acceder a la información de la cuarta columna
+
+```{r df14}
+
+mtcars[ , 4]
+
+```
+
+Tambien podemos obtener la información por columna usando el nombre de la misma
+
+```{r df15}
+
+mtcars[ , "cyl"]
+
+mtcars[ , c("cyl", "hp", "am")]
+
+```
+
+Asimismo, podemos inspeccionar una columna de data frame escribiendo el nombre del mismo seguido de un signo `$` y el nombre de la columna
+
+La ventaja de este método es que los nombres de la columna se autocompletan
+
+```{r df16}
+
+mtcars$cyl
+
+```
+
+Con la posición, al igual que los vectores, podemos acceder a conjuntos de filas y columnas (slices)
+
+Por ejemplo, si nos queremos quedar solo con las 3 primeras filas y la cuarta y quinta columna. En el caso en el que deseamos extraer columnas y filas no contiguas, tenemos que usar vectores con los índices.
+
+```{r df17}
+
+mtcars[1:3, 4:5]
+
+mtcars[c(1,3,5), c(1,4,6)]
+
+```
+
+Podemos construir una tabla nueva a partir de esta sub-tabla, asignando la última a un nombre
+
+```{r df18}
+
+mtcars_peque <-  mtcars[1:3, 4:5]
+
+mtcars_peque
+
+```
+
+Sub-tabla solo con las 10 primeras filas
+
+```{r df19}
+
+mtcars[1:10, ]
+
+```
+
+Sub-tabla solo con las 2 últimas columnas
+
+```{r df20}
+
+mtcars[, 4:5]
+
+```
+
+
+Podemos seleccionar datos con criterios según cumplan una condición
+
+```{r df21}
+
+mtcars[mtcars$cyl > 4 , ]
+
+```
+
+```{r df22}
+
+mtcars[mtcars$cyl == 6, ]
+
+```
+
+Lo podemos complicar
+
+```{r df23}
+
+mtcars[mtcars$cyl == 6 & mtcars$mpg > 18, ]
+
+```
+
+Le hemos pedido a R que nos muestre los datos de la tabla que corresponden a los modelos de coches "A" y que el número de solicitudes sea mayor o igual a 100
+
+Ambas condiciones se cumplen de manera simultanea
+
+```{r df23_1}
+
+mtcars[mtcars$cyl == 6 | mtcars$mpg > 18, ]
+
+```
+
+## Crear nuevas columnas
+
+Es posible crear nuevas columnas basadas en las existentes.
+
+Si deseamos crear una columna llamada `ratio` que sea igual al cociente `mpg` / `cyl`
+
+```{r df24}
+
+mtcars$ratio <- mtcars$mpg / mtcars$cyl
+
+head(mtcars)
+
+```
+
+Si deseamos eliminar una columna, le asignamos el valor `NULL`
+
+```{r df25}
+
+mtcars$ratio <- NULL
+
+head(mtcars)
+
+```
+
+## Ordenar por filas 
+
+
+```{r df26}
+
+mtcars[order(mtcars$mpg), ]
+
+```
+
+En orden descendente
+
+```{r df27}
+
+mtcars[order(-mtcars$mpg), ]
+
+```
