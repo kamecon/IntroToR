@@ -1,0 +1,638 @@
+---
+title: "Datos homogéneos: Vectores, matrices y arreglos"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Tipos básicos en R
+
+Para poder trabajar con datos, es necesario entender como los datos son almacenados en el ordenador por cada lenguaje de programación.
+
+Las estructuras que almacenan información numérica, y la manera de acceder a ellas, difieren de Python a R, o de R a otros lenguajes.
+
+La familia más importante de tipos de variable en R son los vectores, que pueden clasificarse en atómicos o listas.
+
+La estructura de los vectores atómicos es la siguiente (fuente: [Advanced R](https://adv-r.hadley.nz/index.html)):
+
+![Tipos en R](images/summary-tree-atomic.png){width=300}
+
+```{r tipos}
+
+Numero <-  1.0   # (real, flotante)
+Entero <- 1
+Caracter <- "ab"   
+Logico <- TRUE  
+
+Numero
+Entero
+Caracter
+Logico
+
+```
+
+Tener cuidado cuando trabajamos con tipos distintos
+
+```{r tipos2}
+#| eval: false
+
+Numero + Caracter
+
+```
+
+Cuando realizamos una operación con dos tipos numéricos distintos (real + entero), R *fuerza* (coerce) a que el resultado al tipo con mayor precisión, en este caso al tipo real
+
+```{r tipos3}
+
+Suma <- Numero + Entero
+
+Suma
+
+typeof(Suma)
+
+```
+
+Varias cosas acá, hemos tenido nuestra primera aproximación a una función en R, tópico que exploraremos con mayor detalle más adelante. Al igual que la idea intuitiva que tenemos de función de las matemáticas de secundaria, una función en R tiene un argumento (variable entre paréntesis) y nos arroja un resultado.
+
+En R las funciones tienen su nombre seguido de paréntesis, donde colocamos la(s) variable(s) de argumento(s): `una_funcion(x)`
+
+Las funcion `typeof()` nos indica la clase de la variable (numérico, entero o lógico)
+
+```{r tipos3-5}
+
+typeof(Numero)
+typeof(Entero)
+typeof(Caracter)
+typeof(Logico)
+
+```
+
+Asimismo, existen funciones específicas para determinar si una variable es de un tipo específico
+
+```{r tipos4}
+is.numeric(Numero)
+is.integer(Entero) 
+is.character(Caracter)
+is.logical(Logico)
+```
+
+Vemos que R nos dice que `Entero` no es un entero, para especificar un entero debemos colocar una letra L al final del número
+
+```{r tipos5}
+Entero_2 <- 1L
+Entero_2
+is.integer(Entero_2)
+typeof(Entero_2)
+
+```
+
+# Vectores
+
+Vamos a utilizar R para analizar datos y crear modelos estadísticos o algorítmicos a partir de los mismos.
+
+La mayoría de los datos vienen representados en *tablas*: hojas de cálculo, bases de datos relacionales, ficheros .csv, etc.
+
+La mayoría de los modelos estadísticos usan como input datos en forma de tabla.
+
+El objeto más empleado para trabajar con tablas en R son los **data frame** y demás variantes (los tibble o data.tables por ejemplo).
+
+Antes de entender como trabajar tablas, repasamos el concepto de vector, que es el tipo básico sobre el cual están construidos los data frames.
+
+Lo que caracteriza a un vector, es que puede almacenar solo datos del **mismo tipo**
+
+```{r vectores}
+
+vector_numerico <- c(1, 10, 49)
+vector_caracter <- c("a", "b", "c")
+
+vector_numerico
+vector_caracter
+
+```
+
+Los vectores son arreglos de una dimensión (fila o columna) que pueden almacenar números, caracteres o variables lógicas.
+
+Como hemos visto arriba, los vectores se crean con el comando `c()` donde la c viene de *combinar*
+
+```{r vectores2}
+
+vector_mixto <- c(1,2,"a")
+vector_mixto
+
+```
+
+En el ejemplo anterior hemos querido crear un vector con elementos de distintos tipos, numérico y carácter. R ha convertido todos los elementos a carácter.
+
+Si hay carácteres en un vector R convierte todos los elementos a carácter, si todos son numéricos pero de distinto tipo, R los convierte al tipo de mayor precisión (doble). ¿Qué pasa con los vectores lógicos?
+
+```{r vectores3}
+
+vector_mixto2 <- c(1,2,TRUE)
+vector_mixto2
+typeof(vector_mixto2)
+
+```
+
+En este caso R ha convertido los elementos del vector a numérico
+
+Observamos algo que posteriormente va a ser muy útil, R le ha asignado a la variable lógica `TRUE` el número 1. La variable `FALSE` tiene asignado un cero
+
+¿Podemos cambiar una variable o un vector de tipo? SI
+
+```{r vectores4}
+
+vector_numerico
+
+as.character(vector_numerico)
+
+vector_logico <- c(TRUE, FALSE)
+
+vector_logico
+
+as.numeric(vector_logico)
+
+```
+
+Existen varias funciones en R que permiten realizar cambios de tipo
+
+```{r vectores4_5}
+as.character(vector_logico)
+
+```
+
+
+Existen otro par de formas de crear vectores
+
+```{r vectores5}
+
+vector_1 <- 1:5
+
+vector_2 <- seq(1,5)
+
+vector_1
+
+vector_2
+
+
+```
+
+Donde `seq` viene de secuencia
+
+Se pueden crear secuencias más complejas con la función `seq()`
+
+```{r vectores6}
+
+vector_3 <- seq(1,10, by = 2)
+
+vector_4 <- seq(1,10, length.out = 20)
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_3
+
+vector_4
+
+vector_5
+
+```
+
+Se pueden asignar nombres a los elementos del vector
+
+```{r vectores7}
+
+names(vector_1)
+
+nombres <- c("uno", "dos", "tres", "cuatro", "cinco")
+
+names(vector_1) <- nombres
+
+names(vector_1)
+
+```
+
+Otro comando para generar secuencias es `rep`
+
+```{r vectores8}
+
+repetido <- rep(4,10)
+
+repetido
+
+```
+
+Podemos repetir no solo un valor sino vectores
+
+```{r vectores9}
+
+repetido_2 <- rep(1:4, 4)
+
+repetido_2
+
+repetido_3 <- rep(1:4, each = 4)
+
+repetido_3
+
+repetido_4 <- rep(1:4, each=2, times=2)
+
+repetido_4
+
+repetido_5 <- rep(1:4, c(2,3,4,5))
+
+repetido_5
+
+```
+
+Otra característica de los vectores además de su tipo, es su **longitud** o dimensión, la cual podemos determinar con la función `length()`
+
+```{r longitud}
+
+length(vector_1)
+
+length(vector_4)
+
+length(repetido_5)
+
+```
+
+
+## Operaciones con vectores
+
+Se pueden realizar operaciones con vectores
+
+```{r vectores10}
+
+vector_1
+
+vector_2
+
+Vec_suma <- vector_1 +vector_2
+
+Vec_suma
+
+```
+
+```{r vectores11}
+vector_1
+
+vector_2
+
+Vec_producto <- vector_1 * vector_2
+
+Vec_producto
+
+
+```
+
+En este caso, ambos vectores tienen la misma dimensión. ¿Qué ocurre si pasa lo contrario?
+
+```{r vectores11_1}
+
+vector_1 
+
+seq(6,15)
+
+vector_1 + seq(6,15)
+
+
+```
+
+Este comportamiento peculiar es lo que se denomina **reciclaje**. Observar el resultado ¿qué es lo que ha hecho R en este caso?
+
+
+## Vectorización de operaciones
+
+Decimos que una operación está vectorizada si la misma puede ser aplicada a todos los elementos de un vector
+
+```{r vectorizacion}
+
+vector_numerico
+
+vector_numerico + 2
+
+vector_numerico * 2
+
+vector_numerico / 2
+
+vector_numerico^2
+
+sqrt(vector_numerico)
+
+log(vector_numerico)
+
+
+```
+
+Observamos que cuando se aplica un operador aritmético (`+`, `*`, `-`, `/`, `^`) a un vector, la operación se realiza sobre cada uno de los elementos del vector. Del mismo modo, cuando aplicamos una función (`sqrt()`, `log()`) esta usa como argumentos todos los elementos del vector y su output es un vector de dimensión igual a la dimensión del vector original 
+
+
+## Inspección de vectores
+
+Es posible aplicar ciertas funciones para analizar algunas características de los vectores.
+
+Recordar que el objetivo último es el de realizar análisis de datos, algunas de estas funciones serán empleadas de manera regular cuando queramos inspeccionar los datos de una tabla 
+
+Longitud de un vector
+
+```{r inspect}
+
+vector_4
+
+length(vector_4)
+
+```
+
+Estadísticos de un vector
+
+```{r inspect1}
+
+summary(vector_4)
+
+```
+
+
+Valores al principio y al final
+
+```{r inspect2}
+
+head(vector_4)
+
+tail(vector_4)
+
+```
+
+
+Tabla de frecuencias
+
+En muchas aplicaciones prácticas necesitaremos analizar las frecuencias de aparición de un conjunto de datos, con la función `table()` podremos obtener las frecuencias absolutas y pasando como argumento el output de `table()` a la función `prop.table()`
+
+Vamos a construir un ejemplo usando estas funciones generando una muestra de las letras del abecedario. Podemos generar muestras de un vector con la función `sample()`, la cual nos pedirá el vector en cuestión, el tamaño de la muestra, y si realizamos el muestreo con o sin repetición. Obtendremos las letras del abecedario a partir de un vector de constantes predefinido en R llamado `letters` (`LETTERS` si deseamos mayúsculas)
+
+```{r inspect3}
+
+vector_letras <- sample(x = letters[1:5], size = 50, replace = TRUE) #Realizamos una selección de letters, explicamos esto más adelante
+
+tabla <- table(vector_letras)
+
+tabla
+
+prop.table(tabla)
+
+```
+
+## Selecciones
+
+Es posible construir nuevos vectores a partir de un vector
+
+```{r select1}
+
+vector_1
+
+vector_cuadrado <- vector_1^2
+
+vector_cuadrado
+
+```
+
+¿Como accedemos a los elementos de un vector?
+
+```{r select2}
+
+vector_cuadrado[1]
+
+vector_cuadrado[3]
+
+```
+
+Varios elementos seguidos (slice)
+
+```{r select3}
+
+vector_cuadrado[1:3]
+
+vector_cuadrado[3:1]
+
+```
+
+Varios elementos no seguidos
+
+```{r select4}
+
+vector_cuadrado[c(1,3)]
+
+vector_cuadrado[c(3,1)]
+
+```
+
+Todos los elementos excepto algunos
+
+```{r select5}
+
+vector_cuadrado[-c(1,3)]
+
+vector_cuadrado[-length(vector_cuadrado)]
+
+```
+
+Todos los elementos que cumplan una condición
+
+```{r select6}
+
+vector_5
+
+vector_5[vector_5 < 5]
+
+vector_5[vector_5 > 5]
+
+```
+
+La condición puede ser una igualdad
+
+```{r select7}
+
+vector_5[vector_5 == 5.5]
+
+```
+
+Estas condiciones son muy importantes para el análisis de datos. Suponga que desea localizar en una tabla con los datos financieros de un conjunto de personas, los datos de aquellos clientes cuyo ingreso sea mayor a 30.000 al año
+
+También es útil para localizar datos y reemplazarlos por otro valor. Siguiendo el ejemplo anterior, sustituir la columna de ingresos de los clientes cuyo ingreso anual es menor de 12.000 al año por cero, ya que no trabajaremos con ese segmento
+
+```{r select8}
+
+vector_5
+
+vector_5[vector_5 < 5] <- 0
+
+vector_5
+
+```
+
+En el caso que los vectores tengan nombres, podemos emplear estos para seleccionar elementos 
+
+```{r select9}
+
+vector_cuadrado["dos"]
+
+vector_cuadrado[c("uno", "tres")]
+
+```
+
+Más funciones aplicadas a vectores
+
+```{r select10}
+
+vector_5 <- seq(1,10, along.with = vector_1)
+
+vector_5
+
+max(vector_5)
+
+min(vector_5)
+
+sum(vector_5)
+
+prod(vector_5)
+
+```
+
+## Matrices
+
+Hasta ahora hemos trabajado con una estructura de datos de una sola dimensión, pero en el análisis de datos en ocasiones estamos interesados en *descubrir* o encontrar relaciones entre variables, por lo que es necesario verlas en su conjunto para poder captar interrelaciones
+
+Esto nos obliga a tener que trabajar en más de una dimensión, en R podemos hacer eso con **matrices** y **arrays**
+
+Una matriz no es más que una estructura de dos dimensiones que nos permite almacenar datos homogéneos. Para construir una matriz utilizamos la función `matrix()`
+
+```{r matrices}
+
+vector_6 <- seq(8)
+
+vector_6
+
+A <- matrix(vector_6)
+
+A
+
+
+```
+
+Tenemos un vector de una columna. ¿Y si queremos más de una dimensión?
+
+```{r matrices2}
+
+A <- matrix(vector_6, nrow = 2)
+
+A
+
+
+```
+
+```{r matrices3}
+
+A <- matrix(vector_6, ncol = 2)
+
+A
+
+```
+
+
+```{r matrices4}
+
+A <- matrix(vector_6, nrow = 4, ncol = 2)
+
+A
+
+```
+
+
+Observamos que la matriz se *rellena* por columnas, podemos cambiar ese comportamiento
+
+```{r matrices5}
+
+A <- matrix(vector_6, nrow = 4, ncol = 2, byrow = TRUE)
+
+A
+
+```
+
+Del mismo modo que teníamos el atributo nombre para los vectores, también podemos nombrar las filas y columnas de una matriz. Para inspeccionar los nombres de fila de una matriz usamos `rownames()`, y los nombres de las filas `colnames()`
+
+
+```{r matrices6}
+
+rownames(A)
+colnames(A)
+
+```
+
+
+`NULL` nos indica cuando una expresión o función da como resultado un valor indefinido. En este caso nos indica que la matriz no tiene nombres. Vamos a asignarle nombres asociando un vector de caracteres
+
+```{r matrices7}
+
+rownames(A) <- c("fila_1", "fila_2", "fila_3", "fila_4")
+colnames(A) <- c("columna_1", "columma_2")
+
+rownames(A)
+colnames(A)
+
+A
+
+```
+
+`dimnames()` es otra manera de inspeccionar/asignar los nombres de una matriz. 
+
+```{r matrices8}
+
+dimnames(A)
+
+```
+
+¿Se ve algo extraño en esta estructura? Volveremos a esto en el siguiente tópico
+
+Acceder a los elementos de una matriz es muy similar al caso de los vectores, solo debemos diferenciar entre dimensiones con una coma `,`
+
+```{r matrices9}
+
+A
+
+A[1,1]
+
+A[3,2]
+
+A["fila_2", "columma_2"]
+
+A[1:2, 1]
+
+A[c("fila_1", "fila_4"), 2]
+
+```
+
+## Arreglos (arrays)
+
+En el caso que necesitemos trabajar con más de una dimensión, usamos los **arrays**, que definiremos con la función `array()`
+
+```{r arrays1}
+
+arreglo_1 <- array(rep(1:3, each = 4), dim = c(2,2,3))
+
+arreglo_1
+
+```
+
+Y filtranos elementos del siguiente modo que con vectores y matrices
+
+```{r arrays2}
+
+arreglo_1[1,2,2]
+
+arreglo_1[2,1:2,3]
+
+arreglo_1[2,1:2,1]
+
+```
+
+En el trabajo práctico, en muchas ocasiones se suelen colapsar más de dos dimensiones en una matriz, usando el llamado formato *long*, del cual hablaremos en el siguiente módulo

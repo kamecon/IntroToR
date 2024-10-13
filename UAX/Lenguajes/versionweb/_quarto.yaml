@@ -1,0 +1,87 @@
+project:
+  type: website
+  render:
+    - "*.qmd"
+
+website:
+  title: "Lenguajes de programación: R"
+  navbar:
+    background: dark
+    logo: "materiales/images/R_logo.svg.png"
+    right:
+    #   - icon: cloud-fill
+    #     href: https://posit.cloud/spaces/397258
+    #     text: Posit Cloud
+    #   - icon: file-certificate
+    #     href: license-web.qmd
+    #   - icon: github
+    #     href: https://github.com/kamecon/IntroToR/tree/master/courseS3/versionWeb
+    #     text: GitHub
+       - icon: envelope
+         href: mailto:kromesoo@uax.es
+
+    left:
+      - href: index.qmd
+        text: Home
+      # - href: setup.qmd
+      #   text: Packages & Data
+      - text: Secciones
+        menu:
+        - text: "Introducción"
+          href: materiales/01_introIde.qmd
+          #target: "_blank"
+        - text: "R: Básicos"
+          href: materiales/02_basics.qmd
+          #target: "_blank"
+        - text: "Vectores y matrices"
+          href: materiales/03_vectors.qmd
+          #target: "_blank"
+        # - text: "Matrices"
+        #   href: materials/04_matrices.qmd
+          #target: "_blank"
+        # - text: "Data frames"
+        #   href: materials/05_dataFrames.qmd
+        #   #target: "_blank"
+        # - text: "dplyr"
+        #   href: materials/06_dplyr.qmd
+        #   #target: "_blank"
+        # - text: "Statistics"
+        #   href: materials/07_statistics.qmd
+        #   #target: "_blank"
+        # - text: "Programming"
+        #   href: materials/08_programming.qmd
+        #   #target: "_blank"
+        # - text: "ggplot"
+        #   href: materials/09_ggplot.qmd
+        #   #target: "_blank"
+        # - text: "Regression analysis"
+        #   href: materials/10_regression.qmd
+      #   - text: "Thank you 👋"
+      #     href: materials/8_closing.qmd
+      #     target: "_blank"
+      # - text: Exercises
+      #   menu:
+      #   - text: "Hello Arrow Exercises"
+      #     href: materials/1_hello_arrow-exercises.qmd
+      #   - text: "Data Manipulation Part I Exercises"
+      #     href: materials/2_data_manipulation_1-exercises.qmd
+      #   - text: "Data Engineering Exercises"
+      #     href: materials/3_data_engineering-exercises.qmd
+      #   - text: "Arrow In-Memory Workflow Exercises"
+      #     href: materials/5_arrow_single_file-exercises.qmd
+      #   - text: "Data Manipulation Part II Exercises"
+      #     href: materials/4_data_manipulation_2-exercises.qmd
+
+
+format:
+  html:
+    theme: journal
+    #css: styles.css
+    toc: true
+    toc-depth: 4
+    link-external-newwindow: true
+
+# editor: visual
+# engine: knitr
+# execute:
+#   freeze: auto
