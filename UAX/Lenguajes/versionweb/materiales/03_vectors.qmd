@@ -498,13 +498,21 @@ prod(vector_5)
 
 ```
 
-## Matrices
+# Matrices
 
 Hasta ahora hemos trabajado con una estructura de datos de una sola dimensión, pero en el análisis de datos en ocasiones estamos interesados en *descubrir* o encontrar relaciones entre variables, por lo que es necesario verlas en su conjunto para poder captar interrelaciones
 
 Esto nos obliga a tener que trabajar en más de una dimensión, en R podemos hacer eso con **matrices** y **arrays**
 
-Una matriz no es más que una estructura de dos dimensiones que nos permite almacenar datos homogéneos. Para construir una matriz utilizamos la función `matrix()`
+Una matriz no es más que una estructura de dos dimensiones que nos permite almacenar datos homogéneos.
+
+A diferencia de la advertencia del principio de la exposición de los vectores, las matrices **si** se pueden interpretar como el objeto de álgebra lineal, ya que el mismo es susceptible a operaciones matriciales como multiplicación de matrices, cálculo de inversa, diagonalización, etc.
+
+Y al igual que los vectores, no es necesario acceder a ningún paquete para realizar las operaciones de álgebra lineal.
+
+Para construir una matriz utilizamos la función `matrix()`
+
+Las matrices se crean a partir de vectores, aunque también pueden crearse a partir de otras estructuras siempre y cuando tengan datos del mismo tipo
 
 ```{r matrices}
 
@@ -611,7 +619,113 @@ A[c("fila_1", "fila_4"), 2]
 
 ```
 
-## Arreglos (arrays)
+
+Una operación que en la práctica se usa mucho, es la de crear una nueva *tabla* a partir de otra mediante la unión de filas y columnas. Esto se lleva a cabo con las funciones `rbind()` y `cbind()`
+
+Si queremos añadir columnas basados en otra matriz:
+
+```{r matriz1}
+
+#Fijamos una semilla para que el ejemplo sea reproducible
+set.seed(123) 
+
+#Creamos un vector aleatorio
+vector_matriz <-  runif(n = 20, min = 10, max = 50)
+
+vector_matriz
+
+#Redondeamos los elementos del vector
+vector_matriz <- round(vector_matriz) 
+
+vector_matriz
+
+#Construimos la matriz
+matriz_1 <- matrix(data = vector_matriz, nrow = 5, ncol = 4, byrow = TRUE)
+
+matriz_1
+
+```
+
+```{r matriz4}
+
+matriz_1
+
+vector_matriz_2 <- round(runif(n = 10, min = 10, max = 50)) #Atentos a como hemos combinado dos funciones
+
+( matriz_3 <-  matrix(data = vector_matriz_2, nrow = 5, ncol = 2, byrow = TRUE) )
+
+cbind(matriz_1, matriz_3)
+
+```
+
+Si queremos añadir filas basados en otra matriz:
+
+```{r matriz5}
+
+matriz_1
+
+vector_matriz_3 <- round(runif(n = 8, min = 10, max = 50)) 
+
+( matriz_4 <-  matrix(data = vector_matriz_3, nrow = 2, ncol = 4, byrow = TRUE) )
+
+rbind(matriz_1, matriz_4)
+
+```
+
+::: {.callout-tip title="Funciones de álgebra lineal"}
+
+Utilizar la ayuda para determinar que hacen las siguientes funciones de álgebra lineal
+
+`det()`, `diag()`, `svd()`, `eigen()`, `qr()`, `chol()`
+
+:::
+
+::: {.callout-tip title="Ejemplo: Regresión lineal"}
+
+
+Vamos a calcular los coeficientes estimados de una regresión lineal simple usando la solución analítica del problema de minimización de los residuos al cuadrado $\sum_{i=1}^n(y_i - \hat{y}_i)^2$
+
+```{r matriz7}
+
+#install.packages("wooldridge")
+library(wooldridge)
+
+data(gpa1)
+
+#Tamaño de la muestra y numero de regresores
+
+n <- nrow(gpa1)
+k <- 2
+
+#Extraemos la variable independiente $y$
+
+y <- gpa1$colGPA
+
+#Construimos la matriz de regresores $X$ (en este caso 2) y añadimos una columna de unos
+
+X <- cbind(1, gpa1$hsGPA, gpa1$ACT)
+
+```
+
+Estimamos los betas usando la expresión
+
+$$\hat{\beta}=(X'X)^{-1}X'y$$
+
+```{r matriz8}
+
+beta_hat <- solve( t(X)%*%X ) %*% t(X)%*%y 
+beta_hat
+
+
+```
+
+
+El comando `solve` invierte la matriz, y la función `t()` ejecuta la transpuesta de una matriz y el operador `%*%` realiza productos de matrices, por lo que `solve( t(X)%*%X )` ejecuta la operación $(X'X)^{-1}$
+
+:::
+
+
+# Arreglos (arrays)
 
 En el caso que necesitemos trabajar con más de una dimensión, usamos los **arrays**, que definiremos con la función `array()`
 

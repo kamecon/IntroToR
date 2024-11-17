@@ -413,4 +413,60 @@ normal_mpg
 
 Escribir funciones es un mundo y un arte, a la función anterior por ejemplo habría que añadirle alguna prueba que verificara, por ejemplo, si los vectores de entrada son numéricos, como actuar en caso de que haya datos faltantes, imprimir errores informativos en caso de errores, posibilidad de llamar a otras funciones, etc.
 
-La primera parte del párrafo anterior se implementa con el uso de las estructuras condicionales vistas en las secciones anteriores
+La primera parte del párrafo anterior se implementa con el uso de las estructuras condicionales vistas en las secciones anteriores.
+
+# La familia `apply`
+
+Exploraremos las funciones `lapply()` y `sapply()`, que son poderosas herramientas para pasar una función a cada elemento de una lista o un vector.
+
+Estas funciones combinan dos conceptos previamente discutidos: las funciones personalizadas y los bucles.
+
+Estas funciones minimizan la necesidad de crear un bucle explícito, lo que hace que el código sea más conciso y eficiente.
+
+Con `lapply()`, puedes aplicar una función a cada elemento de una lista y obtener como resultado otra lista.
+
+```{r apply01}
+
+normal_vec
+
+```
+
+```{r apply02}
+
+normalized_vector02 <- lapply(datos_entrada, normalizar, datos = datos_1)
+
+normalized_vector02
+
+```
+
+Por otro lado, `sapply` simplifica el resultado a un vector o matriz cuando es posible.
+
+```{r apply03}
+
+normalized_vector03 <- sapply(datos_entrada, normalizar, datos = datos_1)
+
+normalized_vector03
+
+```
+
+No podremos cubrir en detalle el alcance completo de estas funciones y sus diversas aplicaciones en este curso.
+
+::: {.callout-tip title="Ejemplo: Distribución muestral con `replicate`"}
+
+En lugar de usar un bucle, puedes utilizar la función `replicate` de la familia de funciones `apply`. Estas funciones aplican una operación específica a un conjunto de valores representados por un vector. En este caso, estamos repitiendo una instrucción específica encapsulada en una función un número determinado de veces, lo que implica extraer una muestra de una población y realizar un análisis de regresión. En este ejemplo, `replicate` se utiliza para repetir esta operación 1000 veces.
+
+Este tipo de operación es comúnmente utilizado en estadística para realizar simulaciones, donde se repiten numerosas veces realizaciones de una distribución de probabilidad o fenómenos inciertos (por ejemplo, lanzar un dado 50,000 veces).
+
+```{r loopex7}
+
+# A continuación creamos una población de tamaño 1.000.000 que se distribuye como una normal con media 100 y desviación estándar 15
+
+pop <- rnorm(1000000, mean = 100, sd = 15)
+
+distribucion_medias <- replicate(expr = mean(sample(x = pop, size = 100)), n = 1000)
+
+hist(distribucion_medias)
+
+```
+
+:::

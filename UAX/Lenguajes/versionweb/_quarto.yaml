@@ -4,7 +4,7 @@ project:
     - "*.qmd"
 
 website:
-  title: "Lenguajes de programación: R"
+  title: "Lenguajes de programacion: R"
   navbar:
     background: dark
     logo: "materiales/images/R_logo.svg.png"
@@ -39,8 +39,8 @@ website:
         # - text: "Matrices"
         #   href: materials/04_matrices.qmd
           #target: "_blank"
-        # - text: "Data frames"
-        #   href: materials/05_dataFrames.qmd
+        - text: "Data frames"
+          href: materiales/05_dataFrames.qmd
         #   #target: "_blank"
         # - text: "dplyr"
         #   href: materials/06_dplyr.qmd
@@ -48,8 +48,8 @@ website:
         # - text: "Statistics"
         #   href: materials/07_statistics.qmd
         #   #target: "_blank"
-        # - text: "Programming"
-        #   href: materials/08_programming.qmd
+        - text: "Programación"
+          href: materiales/08_programming.qmd
         #   #target: "_blank"
         # - text: "ggplot"
         #   href: materials/09_ggplot.qmd

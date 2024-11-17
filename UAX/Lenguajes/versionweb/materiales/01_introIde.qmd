@@ -24,6 +24,17 @@ Características del lenguaje
 -   Tipado dinámicamente: Fácil y menos boiler plate, facilita mucho la metaprogramación.
 -   Multiparadigma. Aunque la mayoría de los usuarios explotan la versión funcional y algunos la orientación a objetos.
 
+## R vs RStudio
+
+La siguiente imagen y frase están tomadas del libro [Statistical Inference via Data Science: A ModernDive into R and the Tidyverse](https://moderndive.com/index.html)
+
+::: {#fig-rvsrstudio}
+![](https://moderndive.com/images/shutterstock/R_vs_RStudio_1.png)
+
+R vs Studio [Fuente](https://moderndive.com/1-getting-started.html). 
+
+:::
+
 # Entorno de trabajo
 
 En este curso utilizaremos la herramienta online [Posit cloud](https://login.rstudio.cloud/login?redirect=%2F) de Posit.
