@@ -1,5 +1,5 @@
 ---
-title: "Programming basics"
+title: "Programación básica"
 format: html
 execute:
   echo: true
@@ -68,42 +68,6 @@ Por ejemplo
 
 ```{r control2}
 
-
-if (mtcars$mpg[1] > 15) {
-  print("Bien")
-} else {
-  print("Mal")
-}
-
-
-if (mtcars$mpg[1] > 15) {
-  mtcars$mpg[1] + 5
-} else {
-  mtcars$mpg[1] - 5
-}
-
-
-```
-
-
-## Estructura `if` - `else`
-
-```{r control3}
-#| eval: false
-
-if (condicion se cumple) {
-  ejecuta una acción
-} else {
-  ejecuta otra acción
-}
-
-```
-
-Por ejemplo
-
-```{r control4}
-
-mtcars_peque <- mtcars[1:20,]
 
 if (mtcars$mpg[1] > 15) {
   print("Bien")

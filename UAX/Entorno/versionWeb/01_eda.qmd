@@ -1,0 +1,592 @@
+---
+title: "DEA: Análisis exploratorio de datos"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Análisis exploratorio de datos (DEA)
+
+A continuación, os presento una definición de **EDA** generada por un modelo largo de lenguaje (GPT-4o) basado en definiciones recogidas de varios libros de texto (Ver esto y esto):
+
+_El **análisis exploratorio de datos (EDA)** es una etapa crucial en cualquier proyecto de análisis de datos, ya que proporciona una base sólida para comprender y trabajar con los datos. Antes de aplicar modelos estadísticos complejos o técnicas avanzadas, necesitamos asegurarnos de que los datos son confiables, relevantes y adecuados para responder nuestras preguntas de investigación. El EDA nos permite identificar patrones interesantes, relaciones inesperadas entre variables y posibles problemas, como valores atípicos, datos faltantes o errores de medición. Además, facilita la identificación de áreas donde podría ser necesario recopilar más información._
+
+_La utilidad del EDA radica en que ayuda a tomar decisiones informadas desde el principio del proyecto. Por ejemplo, si los datos no respaldan una hipótesis inicial, podemos evitar invertir tiempo y recursos en análisis innecesarios. Además, el EDA nos permite familiarizarnos con los datos, especialmente si no hemos trabajado con ellos antes, y puede revelar aspectos clave que guiarán el análisis posterior. En muchos casos, el EDA actúa como una brújula, orientando nuestras preguntas y enfoques hacia las áreas más prometedoras._
+
+_Aplicar EDA es esencial porque los datos son cada vez más complejos y abundantes, y comprenderlos a fondo es indispensable para cualquier análisis riguroso. Este proceso no solo mejora la calidad del análisis, sino que también contribuye a comunicar mejor los resultados. Sin EDA, corremos el riesgo de pasar por alto detalles críticos o de basar nuestras conclusiones en datos incompletos o malinterpretados. Por estas razones, el EDA es una herramienta poderosa para maximizar la efectividad de cualquier proyecto de análisis de datos._
+
+Una vez leído lo anterior, hagamos el ejercicio de traducirlo a nuestra práctica diaria en el manejo de datos a partir de un par de reflexiones.
+
+Lo primero que nos tenemos que preguntar es ¿Para qué queremos los datos? ¿qué uso le vamos a dar?
+
+El objetivo de extraer información de los datos ya sea a través de su manipulación, análisis descriptivo o modelado (simple o complejo), es el *responder una pregunta*, ya sea de negocio o investigación. Es la pregunta que deseamos contestar (¿qué características tienen las personas que acceden a mi web? ¿qué motivos llevan a un cliente a abandonar mi empresa? ¿qué estrategia de marketing es más adecuada para este segmento de negocio? etc.) la que condiciona que aspectos deseo resaltar de mi conjunto de datos.
+
+No es solo _inspeccionar_ datos, sino evaluar si mi conjunto de datos, o parte de el, es el adecuado para contestar mi pregunta.
+
+## ¿Qué "_exploramos_"?
+
+El verbo _explorar_ se asocia, según la Real Academia Española, a: reconocer, inquirir, averiguar o al término médico de reconocer a un paciente. 
+
+En nuestro contexto, queremos reconocer o identificar características de nuestro conjunto de datos a nivel global (relación entre variables) como a nivel de variables individuales. Estamos interesados en aspectos meramente _físicos_, tales como datos faltantes o duplicados, que carecen de sentido (edades de tres dígitos), errores de medida o datos incompletos debido a la técnica de recogida; y en aspectos intrínsecos de los datos que nos dicen algo de su evolución idiosincrática y global a través de distintas observaciones, y por ende, de su potencial en aproximar la respuesta a la pregunta de análisis.
+
+## ¿Qué viene después?
+
+La exploración genera *conocimiento* acerca de los datos que vamos a emplear en nuestro flujo de trabajo. Un mejor conocimiento de nuestro mayor insumo, nos dota de mayor criterio a la hora no solo de elegir la estrategia de modelización o modelado, sino de identificar los límites de esta.
+
+Asimismo, nos da pistas de si nuestras presunciones iniciales (formalmente, hipótesis de partida) tienen sentido, o donde debemos concentrar la atención para confirmar o descartar las mismas.
+
+## ¿En qué consiste?
+
+Antes de desarrollar este punto, hacer énfasis en un punto que resaltan (casi) todos los textos que abarcan este tema: **El EDA no es un proceso mecánico y es iterativo** 
+
+En proyectos reales, aunque es cierto que podemos seguir un proceso sistemático en un principio, que es el que presentaremos en este curso, el EDA es contingente a los descubrimientos que se realicen en el mismo proceso. Adicionalmente, puede que una primera aproximación nos lleve a realizar exploraciones posteriores en la que apliquemos distintas técnicas a la anterior.
+
+Dicho lo anterior, presentaremos tres aspectos básicos del EDA: análisis descriptivo de los datos, tanto básico como básico como multivariante; análisis gráfico, y limpieza y detección de datos anómalos. Se hará énfasis en las dos primeras, ya que la última ha sido ya tratada en módulos anteriores de la asignatura (Python y R).
+
+# Estadísticas descriptivas
+
+El primer paso en casi cualquier análisis de datos es describir los datos utilizando medidas descriptivas básicas (o avanzadas).
+
+En nuestro caso, el análisis descriptivo nos permite capturar varios aspectos discutidos en la sección anterior:
+
+* La evolución de las variables: ¿las variables tienden a cambiar mucho ya sea una observación en la dimensión temporal o a través de distintas observaciones? ¿la evolución es conjunta en relación al resto de variables? ¿existe un comportamiento sistemático en el patrón de variación conjunta o individual? ¿dicho comportamiento sistemático depende de la naturaleza o característica intrínseca de la variable?
+
+* La existencia de datos faltantes o incompletos en nuestro conjunto de datos
+
+* Detección de datos atípicos
+
+* Identificar potenciales errores de omisión
+
+R base incluye una familia de funciones que nos permite calcular estadísticas descriptivas tanto para datos individuales (típicamente representados por un vector) como para datos agrupados.
+
+En esta sección, cubriremos las funciones principales.
+
+## Datos numéricos
+
+Usando el conjunto de datos `mtcars`
+
+```{r data}
+
+mtcars
+
+```
+
+Presentamos la función `summary()`, que proporciona un conjunto de estadísticas básicas para cada columna de un data frame.  
+
+```{r summary}
+
+summary(mtcars)
+
+```
+
+Si aplicamos la función a un vector en lugar de un data frame, obtendremos estadísticas básicas solo para ese vector.
+
+```{r summary2}
+
+summary(mtcars$mpg)
+
+```
+
+En un flujo típico de análisis de datos, a menudo necesitamos calcular medidas descriptivas específicas. A continuación, mostramos una lista no exhaustiva de funciones que calculan estadísticas descriptivas básicas:
+
+```{r descriptive}
+
+mean(mtcars$mpg)      # Media
+median(mtcars$mpg)    # Mediana
+min(mtcars$mpg)       # Mínimo
+max(mtcars$mpg)       # Máximo
+range(mtcars$mpg)     # Máximo y mínimo
+var(mtcars$mpg)       # Varianza
+sd(mtcars$mpg)        # Desviación estándar 
+IQR(mtcars$mpg)       # Rango Intercuartil 
+quantile(x = mtcars$mpg, probs = 0.5)        # Percentil 50
+quantile(x = mtcars$mpg, probs = 0.25)       # Percentil 25
+quantile(x = mtcars$mpg, probs = 0.75)       # Percentil 75
+quantile(x = mtcars$mpg)                     # Cuantiles
+quantile(x = mtcars$mpg, probs = c(0.15, 0.68, 0.83))   # Cuantiles personalizados
+
+```
+
+La función `mean()` tiene dos argumentos adicionales. Uno de ellos, `trim`, nos permite usar solo una fracción (entre 0 y 0.5) de las observaciones. Estas observaciones se _recortan_ desde ambos extremos antes de calcular la media. Por ejemplo, el siguiente código excluye el 10% de los valores más altos y más bajos:
+
+
+```{r mean}
+
+mean(mtcars$mpg, trim = 0.1)
+
+mean(mtcars$mpg)
+
+```
+
+Vamos a usar un nuevo conjunto de datos, `airquality`
+
+```{r airquality}
+
+head(airquality)
+
+```
+
+Para introducir cómo manejar los valores faltantes _missing values_.  Aplicamos la función `summary()` al conjunto de datos:
+
+```{r airquality 2}
+
+summary(airquality)
+
+```
+
+En este caso, tenemos valores `NA` (faltantes) en dos columnas. Como puedes observar, la función `summary()` nos ayuda a identificar estos valores y proporciona el conteo de los mismos.
+
+En R, la mayoría de las funciones estadísticas no manejan los valores faltantes por defecto en sus cálculos. Es importante aprender cómo tratarlos para evitar errores o resultados incorrectos en los análisis. 
+
+```{r mean2}
+
+mean(airquality$Ozone)
+median(airquality$Ozone)
+sd(airquality$Ozone)
+
+```
+
+Para abordar esto, la mayoría de las funciones estadísticas en R incluyen un argumento `na.rm`, que indica a la función que ignore los valores `NA`. Esto no solo se aplica a la función `mean()`, sino también a muchas otras funciones.
+
+```{r mean3}
+
+mean(airquality$Ozone, na.rm = TRUE)
+median(airquality$Ozone, na.rm = TRUE)
+sd(airquality$Ozone, na.rm = TRUE)
+
+```
+
+La función `mean()` calcula la media aritmética, pero también podemos calcular la media ponderada utilizando la función `weighted.mean()`. Esta función requiere un vector numérico de pesos que tenga la misma longitud que el vector de entrada, especificando el peso para cada elemento.
+
+```{r mean4}
+
+set.seed(123)
+vector_one <- rnorm(n = 5, mean = 10, sd = 2)
+w <- runif(n = 5, min = 0, max = 0.2)
+
+vector_one
+w
+
+mean(vector_one)
+weighted.mean(x = vector_one, w = w)
+
+```
+
+Otra forma de resumir los datos es analizando las frecuencias absolutas y relativas. En el paquete base de R, podemos calcular ambas utilizando las funciones `table()` y `prop.table()`.
+
+```{r prop}
+
+table(mtcars$cyl)
+prop.table(mtcars$cyl)
+
+```
+
+La función `prop.table()` nos da la proporción relativa para cada elemento de un vector, lo cual no es la vista estándar a la que estamos acostumbrados. Para obtener la vista estándar (proporción por clase de elemento), usamos como argumento el resultado de la función `table()`.
+
+```{r prop2}
+
+prop.table(table(mtcars$cyl))
+
+```
+
+La función `cor()` cuantifica la correlación entre dos variables.  
+
+```{r cor}
+
+cor(mtcars$mpg, mtcars$hp)
+
+```
+
+Si trabajamos con una tabla numérica, también podemos calcular correlaciones entre múltiples pares de variables.  
+
+```{r cor2}
+
+cor(mtcars)
+
+```
+
+Cuando tenemos valores `NA`
+
+```{r cor3}
+
+cor(airquality)
+
+```
+
+Podemos ignorar las observaciones con `NA` utilizando el argumento `use`.
+
+```{r cor4}
+
+cor(airquality, use = "complete.obs")
+
+```
+
+Volveremos al análisis de correlaciones en la siguiente sección en las que se trata las herramientas de la EDA a las que tenemos acceso en R a través de librerías de terceros.
+
+
+## Análisis gráfico descriptivo (rápido)
+
+Los estadísticos descriptivos son una guía potente, pero cuando trabajamos con datos masivos o en espacios de alta dimensión, una representación visual es más útil. El análisis visual permite identificar aspectos como la variabilidad y la tendencia de una variable, sin necesidad de interpretar estadísticos o realizar cómputos previos.
+
+Otra ventaja de los gráficos es que es más sencillo realizar comparaciones entre variable de manera visual.
+
+
+En módulos anteriores de la asignatura se ha trabajado la potente librería `ggplot2`, en esta sección usaremos los gráficos de R base, que a pesar de que su presentación básica es menos elaborada, tiene la ventaja de que nos permite realizar representaciones gráficas muy rápidas sin sacrificar en exceso el diseño.
+
+Como menciona [Peng](https://bookdown.org/rdpeng/exdata/exploratory-graphs.html) en su libro, hay que distinguir entre visualizaciones que sirven como presentación final de resultados, y aquellos que tienen un objetivo **exploratorio**. Citamos textualmente: _Los gráficos exploratorios se suelen crear de manera muy rápida, y se generan muchos de ellos durante el proceso de examinar los datos_. En la EDA nos concentramos en el último tipo de gráficos.
+
+
+### Variabilidad de una variable
+
+#### Histogramas
+
+```{r graph1}
+
+hist(x = airquality$Temp)
+
+```
+
+Más puntos de corte  
+
+```{r graph2}
+
+hist(x = airquality$Temp, breaks = 25) 
+
+```
+
+Densidades
+
+```{r graph3}
+
+plot(density(airquality$Temp))
+
+```
+
+Cambiar el ancho de banda
+
+```{r graph4}
+
+plot(density(airquality$Temp, bw = 100))
+
+```
+
+Cambiar el núcleo (kernel)  
+
+```{r graph5}
+
+plot(density(airquality$Temp, kernel = "epanechnikov"))
+
+```
+
+#### Diagramas de caja (boxplots)
+
+```{r graph6}
+
+boxplot(formula = mpg ~ cyl, data = mtcars)
+
+```
+
+
+#### Gráficos de barras
+
+Gráficos de barras: Por conteos
+
+```{r graph7}
+
+barplot(table(mtcars$cyl))
+
+```
+
+Gráficos de barras: Por proporciones  
+
+```{r graph8}
+
+barplot(prop.table(table(mtcars$cyl)))
+
+```
+
+#### Función de distribución
+
+Función de distribución acumulativa empírica (ECDF): Datos discretos  
+
+```{r graph9}
+
+plot.ecdf(mtcars$hp)
+
+```
+
+Función de distribución acumulativa empírica (ECDF): Datos continuos  
+
+```{r graph10}
+
+data_ecdf <- rnorm(n = 10e3)
+
+plot.ecdf(data_ecdf)
+
+```
+
+## Datos categóricos  
+
+Para los datos categóricos no tiene sentido calcular estadísticas como medias o desviaciones estándar; en su lugar, analizamos estos datos utilizando **proporciones**.  
+
+Utilizaremos el conjunto de datos `HMDA` del libro de texto de econometría introductoria de Stock y Watson.  
+
+```{r hmda}
+
+library(AER)
+data("HMDA", package = "AER")
+head(HMDA)
+
+```
+
+Podemos construir una tabla cruzada que muestre los conteos para diferentes combinaciones de dos variables categóricas.  
+
+```{r hmda2}
+
+table(HMDA$deny, HMDA$hschool)
+
+```
+
+También podemos expresar estos conteos en términos de proporciones.  
+
+```{r hmda3}
+
+prop.table(table(HMDA$deny, HMDA$hschool))
+
+```
+
+Por fila
+
+```{r hmda4}
+
+prop.table(table(HMDA$deny, HMDA$hschool), margin = 1)
+
+```
+
+Por columna
+
+```{r hmda5}
+
+prop.table(table(HMDA$deny, HMDA$hschool), margin = 2)
+
+```
+
+# DEA: usando librerías de terceros
+
+Ya se ha mencionado en la asignatura el impresionante ecosistema de librerías que tiene R, pues no es ninguna sorpresa que exista una familia de librerías que nos ayudan al análisis exploratorio de datos, complementando y mejorando las herramientas gráficas y analíticas de R base.
+
+En esta sección no se pretende realizar una revisión exhaustiva de las librerías existentes a la fecha, sino que se presenta una selección que consideramos no solo útiles, sino ya maduras o novedosas.
+
+
+```{r eda01}
+
+pacman::p_load(gtsummary,
+               DataExplorer,
+               skimr,
+               SmartEDA,
+               summarytools,
+               corrplot,
+               PerformanceAnalytics,
+               GGally,
+               inspectdf,
+               palmerpenguins,
+               dplyr)
+
+```
+
+
+Vamos a trabajar con un conjunto de datos sencillo, [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/), para hacer énfasis en las prestaciones de las librerías.
+
+Inspeccionamos los datos 
+
+
+```{r eda02}
+
+palmerpenguins::penguins
+
+```
+
+La librería [Skimr](https://docs.ropensci.org/skimr/reference/skim.html) es una alternativa a la función `summary()` de R base, además combinado con los verbos de `dplyr`proporciona información agrupada y filtrada por variables
+
+
+```{r eda03}
+
+skim(penguins)
+
+```
+
+```{r eda04}
+
+penguins |> 
+  group_by(species) |> 
+  skim()
+
+```
+
+La librería [`gtsummary`](https://www.danieldsjoberg.com/gtsummary/) también es una alternativa muy potente a la función `summary()`, usando también para presentar el resultado de modelos estimados
+
+
+```{r eda05}
+
+tbl_summary(penguins)
+
+```
+
+El potencial de personalización de la tabla de resumen, por variables e información estadística, es bastante extensa
+
+```{r eda06}
+
+penguins |> 
+  select(species, bill_depth_mm, bill_length_mm, flipper_length_mm, island) |> 
+  tbl_summary(by = island) |> 
+  add_p()
+
+```
+
+
+La librería [`summarytools`](https://cran.r-project.org/web/packages/summarytools/vignettes/introduction.html) proporciona además de una función análoga a `summary()`, tablas de frecuencia univariante y conjunta.
+
+```{r eda07}
+
+dfSummary(penguins) 
+# |> 
+#   stview()
+
+```
+
+Estadísticos descriptivos para las variables numéricas
+
+```{r eda09}
+
+descr(penguins)
+
+```
+
+Tablas de proporciones para variables categóricas
+
+```{r eda08}
+
+ctable(x = penguins$species, y = penguins$island, prop = "r")
+
+```
+
+La librería [`inspectdf`](https://alastairrushworth.com/inspectdf/) también nos proporciona un análisis descriptivo, con su correspondiente gráfico
+
+Variables numéricas
+
+```{r eda10}
+
+inspect_num(penguins)
+inspect_num(penguins) |> 
+  show_plot()
+
+```
+
+Variables categóricas
+
+```{r eda11}
+
+inspect_cat(penguins)
+inspect_cat(penguins) |> 
+  show_plot()
+
+```
+
+Valores faltantes
+
+```{r eda12}
+
+inspect_na(penguins)
+inspect_na(penguins) |>
+  show_plot()
+
+```
+
+Y con esta funcionalidad de la librería `inspectdf`, pasamos a revisar librerías que nos permitan una mejor visualización de las correlaciones entre variables
+
+
+```{r eda13}
+
+inspect_cor(penguins)
+inspect_cor(penguins) |> 
+  show_plot()
+
+```
+
+En este aspecto, la librería [`corrplot`](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html) ofrece una visualización muy amigable de la matriz de correlaciones, muy personalizable.
+
+```{r eda14}
+
+correl_penguins <- cor(penguins |> select_if(is.numeric) |> select(-year),
+                       use = "complete.obs")
+
+corrplot(corr = correl_penguins, method = 'number')
+
+```
+
+```{r eda15}
+
+corrplot(corr = correl_penguins, method = 'color')
+
+```
+
+```{r eda16}
+
+corrplot(corr = correl_penguins, method = 'circle')
+
+```
+
+La librería [`PerformanceAnalytics`](https://github.com/braverock/PerformanceAnalytics) es un paquete que ofrece funciones estadísticas para el análisis de carteras de instrumentos financieros. Su función para representar la matriz de correlaciones nos ofrece, algo más que solo correlaciones
+
+
+```{r eda17}
+
+chart.Correlation(correl_penguins, histogram = TRUE)
+
+```
+
+```{r eda13}
+
+
+
+```
+
+
+# 5. GGally: Scatterplot matrix with pairwise relationships ----
+ggpairs(
+  data    = iris,
+  columns = 1:4,
+  mapping = aes(color = Species)
+) +
+  tidyquant::scale_fill_tq() +
+  tidyquant::scale_color_tq()
+
+# 6. DataExplorer: Generate a full EDA report ----
+create_report(
+  iris,
+  output_dir = "086_top_10_eda_packages/",
+  output_file = "DataExplorer_Report.html"
+)
+
+
+# 8. SmartEDA: Generate a detailed EDA report in HTML ----
+ExpReport(
+  iris,
+  op_dir = "086_top_10_eda_packages/",
+  op_file = "SmartEDA_Report.html"
+)
+
+# 10. Inspectdf: Visualize missing values in the dataset ----
+inspect_na(iris) %>% show_plot()
+inspect_cat(iris) %>% show_plot()
+inspect_cor(iris) %>% show_plot()
+
+
+
+
+
+
+
