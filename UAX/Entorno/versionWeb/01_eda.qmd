@@ -393,7 +393,8 @@ pacman::p_load(gtsummary,
                GGally,
                inspectdf,
                palmerpenguins,
-               dplyr)
+               dplyr,
+               ggplot2)
 
 ```
 
@@ -548,7 +549,9 @@ chart.Correlation(correl_penguins, histogram = TRUE)
 
 ```
 
-```{r eda13}
+La librería [`GGally`](https://ggobi.github.io/ggally/articles/ggpairs.html)
+
+```{r eda18}
 
 
 
@@ -563,6 +566,33 @@ ggpairs(
 ) +
   tidyquant::scale_fill_tq() +
   tidyquant::scale_color_tq()
+
+```{r eda18}
+
+
+
+```
+```{r eda18}
+
+
+
+```
+```{r eda18}
+
+
+
+```
+```{r eda18}
+
+
+
+```
+```{r eda18}
+
+
+
+```
+
 
 # 6. DataExplorer: Generate a full EDA report ----
 create_report(
