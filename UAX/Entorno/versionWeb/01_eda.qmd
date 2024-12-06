@@ -555,7 +555,7 @@ chart.Correlation(correl_penguins, histogram = TRUE)
 ```
 
 
-# 5. GGally: Scatterplot matrix with pairwise relationships ----
+€# 5. GGally: Scatterplot matrix with pairwise relationships ----
 ggpairs(
   data    = iris,
   columns = 1:4,
