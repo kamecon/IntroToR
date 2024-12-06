@@ -1,0 +1,166 @@
+---
+title: "SQL con R"
+format: docx
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# SQL con R
+
+El acceso a bases de datos relacionales y similares es parte del día a día de nuestro trabajo como analistas de datos y desarrolladores de modelos que usan inteligencia artificial. Como menciona [Reneé Teate](https://www.linkedin.com/in/reneeparilakteate) en su libro [SQL for Data Scientist](https://sqlfordatascientists.com/), _Cuando comienzas un proyecto de análisis, el primer paso suele ser conectarse a una base de datos en un servidor_
+
+Asimismo, y puede que parezca un lugar común, pero el lenguaje (Structured Query Language) es la _lingua franca_ de la manipulación de datos, por lo que el manejo del mismo es una habilidad importante en el análisis de datos.
+
+Una vez analizado los aspectos básicos del lenguaje SQL en sesiones anteriores de la asignatura, en este breve módulo de una sesión, nos concentraremos en como extraer datos desde bases de datos relaciones desde R usando SQL, o no.
+
+# Acceso a bases de datos desde R
+
+Es posible acceder a diversas fuentes de datos remotas desde R, lo haremos mediante el uso de librerías de terceros (ver [esto](https://solutions.posit.co/connections/db/) para más detalles), en nuestro caso usaremos la librería [DBI](https://dbi.r-dbi.org/)
+
+En estas notas trabajaremos con un ejemplo de juguete usando un conjunto de datos reducido pero conocido (`mtcars`) y trabajando en local y de manera temporal. Para esto último usaremos la librería [`RSQLite`](https://rsqlite.r-dbi.org/)
+
+Empezamos accediendo a las librerías
+
+```{r sql01}
+
+library(DBI, RSQLite)
+
+```
+
+El primer paso siempre es conectarnos a una base de datos. Debería tener los parámetros de conexión asi como un usuario y una clave. En nuestro ejemplo de juguete, esto no hará falta, ya que crearemos una base temporal en local con la ayuda de la librería `RSQLite`.
+
+Establecemos la conexión usando la función `dbConnect` de la librería `DBI` (A no ser que se indique lo contrario, todas las funciones de esta sección pertenecen a dicha librería)
+
+```{r sql02}
+
+con <- dbConnect(RSQLite::SQLite(), dbname = ":memory:")
+
+```
+
+Una vez establecida la conexión, debemos poblar la base de datos con alguna tabla, por lo cual debemos crear una tabla. Lo anterior se hace con la función `dbWriteTable`.
+
+Debemos indicarle a la función cual es nuestra conexión `con`, que tabla deseamos incorporar (`mtcars` en nuestro caso) y el nombre que le asignaremos a la tabla (mtcars de nuevo)
+
+
+```{r sql03}
+
+dbWriteTable(conn = con, name = "mtcars", value = mtcars)
+
+```
+
+Comprobamos que hemos creado la tabla con la función `dbListTables`, la cual nos da una lista de las tablas a la que tenemos acceso en la conexión
+
+
+```{r sql04}
+
+dbListTables(conn = con)
+
+```
+Podemos inspeccionar los campos (columnas) de la tabla con `dbListFields`
+
+
+```{r sql05}
+
+dbListFields(conn = con, name = "mtcars")
+
+```
+
+O analizar los tipos de cada columa con `dbDataType`. Observar que los argumentos cambian a pesar de usar los mismos inputs que la función anterior 
+
+```{r sql055}
+
+dbDataType(dbObj = con, obj = mtcars)
+
+```
+
+Asimismo, podemos inspeccionar la tabla entera con `dbReadTable`. Esta práctica no es aconsejable con tablas de gran tamanno
+
+```{r sql06}
+
+dbReadTable(conn = con, "mtcars")
+
+```
+
+Una vez nos hemos cerciorado que hemos creado la tabla, y analizado alguna de sus características, vamos a empezar a queries usando SQL
+
+La función que uilizaremos de manera intensiva en esta tarea, es `dbGetQuery`, a la cual indicaremos la conexión (observar que en todas las funciones necesitamos este argumento), y la query que deseamos ejecutar a una de las tablas de la base de datos.
+
+Empezaremos por una query básica, sencillamente extraer las 5 primeras filas de nuestra tabla
+
+```{r sql07}
+
+tabla_1 <- dbGetQuery(conn = con,
+                      statement = "
+                      SELECT * 
+                      FROM mtcars
+                      LIMIT 5")
+tabla_1
+
+
+```
+
+Vamos a complicar un poco más la búsqueda filtrando la tabla, seleccionamos cuatro columnas y solo aquellas filas que cumplan la condición de que el número de cilindros sea igual a ocho.
+
+```{r sql08}
+
+tabla_2 <- dbGetQuery(conn = con,
+                      statement = "
+                      SELECT mpg, hp, cyl, wt
+                      FROM mtcars
+                      WHERE cyl = 8")
+
+tabla_2
+
+```
+
+Ahora vamos a hacer una agrupación usando una función de agregación, vamos a calcular el promedio de los caballos de potencia por cilindros
+
+```{r sql09}
+
+tabla_3 <- dbGetQuery(conn = con,
+                      statement = "
+                      SELECT cyl, AVG(MPG) AS promedio
+                      FROM mtcars
+                      GROUP BY cyl")
+
+tabla_3
+
+```
+
+Ordenamos por el promedio
+
+```{r sql10}
+
+tabla_3 <- dbGetQuery(conn = con,
+                      statement = "
+                      SELECT cyl, AVG(MPG) AS promedio
+                      FROM mtcars
+                      GROUP BY cyl
+                      ORDER BY promedio")
+
+tabla_3
+
+```
+
+Ordenamos de mayor a menor
+
+```{r sql11}
+
+tabla_3 <- dbGetQuery(conn = con,
+                      statement = "
+                      SELECT cyl, AVG(MPG) AS promedio
+                      FROM mtcars
+                      GROUP BY cyl
+                      ORDER BY promedio DESC")
+
+tabla_3
+
+```
+
+Y de este modo, podemos realizar cualquiera de las queries aprendidas en el apartado anterior.
+
+En este punto, cabe recordar la importancia de poder acceder a una base de datos usando R. Podemos tener tablas de gran tamanno almacenadas en la base de datos, que no es deseable o tan siquiera probable cargar en memoria cuando trabajamos con R. El poder tener herramientas que nos permitan interactuar con bases remotas o locales, nos permite trabajar con objetos que no podemos cargar en memoria. Interactuamos con las tablas que necesitamos, filtramos, calculamos, ordenamos, etc. y cargamos en memoria solo el resultado. De esta forma evitamos cuellos de botella de memoria en nuestro flujo de trabajo.
+

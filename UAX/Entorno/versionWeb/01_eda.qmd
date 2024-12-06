@@ -1,6 +1,6 @@
 ---
 title: "DEA: Análisis exploratorio de datos"
-format: html
+format: docx
 execute:
   echo: true
   messages: false
@@ -393,7 +393,8 @@ pacman::p_load(gtsummary,
                GGally,
                inspectdf,
                palmerpenguins,
-               dplyr)
+               dplyr,
+               ggplot2)
 
 ```
 
@@ -429,22 +430,22 @@ penguins |>
 La librería [`gtsummary`](https://www.danieldsjoberg.com/gtsummary/) también es una alternativa muy potente a la función `summary()`, usando también para presentar el resultado de modelos estimados
 
 
-```{r eda05}
+<!-- ```{r eda05} -->
 
-tbl_summary(penguins)
+<!-- tbl_summary(penguins) -->
 
-```
+<!-- ``` -->
 
-El potencial de personalización de la tabla de resumen, por variables e información estadística, es bastante extensa
+<!-- El potencial de personalización de la tabla de resumen, por variables e información estadística, es bastante extensa -->
 
-```{r eda06}
+<!-- ```{r eda06} -->
 
-penguins |> 
-  select(species, bill_depth_mm, bill_length_mm, flipper_length_mm, island) |> 
-  tbl_summary(by = island) |> 
-  add_p()
+<!-- penguins |>  -->
+<!--   select(species, bill_depth_mm, bill_length_mm, flipper_length_mm, island) |>  -->
+<!--   tbl_summary(by = island) |>  -->
+<!--   add_p() -->
 
-```
+<!-- ``` -->
 
 
 La librería [`summarytools`](https://cran.r-project.org/web/packages/summarytools/vignettes/introduction.html) proporciona además de una función análoga a `summary()`, tablas de frecuencia univariante y conjunta.
@@ -548,41 +549,76 @@ chart.Correlation(correl_penguins, histogram = TRUE)
 
 ```
 
-```{r eda13}
+La librería [`GGally`](https://ggobi.github.io/ggally/articles/ggpairs.html) es una extensión de `ggplot2` con la cual podemos visualizar la comparación de datos multivariantes a pares a través de una matriz
 
+```{r eda18}
+
+ggpairs(penguins)
+
+```
+
+Si nos concentramos solo en un subconjunto de variables.
+
+```{r eda19}
+
+ggpairs(penguins, columns = c(1, 4, 5))
+
+```
+
+Annadimos color para distinguir por especie
+
+```{r edad20}
+
+ggpairs(penguins, mapping = aes(color = species), columns = c(1, 4, 5))
 
 
 ```
 
+Inluímos una regresión lineal
 
-€# 5. GGally: Scatterplot matrix with pairwise relationships ----
-ggpairs(
-  data    = iris,
-  columns = 1:4,
-  mapping = aes(color = Species)
-) +
-  tidyquant::scale_fill_tq() +
-  tidyquant::scale_color_tq()
+```{r eda21}
 
-# 6. DataExplorer: Generate a full EDA report ----
+ggpairs(penguins,
+        mapping = aes(color = species),
+        columns = c(1, 4, 5),
+        lower = list(
+          continuous = "smooth",
+          combo = "facetdensity",
+          mapping = aes(color = species)
+          )
+        )
+
+```
+
+Culminamos con dos librerías que nos generan reportes detallados en html
+
+La librería [DataExplorer](https://cran.r-project.org/web/packages/DataExplorer/vignettes/dataexplorer-intro.html)
+
+
+```{r eda22}
+#|eval: false
+
 create_report(
-  iris,
-  output_dir = "086_top_10_eda_packages/",
-  output_file = "DataExplorer_Report.html"
+  penguins,
+  # output_dir = "reportes/",
+  # output_file = "DataExplorer_Reporte.html"
 )
 
+```
 
-# 8. SmartEDA: Generate a detailed EDA report in HTML ----
+Y [SmartEDA](https://daya6489.github.io/SmartEDA/)
+
+```{r eda23}
+
+
 ExpReport(
   iris,
-  op_dir = "086_top_10_eda_packages/",
-  op_file = "SmartEDA_Report.html"
+  op_dir = "./",
+  op_file = "SmartEDA_Reporte.html"
 )
 
-# 10. Inspectdf: Visualize missing values in the dataset ----
-inspect_na(iris) %>% show_plot()
-inspect_cat(iris) %>% show_plot()
-inspect_cor(iris) %>% show_plot()
+```
+
 
 
 
