@@ -1,0 +1,478 @@
+---
+title: "Data Frames"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+## Data frames
+
+Gran parte de los datos con los que trabajamos en el mundo de la ciencia de datos, están organizados en arreglos rectangulares, donde las filas representan las instancias, individuos u objetos de estudio, y las columnas las características de los mismos.  Esto implica que por definición, dado que las unidades de estudio se representan como entes multidimensionales, que las filas son heterogéneas (una fila es un individuo caracterizado, por ejemplo, por su edad, código postal de su residencia, saldo de su cuenta bancaria, etc.), y las columnas son homogéneas (la columna de edad son todos enteros si se representan en años) 
+
+En R, el contenedor usado para poder realizar análisis sobre datos rectangulares, son los data frames.
+
+Formalmente hablando, los data frames son **listas de vectores** de igual magnitud. Por lo que todo lo que hemos aprendido en las secciones anteriores, es aplicable a los data frames
+
+### Inspeccionar los datos
+
+Por lo general, solemos inspeccionar los datos de una tabla para familiarizarnos con ellos y ver que tipo de análisis podemos realizar con ellos.
+
+Vamos a usar una de las tablas de nuestra base de datos
+
+Debemos cargar el archivo .csv y asignarlo a un objeto en R, lo haremos con la función `read.csv()`
+
+```{r df1}
+
+productos <- read.csv(file = "./data/product.csv")
+
+```
+
+Existen varias formas de echar vistazos rápidos a los datos sin necesidad de visualizar la tabla entera
+
+Por ejemplo podemos ver las 6 primeras filas
+
+```{r df2}
+
+head(productos)
+
+```
+
+O las 6 últimas
+
+```{r df3}
+
+tail(productos)
+
+```
+
+Si en lugar de 6, queremos ver un determinado número de filas, simplemente se lo decimos a las funciones `head`y `tail`
+
+```{r df4}
+
+head(productos, n = 3)
+
+tail(productos, n = 2)
+
+```
+
+En el caso en que tengamos muchas columnas, la inspección visual es engorrosa, pero, al igual que las listas, si un data frame es una lista de vectores, donde los vectores son las columnas, podemos acceder a los nombres de las columnas usando `names()`
+
+```{r df5}
+
+names(productos)
+
+```
+
+
+Asimismo, un data frame es un objeto rectangular, es decir, con más de una dimensión, como una matriz, por lo que podremos obtener el número de filas y columnas con `dim()`
+
+```{r df6}
+
+dim(productos)
+
+```
+
+Podemos ver por separado el número de filas y columnas con `nrow` y `ncol`
+
+```{r df7}
+
+ncol(productos)
+
+nrow(productos)
+
+```
+
+
+Otra forma es usando la función `str`. Aunque no es intuitiva e incluso intimida a primera vista, no es tan complicado y aporta información útil 
+
+```{r df8}
+
+str(productos)
+
+```
+
+Una versión que aporta información estadística es `summary`
+
+```{r df9}
+
+summary(productos)
+
+```
+
+Podemos acceder a elementos de los vectores por posición o nombre
+
+```{r df12}
+
+head(productos, n = 1)
+
+productos[1,2]
+
+productos[1,4]
+
+```
+
+En el primer caso le decimos a R que queremos que nos muestre el dato de la primera fila y la segunda columna, en el segundo caso el dato de la primera fila y cuarta columna
+
+En el caso que deseemos ver una columna o fila específica, dejamos una de las dimensiones en blanco
+
+Si queremos acceder a la información de la segunda fila
+
+```{r df13}
+
+productos[2, ]
+
+```
+
+Si queremos acceder a la información de la cuarta columna
+
+```{r df14}
+
+productos[ , 4]
+
+```
+
+Observe que el resultado ya no parece un data frame, y es porque no lo es. Lo que obtenemos es un vector, que es el equivalente a un array de numpy en Python.
+
+Los vectorers son el contenedor básico de datos en R, podemos reducir cualquier contenedor en R a un vector. En los vectores podemos almacenar datos de un solo tipo (númerico -entero o doble-, carácteres y lógico)
+
+Formalmente, un data frame es una colección de vectores de la misma longitud dentro de otra estructura, una **lista**
+
+Volveremos a lo anterior más adelante.
+
+También podemos obtener la información por columna usando el nombre de la misma
+
+```{r df15}
+
+productos[ , "Category"]
+
+```
+
+Asimismo, podemos inspeccionar una columna de data frame escribiendo el nombre del mismo seguido de un signo `$` y el nombre de la columna
+
+La ventaja de este método es que los nombres de la columna se autocompletan
+
+```{r df16}
+
+head(productos$Category)
+
+```
+
+Con la posición, podemos acceder a conjuntos de filas y columnas (slices)
+
+Por ejemplo, si nos queremos quedar solo con las 3 primeras filas y la cuarta y quinta columna
+
+```{r df17}
+
+productos[1:3, 4:5]
+
+```
+
+### Manipulación de data frames
+
+Podemos añadir columnas a un data frame, usemos una versión reducida de `productos`
+
+```{r df18}
+
+(productos_mini <- productos[1:10, ])
+
+```
+
+Creamos un vector (con nombre) de caracteres de longitud 10
+
+```{r df18_5}
+
+( nueva_columna <- letters[1:10] )
+
+```
+
+Añadimos este vector como una nueva columna a `productos_mini`
+
+```{r df19}
+
+productos_mini$new <- nueva_columna
+
+productos_mini
+
+```
+
+Otra forma de añadir una nueva(s) columna(s) es usando la función `cbind()`
+
+
+```{r df20}
+
+( new2 <- letters[11:20] )
+
+( productos_mini <- cbind(productos_mini, new2) )
+
+```
+
+Asimismo podemos usar `rbind()` para añadir nuevas filas al data frame
+
+
+```{r df21}
+
+( rbind(productos_mini[, 1:(ncol(productos_mini)-2)], productos[11:15, ]) )
+
+```
+
+Prestar atención a lo que hemos hecho para poder adaptar productos_mini al número de columnas del sub conjunto de productos. 
+
+Para aplicar la función `cbind()`hay que asegurarse que los data frames tengan el mismo número de filas, y para `rbind()` que tengan el mismo número de columnas.
+
+Si queremos cambiar el orden de las columnas pasamos un vector de caracteres como máscara en la dimensión de columnas como máscara.
+
+```{r df22}
+
+orden_nuevo <- c ("UnitPrice", "UnitsInStock", "UnitsOnOrder", "Category", "Discontinued", "ProductName", "ProductID", "ReorderLevel", "SupplierID")
+
+productos[, orden_nuevo]
+
+```
+
+Si lo que queremos es ordenar por filas 
+
+
+```{r df26}
+
+productos[order(productos$ProductID), ]
+
+```
+
+En orden descendente
+
+```{r df27}
+
+productos[order(-productos$ProductID), ]
+
+```
+
+Si deseamos crear una nueva columna a partir de otras
+
+```{r df23}
+
+productos_mini$mpgOvercyl <- productos_mini$UnitPrice / productos_mini$UnitsInStock
+
+productos_mini
+
+```
+
+
+Y  podemos filtrar filas usando condiciones lógicas al igual que hacíamos con los vectores
+
+```{r df24}
+
+productos[productos$UnitPrice > 500 & productos$Category  == "Home Goods", ]
+
+```
+
+```{r df25}
+
+productos[productos$UnitPrice > 500 | productos$Category  == "Home Goods", ]
+
+```
+
+```{r df26}
+
+productos[productos$Category  == "Home Goods", ]
+
+```
+
+A continuación, vamos a replicar las queries de SQL de la sección anterior con lo aprendido en esta lección. Cargamos las tablas necesarias para poder hacer la replicación
+
+```{r df27}
+
+clientes <- read.csv(file = "./data/customer.csv")
+ordenes <- read.csv(file = "./data/order.csv")
+
+```
+
+
+```{sql query01}
+#| connection: con
+SELECT *
+FROM clientes
+WHERE Country <> 'China'
+LIMIT 5
+```
+
+```{r df25}
+
+head(clientes[clientes$Country != "China", ], 5)
+
+```
+
+```{sql query02}
+#| connection: con
+SELECT *
+FROM clientes
+WHERE Country <> 'China'
+LIMIT 5
+```
+
+```{r df26}
+
+head(clientes[clientes$Country != "China", ], 5)
+
+```
+
+```{sql query03}
+#| connection: con
+SELECT
+CustomerID AS IDCliente,
+Email AS Correo,
+Country AS Pais
+FROM clientes
+WHERE Country <> 'China'
+LIMIT 5
+```
+
+```{r df27}
+
+cli_china <- head(clientes[clientes$Country != "China", c("CustomerID", "Email", "Country")], 5)
+
+cli_china
+
+```
+
+```{r df28}
+
+cli_china2 <- head(clientes[clientes$Country != "China", c("CustomerID", "Email", "Country")], 5)
+names(cli_china2) <- c("IDCliente", "Correo", "Pais")
+
+cli_china2
+
+```
+
+```{sql query04}
+#| connection: con
+SELECT CustomerID AS IDCliente,
+       Email AS Correo,
+       Country AS Pais,
+       Gender AS Genero
+FROM clientes
+WHERE Country = 'China'
+AND Gender = 'Male'
+LIMIT 5
+```
+
+```{r df29}
+
+cli_china3 <- head(clientes[clientes$Country == "China" & clientes$Gender == "Male",
+                            c("CustomerID", "Email", "Country", "Gender")], 5)
+names(cli_china3) <- c("IDCliente", "Correo", "Pais", "Género")
+
+cli_china3
+
+```
+
+```{sql query05}
+#| connection: con
+SELECT CustomerID AS IDCliente,
+       Email AS Correo,
+       Country AS Pais,
+       Gender AS Genero
+FROM clientes
+WHERE CustomerID > 5
+AND CustomerID < 10
+
+```
+
+```{r df30}
+
+cli_china4 <- head(clientes[clientes$CustomerID > 5 & clientes$CustomerID < 10,
+                            c("CustomerID", "Email", "Country", "Gender")], 5)
+names(cli_china4) <- c("IDCliente", "Correo", "Pais", "Género")
+
+cli_china4
+
+```
+
+
+```{sql query06}
+#| connection: con
+SELECT Country AS Pais,
+       COUNT(CustomerID) AS Clientes
+FROM clientes
+GROUP BY Country
+ORDER BY Clientes DESC
+LIMIT 5
+
+```
+
+Para realizar esta query en R (base), debemos recurrir a varias funciones. Este tipo de operaciones se simplificaran mucho en las próximas sesiones cuando presentemos dos librerías cuya sintaxis se asemeja más al lenguaje SQL, mientras mantiene la simplicidad de R
+
+Para agregar y agrupar vamos a usar la función `aggregate()`, luego ordenaremos como se ha explicado antes y dejaremos el `head()` para el final
+
+
+```{r df31}
+
+cli_china5 <- aggregate(CustomerID ~ Country, data = clientes, FUN = length)
+
+names(cli_china5) <- c("País", "Clientes")
+
+cli_china5 <- cli_china5[order(-cli_china5$Clientes), ]
+
+cli_china5 <- head(cli_china5, 5)
+
+cli_china5
+
+```
+Otra opción es usar la función `by()`, el problema es que el output de la misma no es un data frame, por lo que hay un paso adicional en esta operación
+
+```{r df31}
+
+cli_china6 <-  by(clientes$CustomerID, clientes$Country, FUN = length)
+
+cli_china6 <- sort(cli_china6, decreasing = TRUE)
+
+cli_china6 <- as.data.frame(cli_china6)
+
+names(cli_china6) <- c("Clientes")
+
+cli_china6 <- head(cli_china6, 5)
+
+cli_china6
+
+```
+
+Como se ha mencionado antes, este es el tipo de operaciones que se simplifican mucho usando las librerías que presentaremos más adelante.
+
+
+```{sql query05}
+#| connection: con
+SELECT
+  ordenes.OrderID AS Pedido,
+  ordenes.CustomerID AS Cliente,
+  clientes.Email AS Correo,
+  clientes.Country AS Pais,
+  clientes.Gender AS Genero
+FROM ordenes
+LEFT JOIN clientes
+  ON ordenes.CustomerID = clientes.CustomerID
+WHERE clientes.Country = 'China'
+LIMIT 5
+
+```
+
+```{r df30}
+
+cli_china7 <- merge(x = ordenes[ , c("OrderID", "CustomerID")],
+                    y = clientes[ , c("CustomerID", "Email", "Country", "Gender")],
+                    by = "CustomerID",
+                    all.x = TRUE)
+
+
+names(cli_china7) <- c("IDCliente", "Pedido", "Correo", "Pais", "Género")
+
+cli_china7 <- cli_china7[cli_china7$Pais == "China", ]
+
+cli_china7 <- head(cli_china7, 5)
+
+cli_china7
+
+```
+
+
