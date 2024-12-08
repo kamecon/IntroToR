@@ -42,7 +42,7 @@ En este curso utilizaremos la herramienta online [Posit cloud](https://login.rst
 Posit Cloud en su versión online
 
 ::: {#fig-atomic}
-![](rstudio.jpg)
+![](images/rstudio.jpg)
 
 Entorno de R studio
 :::

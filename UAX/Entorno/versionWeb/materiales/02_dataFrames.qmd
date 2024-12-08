@@ -136,7 +136,7 @@ productos[ , 4]
 
 Observe que el resultado ya no parece un data frame, y es porque no lo es. Lo que obtenemos es un vector, que es el equivalente a un array de numpy en Python.
 
-Los vectorers son el contenedor básico de datos en R, podemos reducir cualquier contenedor en R a un vector. En los vectores podemos almacenar datos de un solo tipo (númerico -entero o doble-, carácteres y lógico)
+Los vectores son el contenedor básico de datos en R, podemos reducir cualquier contenedor en R a un vector. En los vectores podemos almacenar datos de un solo tipo (numérico -entero o doble-, caracteres y lógico)
 
 Formalmente, un data frame es una colección de vectores de la misma longitud dentro de otra estructura, una **lista**
 
@@ -228,7 +228,7 @@ Si queremos cambiar el orden de las columnas pasamos un vector de caracteres com
 
 orden_nuevo <- c ("UnitPrice", "UnitsInStock", "UnitsOnOrder", "Category", "Discontinued", "ProductName", "ProductID", "ReorderLevel", "SupplierID")
 
-productos[, orden_nuevo]
+head(productos[, orden_nuevo])
 
 ```
 
@@ -237,7 +237,7 @@ Si lo que queremos es ordenar por filas
 
 ```{r df26}
 
-productos[order(productos$ProductID), ]
+head(productos[order(productos$ProductID), ])
 
 ```
 
@@ -245,7 +245,7 @@ En orden descendente
 
 ```{r df27}
 
-productos[order(-productos$ProductID), ]
+head(productos[order(-productos$ProductID), ])
 
 ```
 
@@ -264,30 +264,45 @@ Y  podemos filtrar filas usando condiciones lógicas al igual que hacíamos con 
 
 ```{r df24}
 
-productos[productos$UnitPrice > 500 & productos$Category  == "Home Goods", ]
+head(productos[productos$UnitPrice > 500 & productos$Category  == "Home Goods", ])
 
 ```
 
 ```{r df25}
 
-productos[productos$UnitPrice > 500 | productos$Category  == "Home Goods", ]
+head(productos[productos$UnitPrice > 500 | productos$Category  == "Home Goods", ])
 
 ```
 
-```{r df26}
+```{r df266}
 
-productos[productos$Category  == "Home Goods", ]
+head(productos[productos$Category  == "Home Goods", ])
 
 ```
 
 A continuación, vamos a replicar las queries de SQL de la sección anterior con lo aprendido en esta lección. Cargamos las tablas necesarias para poder hacer la replicación
 
-```{r df27}
+```{r df275}
 
 clientes <- read.csv(file = "./data/customer.csv")
 ordenes <- read.csv(file = "./data/order.csv")
 
 ```
+
+```{r con01}
+#|echo: false
+
+library(DBI, RSQLite)
+
+con <- dbConnect(RSQLite::SQLite(), dbname = ":memory:")
+
+dbWriteTable(conn = con, name = "clander", value = read.csv("./data/clander.csv"))
+dbWriteTable(conn = con, name = "clientes", value = read.csv("./data/customer.csv"))
+dbWriteTable(conn = con, name = "ordenes", value = read.csv("./data/order.csv"))
+dbWriteTable(conn = con, name = "productos", value = read.csv("./data/product.csv"))
+
+```
+
 
 
 ```{sql query01}
@@ -298,7 +313,7 @@ WHERE Country <> 'China'
 LIMIT 5
 ```
 
-```{r df25}
+```{r df255}
 
 head(clientes[clientes$Country != "China", ], 5)
 
@@ -312,7 +327,7 @@ WHERE Country <> 'China'
 LIMIT 5
 ```
 
-```{r df26}
+```{r df2666}
 
 head(clientes[clientes$Country != "China", ], 5)
 
@@ -329,7 +344,7 @@ WHERE Country <> 'China'
 LIMIT 5
 ```
 
-```{r df27}
+```{r df277}
 
 cli_china <- head(clientes[clientes$Country != "China", c("CustomerID", "Email", "Country")], 5)
 
@@ -422,7 +437,7 @@ cli_china5
 ```
 Otra opción es usar la función `by()`, el problema es que el output de la misma no es un data frame, por lo que hay un paso adicional en esta operación
 
-```{r df31}
+```{r df32}
 
 cli_china6 <-  by(clientes$CustomerID, clientes$Country, FUN = length)
 
@@ -441,7 +456,7 @@ cli_china6
 Como se ha mencionado antes, este es el tipo de operaciones que se simplifican mucho usando las librerías que presentaremos más adelante.
 
 
-```{sql query05}
+```{sql query07}
 #| connection: con
 SELECT
   ordenes.OrderID AS Pedido,
@@ -457,7 +472,7 @@ LIMIT 5
 
 ```
 
-```{r df30}
+```{r df33}
 
 cli_china7 <- merge(x = ordenes[ , c("OrderID", "CustomerID")],
                     y = clientes[ , c("CustomerID", "Email", "Country", "Gender")],
@@ -465,7 +480,7 @@ cli_china7 <- merge(x = ordenes[ , c("OrderID", "CustomerID")],
                     all.x = TRUE)
 
 
-names(cli_china7) <- c("IDCliente", "Pedido", "Correo", "Pais", "Género")
+names(cli_china7) <- c("Cliente", "Pedido", "Correo", "Pais", "Género")
 
 cli_china7 <- cli_china7[cli_china7$Pais == "China", ]
 
@@ -475,4 +490,10 @@ cli_china7
 
 ```
 
+```{r con2}
+#| echo: false
+
+dbDisconnect(con)
+
+```
 
