@@ -14,6 +14,8 @@ Ya se han mostrado las ventajas de usar SQL, la estructura del lenguaje, y pract
 
 En R para poder interactuar con SQL, debemos llamar librerías externas que nos permitan conectarnos con alguna base de datos. Por lo general, trabajaremos con bases de datos remotas o que pertenecen a la infraestructura de una empresa. En clase trabajaremos con bases de datos en local, la diferencia con trabajar con bases de datos remotas o corporativas, es simplemente señalar a la librería los parámetros de conexión.
 
+# SQL en R
+
 Usaremos las librerías `DBI` para conectarnos, y `RSQLite` para trabajar localmente
 
 El primer paso es llamar a las librerías y establecer la conexión con la base de datos, esto último lo haremos con la función `dbConnect` de `DBI`
@@ -121,10 +123,66 @@ dbGetQuery(conn = con, readr::read_file("query04.sql"))
 
 ```
 
-Al finalizar, es importante recordar desconectarse de la base de datos usando la función `dbDisconnect()`
+# Queries parametrizadas
+
+En lugar de suministrar valores concretos en una query, por ejemplo, pedir que en la tabla de clientes nos muestre la información de China y Portugal, le suministramos un parámetro (País por ejemplo), y sustituimos esos parámetros por los países que nos interesen
+
+Cambiemos la query de primer ejemplo
 
 
 ```{r sql10}
+
+dbGetQuery(conn = con,
+           statement = "
+           SELECT *
+           FROM clientes
+           WHERE Country = 'China'
+           LIMIT 5")
+
+```
+
+Podemos sustituir China por un parámetro PAIS, y cambiar el nombre del país dependiendo de nuestras necesidades.
+
+Para ejecutar lo anterior, usaremos la librería `glue`
+
+```{r sql11}
+
+library(glue)
+
+PAIS <- "'China'"
+
+queryParam1 <- glue("
+           SELECT *
+           FROM clientes
+           WHERE Country = {PAIS}
+           LIMIT 5")
+
+dbGetQuery(conn = con,
+           statement = queryParam1)
+
+```
+
+
+```{r sql12}
+
+library(glue)
+
+PAIS <- "'Spain'"
+
+queryParam1 <- glue("
+           SELECT *
+           FROM clientes
+           WHERE Country = {PAIS}
+           LIMIT 5")
+
+dbGetQuery(conn = con,
+           statement = queryParam1)
+
+```
+
+Al finalizar, es importante recordar desconectarse de la base de datos usando la función `dbDisconnect()`
+
+```{r sql100}
 
 dbDisconnect(con)
 

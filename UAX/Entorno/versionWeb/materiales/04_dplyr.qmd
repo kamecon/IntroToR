@@ -518,7 +518,10 @@ productos_anidado$data[[3]]
 
 fechas <- ordenes |>
   select(ShippedDate, ShipAddress) |> 
-  tidyr::separate(ShippedDate, into = c("day", "month", "year"), sep = "/")
+  tidyr::separate(ShippedDate,
+                  into = c("month", "day", "year"),
+                  sep = "/",
+                  remove = FALSE)
 
 fechas |> 
   head()
@@ -553,16 +556,53 @@ fechas |>
 
 ```
 
+```{r exec04}
+
+fechas |>
+  mutate(Date2 = as.Date(ShippedDate, "%m/%d/%Y"))
+
+```
+
+Con `lubridate`
+
+```{r exec05}
+
+pacman::p_load(lubridate)
+
+fechas |> 
+  mutate(Date2 = as.Date(ShippedDate, "%m/%d/%Y"),
+         Date3 = mdy(ShippedDate))
+
+```
+
+Formatos de fecha
+
+```{r exec06}
+
+?strftime
+
+```
+
+Ejemplos con `Sys.time()` y `format()`
+
+```{r exec07}
+
+Sys.time()
+format(Sys.time(), "%y/%m/%d")
+format(Sys.time(), "%Y/%m/%d")
+format(Sys.time(), "%Y/%m/%dT%H%M")
+format(Sys.time(), "%Y/%m/%dT%H:%M")
+format(Sys.time(), "%Y/%m/%dT%H:%M:%S")
+format(Sys.time(), "%Y/%m/%dT%H:%M:%S")
+format(Sys.time(), "%Y/%m/%dTime%H:%M:%S")
+format(Sys.time(), "%Y/%m/%d.Time%H:%M:%S")
+format(Sys.time(), "%Y/%m/%d.Time:%H:%M:%S")
+format(Sys.time(), "%Y/%m/%d.Hora:%H:%M:%S")
 
 
+```
 
-
-
-
-
-
-
-
+Pueden encontrar información más detallada de como manipular fechas y horas (con `lubridate`) leer este [capítulo](https://es.r4ds.hadley.nz/16-datetimes.html) del [libro](https://es.r4ds.hadley.nz/) recomendado arriba 
 
 
 

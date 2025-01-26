@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 50e561a1-ed44-4294-af57-095dbdc0d967
+      url: 'https://r-trainings.quarto.pub/entorno-r'
