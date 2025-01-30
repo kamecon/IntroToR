@@ -1,0 +1,246 @@
+---
+title: "ggplot2"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Introducción a la visualización en R con `ggplot2`
+
+La visualización de datos es un tópico independiente al que habría que dedicarle un cuatrimestre o incluso un curso entero.
+
+Es un elemento fundamental en el ciclo del análisis de datos, que ocupa un sitio tanto al principio, durante y al final del mismo.
+
+Dada la naturaleza práctica e interactiva de este módulo, el mismo se basará más en sesiones de código que en discusiones de naturaleza teórica,
+
+Abarcaremos las funcionalidades de visualización de la librería `ggplot2` del ecosistema tidyverse.
+
+ggplot2 ha sido usado por medios como la [BBC](https://bbc.github.io/rcookbook/) y el [Financial Times](https://blog.revolutionanalytics.com/2018/06/ft-bbc-uses-r.html)
+
+::: {#fig-datatble}
+![](images/logo5.png){width=200}
+
+Hex sticker de ggplot2
+:::
+
+::: {.callout-note}
+
+**Referencias bibliográficas**
+
+Como se ha mencionado, en este curso veremos una (extremadamente) breve introducción a visualización con ggplot2. así que, a los interesados en profundizar en el tema les recomiendo la siguiente bibliografía:
+
++ Básica
+
+  - [R Graphics Cookbook](https://r-graphics.org/), 2nd edition de Winston Chang. Es un libro de referencia en forma de recetario que es muy útil a la hora de intentar resolver dudas básicas (y no tanto) muy concretas.
+
+  - [Data Visualization A practical introduction](https://socviz.co/) de Kieran Healy. Es una obra más extensa pero muy recomendable que va más allá del mero aprendizaje de una librería y trata los elementos de una buena visualización.
+
++ Complementaria
+
+  - [ggplot2: Elegant Graphics for Data Analysis (3e)](https://ggplot2-book.org/) de  Hadley Wickham, Danielle Navarro, y Thomas Lin Pedersen. Este “es” el libro si desea aprender no el uso práctico de la librería ggplot2, sino la filosofía de la Gramática de Gráficos detrás de la librería. No será una referencia para este curso, pero es una cita obligatoria en cualquier curso que use ggplot2
+  
+  - [The Grammar of Graphics](https://link.springer.com/book/10.1007/0-387-28695-0?source=post_page-----1f92b4ed4149--------------------------------) de Leland Wilkinson. El libro de la *gramática de los gráficos*, filosofía debajo de la librería ggplot2. Recomendable para cualquiera que le interese la visualización en general.
+
+:::
+
+Instalamos y cargamos la librería 
+
+```{r ggplot01}
+
+#install.packages(ggplot2)
+library(ggplot2)
+
+```
+
+Vamos a usar conjuntos de datos que trae la librería ggplot2 como ejemplo, empezamos con `mpg`
+
+```{r ggplot02}
+
+mpg
+
+```
+
+# Gramática de Gráficos
+
+Similar a cómo la gramática del lenguaje organiza el lenguaje mediante un conjunto de reglas, la gramática de gráficos define un conjunto de reglas para estructurar gráficos.
+
+En su núcleo, la **gramática de gráficos** gira en torno al concepto de capas. Una combinación coherente de capas culmina en la formación de un gráfico.
+
+## Capas
+
+* _Datos_: conjunto de datos que se está visualizando  
+* _Estéticas_: vincula variables del conjunto de datos con propiedades visuales como color, tamaño y forma  
+* _Geometrías_: representación visual utilizada para los datos (líneas, puntos, barras)  
+* _Facetas_: divide los datos en subconjuntos según una o más variables categóricas (país, género, edad)  
+* _Estadísticas_: geometrías calculadas basadas en medidas estadísticas  
+* _Coordenadas_: especifica el tipo de sistema de coordenadas, como cartesiano, polar, etc.  
+* _Temas_: apariencia de las decoraciones del gráfico (ejes, líneas de cuadrícula, fondo)  
+
+::: {#fig-layers}
+![](images/gglayers.png){width=400}
+
+Imagen adaptada de *The Grammar of Graphics*. [Fuente](https://r.qcbs.ca/workshop03/book-en/grammar-of-graphics-gg-basics.html).
+:::
+
+
+Fundamentalmente, cada gráfico requiere un conjunto de datos, una representación geométrica y especificaciones estéticas.  
+
+```{r ggplot03}
+#| eval: false
+
+ggplot(data = <DATA>, mapping = aes(<MAP>)) + <GEOMETRY>(OPTIONS)
+
+```
+
+La geometría se refiere al tipo de gráfico (dispersión, línea, barra, etc.), y las estéticas describen cómo se asignan los datos a los ejes, es decir, qué colocamos en los ejes.  
+
+La función para crear un gráfico es `ggplot()`.  
+
+Construyamos un gráfico que relacione las variables `displ` y `hwy`. El primer paso es llamar al conjunto de datos y especificar las variables que queremos representar; este último aspecto es lo que ggplot denomina *estéticas*.  
+
+## Datos y estéticas  
+
+```{r ggplot035_0}
+
+graph <- ggplot(mpg) 
+
+graph
+
+```
+
+```{r ggplot035}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) 
+
+graph
+
+```
+
+## Geometrías  
+
+Vemos que esto representa una especie de lienzo donde se visualizan las variables a representar. Necesitamos una *capa* de geometría. Puedes ver una lista de geometrías de ggplot2 [aquí](https://ggplot2.tidyverse.org/reference/#geoms).  
+
+```{r ggplot04}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+
+graph
+
+```
+
+Dentro de las estéticas, podemos incorporar opciones adicionales:  
+
+* `color`: Especifica el color de la geometría y puede variar según una tercera variable si existe dicha dependencia.  
+
+* `fill`: Define el color de relleno de la geometría si es una forma que puede llenarse (como barras, puntos, polígonos, etc.).  
+
+* `shape`: Indica la forma de los puntos (pares ordenados o n-adas de las variables representadas) o de las líneas que los conectan.  
+
+* `size`: Define el tamaño de la geometría.  
+
+* `alpha`: Controla la transparencia de la geometría.  
+
+Añadimos un color a la geometría que depende de la variable categórica `class` del conjunto de datos.  
+
+```{r ggplot05}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = class)) +
+  geom_point()
+
+graph
+
+```
+
+Esto es lo que llamamos una estética _no fija_. En este caso, debe aparecer como argumento dentro de la función `aes()`.  
+
+Observa lo que sucede si incluimos el argumento `color` en `geom_point()`.  
+
+```{r ggplot055}
+#| eval: false
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = class)
+
+graph
+
+```
+
+Obtenemos un error. Sustituyamos la variable `class` por un nombre de color.  
+
+```{r ggplot056}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(color = "blue")
+
+graph
+
+```
+
+Esto es lo que llamamos una _estética fija_, es decir, el color es el mismo para todos los puntos.  
+
+Asimismo, podemos incluir una forma para cada par ordenado que dependa de otra variable, en este caso `cyl`. Antes de añadirla, la convertimos en un factor.  
+
+```{r ggplot06}
+
+graph <- ggplot(mpg, aes(x = displ,
+                         y = hwy,
+                         color = class,
+                         shape = factor(cyl))
+                ) +
+  geom_point()
+
+graph
+
+```
+
+Podemos modificar el tamaño de las estéticas.  
+
+```{r ggplot065}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = class, shape = factor(cyl))) +
+  geom_point(size = 3)
+
+graph
+
+```
+
+Honestamente, este gráfico introduce más confusión de la que resuelve. Volvamos a una versión más simple y seleccionemos la forma de los elementos estéticos utilizando el atributo `shape`. Cada opción de forma tiene un número específico, que puedes consultar [aquí](https://ggplot2.tidyverse.org/articles/ggplot2-specs.html#point).  
+
+```{r ggplot07}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 3, shape = 23)
+
+graph
+
+```
+
+Mantengamos círculos un poco más grandes.  
+
+```{r ggplot08}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21)
+
+graph
+
+```
+
+Vamos a excluir los autos con 5 cilindros (ya que hay muy pocos), y de esta manera vemos cómo podemos manipular el conjunto de datos dentro de las instrucciones del gráfico.  
+
+```{r ggplot09}
+# #| class-source: "numberLines"
+# #| source-line-numbers: "1"
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21)
+
+graph
+
+```
+

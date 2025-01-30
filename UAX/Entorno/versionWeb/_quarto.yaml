@@ -29,12 +29,8 @@ website:
           href: materiales/04_dplyr.qmd
         - text: "Análisis exploratorio de datos"
           href: materiales/03_eda.qmd
-        # - text: "Statistics"
-        #   href: materials/07_statistics.qmd
-        #   #target: "_blank"
-        #   #target: "_blank"
-        # - text: "ggplot"
-        #   href: materials/09_ggplot.qmd
+        - text: "ggplot2"
+          href: materiales/05_ggplot2.qmd
         #   #target: "_blank"
         # - text: "Regression analysis"
         #   href: materials/10_regression.qmd
