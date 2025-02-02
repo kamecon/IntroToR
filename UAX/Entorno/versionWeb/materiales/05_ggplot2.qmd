@@ -230,11 +230,9 @@ graph
 
 ```
 
-Vamos a excluir los autos con 5 cilindros (ya que hay muy pocos), y de esta manera vemos cómo podemos manipular el conjunto de datos dentro de las instrucciones del gráfico.  
+Vamos a excluir los coches con 5 cilindros (ya que hay muy pocos), y de esta manera vemos cómo podemos manipular el conjunto de datos dentro de las instrucciones del gráfico.  
 
 ```{r ggplot09}
-# #| class-source: "numberLines"
-# #| source-line-numbers: "1"
 
 graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
                   aes(x = displ, y = hwy, color = factor(cyl))) +
@@ -244,3 +242,613 @@ graph
 
 ```
 
+Cambiando la geometría, gráfico de barras  
+
+```{r ggplot092}
+
+graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
+  geom_bar()
+
+graph
+
+```
+
+```{r ggplot0925}
+
+graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
+  geom_bar() +
+  coord_flip()
+
+graph
+
+```
+
+```{r ggplot0926}
+
+graph <- ggplot(mpg, aes(x = cyl, fill = factor(class))) +
+  geom_bar(position = "dodge")
+
+graph
+
+```
+
+```{r ggplot0927}
+
+graph <- ggplot(mpg, aes(x = class, fill = factor(cyl))) +
+  geom_bar(position = "fill") +
+  labs(y = "Proportion")
+
+graph
+
+```
+
+Exploraremos un conjunto de datos diferente que es adecuado para la creación de gráficos de líneas, el conjunto de datos `economics`
+
+```{r ggplotecon}
+
+economics
+
+
+```
+
+Gráfico de líneas
+
+```{r ggplot082}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line()
+
+graph
+
+```
+
+```{r ggplot083}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line(color = "blue", size = 1.2)
+
+graph
+
+```
+
+```{r ggplot084}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line(color = "blue", size = 1.2, linetype = "dashed")
+
+graph
+
+```
+
+Diferentes tipos de líneas  
+
+```{r ggplot0845}
+
+ggplot(economics_long, aes(date, value01)) +
+  geom_line(aes(linetype = variable))
+
+```
+
+
+```{r ggplot085}
+
+graph <- ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_line() +
+  geom_area(fill="lightblue", color="black")
+
+graph
+
+```
+
+
+Histogramas
+
+```{r ggplot14}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram()
+
+graph_h
+
+```
+
+No se ve muy bien, cambiemos los parámetros predeterminados, como el ancho de los intervalos (`binwidth`)
+
+```{r ggplot15}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(binwidth = 3)
+
+graph_h
+
+```
+
+O el número de intervalos (`bins`)
+
+```{r ggplot152}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(bins = 8)
+
+graph_h
+
+```
+
+O usemos algunos colores
+
+```{r ggplot16}
+#| warning: false
+
+graph_h <- ggplot(mpg, aes(x = cty)) +
+  geom_histogram(binwidth = 3, fill = "blue", color = "black")
+
+graph_h
+
+```
+
+
+Un diagrama de caja o boxplot
+
+```{r ggplot17}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot()
+
+graph_b
+
+```
+
+Cambiemos el color
+
+```{r ggplot172}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot(color= "black", fill = "cornsilk")
+
+graph_b
+
+```
+
+```{r ggplot173}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy, fill = factor(class) )) +
+  geom_boxplot()
+
+graph_b
+
+```
+
+Comparación de distribuciones con densidades  
+
+```{r ggpplot1745}
+
+ggplot(mpg |> dplyr::filter(cyl != 5),
+       aes(x = hwy)
+       ) +
+  geom_density(alpha = 0.4) +
+  facet_grid(~ cyl)
+
+```
+
+
+```{r ggpplot174}
+
+ggplot(mpg |> dplyr::filter(cyl != 5),
+       aes(x = hwy, fill = factor(cyl))
+       ) +
+  geom_density(alpha = 0.4) 
+
+```
+
+Otra forma de representar densidades es mediante un _joyplot_, que se puede crear con la biblioteca `ggridges`. Un _joyplot_ es un tipo de gráfico que muestra múltiples gráficos de densidad apilados, lo que facilita la comparación de las distribuciones de diferentes grupos o categorías
+
+
+```{r ggpplot175}
+
+library(ggridges)
+
+ggplot(mpg, 
+       aes(x = hwy, y = class, fill = class)) +
+  geom_density_ridges() + 
+  theme_ridges()
+
+```
+
+## Facetas
+
+Puede que no sea fácil visualizar todo en un solo gráfico; en este caso, podemos crear un subgráfico para cada variable categórica. En tales casos, podemos definir facetas con `facet_wrap()`  
+
+```{r ggplot12}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  facet_wrap( ~ cyl)
+
+graph
+
+```
+
+También puedes crear facetas utilizando dos variables categóricas con `facet_grid()`
+
+```{r ggplot13}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(manufacturer))) +
+  geom_point(size = 4, shape = 21) +
+  facet_grid(class ~ cyl)
+
+graph
+
+```
+
+```{r ggplot17f}
+#| warning: false
+
+graph_b <- ggplot(mpg, aes(x =factor(class), y = hwy)) +
+  geom_boxplot(color= "black", fill = "cornsilk")+
+  facet_wrap(~year)
+
+graph_b
+
+```
+
+## Estadísticas  
+
+Ahora, estimemos una relación lineal entre las variables `hwy` y `displ` para cada nivel de cilindros.  
+
+```{r ggplot10}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth(method = lm)
+
+graph
+
+```
+
+Tenemos la capacidad de ajustar la apariencia de las funciones de suavizado. Por ejemplo, podemos eliminar el intervalo de confianza y cambiar el grosor de la línea.  
+
+```{r ggplot105}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth(method = lm, se = FALSE, size = 3)
+
+graph
+
+```
+
+Y si queremos que la relación sea no lineal, no especificamos el método (por defecto es no lineal).  
+
+```{r ggplot11}
+#| warning: false
+
+graph <- ggplot(mpg |> dplyr::filter(cyl != 5),
+                  aes(x = displ, y = hwy, color = factor(cyl))) +
+  geom_point(size = 4, shape = 21) +
+  geom_smooth()
+
+graph
+
+```
+
+Una versión no lineal más simple.  
+
+```{r ggplot18}
+
+graph <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(colour = "blue", size = 2) +  
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red")
+
+graph 
+
+```
+
+## Temas  
+
+La función `theme()` en `ggplot2` permite personalizar los componentes no relacionados con los datos en tus gráficos, como los ejes, etiquetas, fondos y más.  
+
+Cuando ejecutas `?theme`, notarás que hay numerosos elementos dentro de un gráfico que pueden modificarse. Antes de profundizar en una selección de estos elementos personalizables, primero exploraremos las funciones de temas que ofrecen configuraciones predefinidas para estilos específicos.
+
+### Default: Grey
+
+```{r themes1}
+
+graph +
+  theme_gray()
+
+```
+
+### Theme BW
+
+```{r themes2}
+
+graph +
+  theme_bw()
+
+```
+
+### Theme dark
+
+```{r themes3}
+
+graph +
+  theme_dark()
+
+```
+
+### Theme minimal
+
+```{r themes4}
+
+graph +
+  theme_minimal()
+
+```
+
+### Theme classic
+
+```{r themes5}
+
+graph +
+  theme_classic()
+
+```
+
+### Theme Light
+
+```{r themes6}
+
+graph +
+  theme_light()
+
+```
+
+### ggthemes
+
+El paquete `ggthemes` proporciona temas adicionales que amplían las opciones de personalización en `ggplot2`, permitiéndote aplicar una variedad de estilos predefinidos a tus gráficos 
+
+```{r themes7}
+
+library(ggthemes)
+
+graph +
+  theme_economist()
+
+```
+
+```{r themes8}
+
+graph +
+  theme_fivethirtyeight()
+
+```
+
+ 
+```{r themes9}
+
+graph +
+  theme_stata()
+
+```
+
+Antes de profundizar en la función `theme`, primero agreguemos etiquetas informativas a nuestro gráfico, como un título, etiquetas de ejes y otras anotaciones relevantes
+
+```{r themes10}
+
+graph <- graph +
+  labs(title = "My First Plot",
+       subtitle = "With ggplot",
+       caption = "Source: Me") +
+  xlab("Engine displacement") +
+  ylab("Highway miles per gallon")
+
+graph
+
+```
+
+[Here](https://ggplot2.tidyverse.org/reference/theme.html), you can find a comprehensive list of theme elements available in `ggplot2`. The following figure illustrates and helps you identify some of these key elements in a plot.
+
+::: {#fig-themes}
+![](images/themes.png){width=90%}
+
+ggplot2 Theme Elements Reference Sheet ([source](https://isabella-b.com/blog/ggplot2-theme-elements-reference/))
+
+:::
+
+Usando la figura como guía, procedamos a modificar algunos elementos del gráfico para ver cómo impactan en la apariencia general del mismo.  
+
+Este es nuestro gráfico base.  
+
+
+```{r themes11}
+
+graph <- graph +
+  theme_minimal()
+
+graph
+
+```
+
+Comenzaremos personalizando el título del gráfico. Para ello, consultaremos la documentación de la función `theme()` para comprender cómo estructurar correctamente los argumentos. Esto nos ayudará a controlar la apariencia del título, como el tamaño de la fuente, el color, la alineación y su posición en el gráfico.
+
+
+```{r themes115}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown"))
+
+```
+
+Etiquetas de ejes
+
+```{r themes12}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title.x = element_text(size = 15, colour = "purple", family = "mono"))
+
+```
+
+Si queremos modificar las etiquetas de ambos ejes
+
+```{r themes13}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono"))
+
+```
+
+El fondo
+
+```{r themes14}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1"))
+
+```
+
+Añadimos un eje
+
+```{r themes15}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line())
+
+```
+
+Formatear el texto de los ejes
+
+```{r themes16}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic"))
+
+```
+
+Sin líneas de cuadrícula
+
+```{r themes17}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank())
+
+```
+
+Líneas de cuadrícula personalizadas
+
+```{r themes18}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) 
+
+```
+
+```{r themes19}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) +
+  theme(panel.grid.minor.x = element_line(colour = "black", linetype = "solid"))
+
+```
+
+```{r themes20}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) +
+  theme(panel.grid.minor.x = element_line(colour = "black", linetype = "solid")) +
+  theme(panel.grid.major.y = element_line(colour = "green", linetype = "dashed")) +
+  theme(panel.grid.minor.y = element_line(colour = "black", linetype = "solid"))
+
+
+```
+
+Cambiar el fondo del panel
+
+```{r themes21}
+
+graph +
+  theme(plot.title = element_text(hjust = 0.5, family = "serif", size = 20, colour = "brown")) +
+  theme(axis.title = element_text(size = 15, colour = "purple", family = "mono")) +
+  theme(plot.background = element_rect(fill = "lightsalmon1")) +
+  theme(axis.line = element_line()) +
+  theme(axis.text = element_text(face = "bold.italic")) +
+  theme(panel.grid = element_blank()) +
+  theme(panel.grid.major.x = element_line(colour = "yellow", linetype = "dashed")) +
+  theme(panel.grid.minor.x = element_line(colour = "black", linetype = "solid")) +
+  theme(panel.grid.major.y = element_line(colour = "green", linetype = "dashed")) +
+  theme(panel.grid.minor.y = element_line(colour = "black", linetype = "solid")) +
+  theme(panel.background = element_rect(fill = "bisque"))
+
+
+```
+
+## Guardar gráficos  
+
+Finalmente, podemos guardar nuestro gráfico utilizando la función `ggsave()`. Puedes elegir el formato del archivo de salida  
+
+Por defecto, la función `ggsave()` guarda el último gráfico
+
+```{r save1}
+#| warning: false
+#| eval: false
+
+ggsave(filename = "myPlot.pdf", device = "pdf")
+
+```
+
+El argumento `device` controla el tipo de archivo de salida
+
+```{r save2}
+#| warning: false
+#| eval: false
+
+ggsave(filename = "myPlot.jpeg", device = "jpeg")
+
+```
