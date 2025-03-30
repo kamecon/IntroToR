@@ -1,0 +1,190 @@
+---
+title: "SQL en R"
+format: html
+execute:
+  echo: true
+messages: false
+warning: false
+editor: source
+---
+
+En asignaturas previas se ha destacado la importancia del lenguaje SQL en la ciencia de datos, ya que nos permite interactuar con bases de datos relacionales. Lo anterior permite manipular gran cantidad de datos de manera eficiente sin necesidad de cargarlos en memoria.
+
+Ya se han mostrado las ventajas de usar SQL, la estructura del lenguaje, y practicado con las queries más básicas, en esta sección vamos a replicar lo aprendido en R.
+
+En R para poder interactuar con SQL, debemos llamar librerías externas que nos permitan conectarnos con alguna base de datos. Por lo general, trabajaremos con bases de datos remotas o que pertenecen a la infraestructura de una empresa. En clase trabajaremos con bases de datos en local, la diferencia con trabajar con bases de datos remotas o corporativas, es simplemente señalar a la librería los parámetros de conexión.
+
+# SQL en R
+
+Usaremos las librerías `DBI` para conectarnos, y `RSQLite` para trabajar localmente
+
+El primer paso es llamar a las librerías y establecer la conexión con la base de datos, esto último lo haremos con la función `dbConnect` de `DBI`
+
+```{r sql01}
+
+library(DBI, RSQLite)
+
+con <- dbConnect(RSQLite::SQLite(), dbname = ":memory:")
+
+```
+
+
+Una vez establecida la conexión, vamos a poblar la base de datos con las mismas tablas usadas en la primera parte de la asignatura. Para esto usaremos la función `dbWriteTable()`
+
+```{r sql02}
+
+dbWriteTable(conn = con, name = "clander", value = read.csv("./data/clander.csv"))
+dbWriteTable(conn = con, name = "clientes", value = read.csv("./data/customer.csv"))
+dbWriteTable(conn = con, name = "ordenes", value = read.csv("./data/order.csv"))
+dbWriteTable(conn = con, name = "productos", value = read.csv("./data/product.csv"))
+
+
+```
+
+Verificamos que hemos creado correctamente las tablas con la función `dbListTables()`, la cual nos da una lista de las tablas de la base de datos
+
+```{r sql03}
+
+dbListTables(con)
+
+```
+
+Ya podemos comenzar a realizar queries, lo haremos a través de la función `dbGetQuery()`, cuyos argumentos son: la conexión a la base de datos y la query entre comillas
+
+Usaremos un conjunto de queries básicas cuya dificultad se va incrementando poco a poco
+
+```{r sql04}
+
+dbGetQuery(conn = con,
+           statement = "
+           SELECT *
+           FROM clientes
+           LIMIT 5")
+
+```
+
+```{r sql05}
+
+dbGetQuery(conn = con,
+           statement = "
+           SELECT *
+           FROM clientes
+           WHERE Country <> 'China'
+           LIMIT 5")
+
+```
+
+En los ejemplos anteriores hemos escrito la query dentro de la función, para queries más largas esto podría ser incómodo. Otra manera de hacerlo es definiendo la query fuera de la función asignándole un nombre, y llamando a la query dentro de la función con dicho nombre
+
+```{r sql06}
+
+query01 <- "SELECT CustomerID AS IDCliente,
+                   Email AS Correo,
+                   Country AS Pais
+            FROM clientes
+            WHERE Country <> 'China'
+            LIMIT 5"
+
+dbGetQuery(conn = con, statement = query01)
+
+```
+
+Otra forma es escribiendo la query en un archivo .sql y llamando el archivo dentro de la función. Para esto, necesitamos cargar la librería `readr` y usar su función `read_file()`
+
+```{r sql07}
+
+dbGetQuery(conn = con, readr::read_file("query02.sql"))
+
+```
+
+Realizamos queries menos básicas, aplicando agrupamientos
+
+```{r sql08}
+
+query02 <- "SELECT Country AS Pais,
+       COUNT(CustomerID) AS Clientes
+       FROM clientes
+       GROUP BY Country
+       ORDER BY Clientes DESC
+       LIMIT 5"
+
+dbGetQuery(conn = con, statement = query02)
+
+```
+
+Ejecutamos las dos últimas queries vistas al inicio de la asignatura
+
+
+```{r sql09}
+
+dbGetQuery(conn = con, readr::read_file("query03.sql"))
+
+dbGetQuery(conn = con, readr::read_file("query04.sql"))
+
+```
+
+# Queries parametrizadas
+
+En lugar de suministrar valores concretos en una query, por ejemplo, pedir que en la tabla de clientes nos muestre la información de China y Portugal, le suministramos un parámetro (País por ejemplo), y sustituimos esos parámetros por los países que nos interesen
+
+Cambiemos la query de primer ejemplo
+
+
+```{r sql10}
+
+dbGetQuery(conn = con,
+           statement = "
+           SELECT *
+           FROM clientes
+           WHERE Country = 'China'
+           LIMIT 5")
+
+```
+
+Podemos sustituir China por un parámetro PAIS, y cambiar el nombre del país dependiendo de nuestras necesidades.
+
+Para ejecutar lo anterior, usaremos la librería `glue`
+
+```{r sql11}
+
+library(glue)
+
+PAIS <- "'China'"
+
+queryParam1 <- glue("
+           SELECT *
+           FROM clientes
+           WHERE Country = {PAIS}
+           LIMIT 5")
+
+dbGetQuery(conn = con,
+           statement = queryParam1)
+
+```
+
+
+```{r sql12}
+
+library(glue)
+
+PAIS <- "'Spain'"
+
+queryParam1 <- glue("
+           SELECT *
+           FROM clientes
+           WHERE Country = {PAIS}
+           LIMIT 5")
+
+dbGetQuery(conn = con,
+           statement = queryParam1)
+
+```
+
+Al finalizar, es importante recordar desconectarse de la base de datos usando la función `dbDisconnect()`
+
+```{r sql100}
+
+dbDisconnect(con)
+
+```
+

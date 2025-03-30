@@ -1,0 +1,30 @@
+---
+title: Desarrollo de un proyecto a gran escala usando R (y otras cosas). FIGARO
+subtitle: Máster Universitario en Análisis y Divulgación de Datos CEU San Pablo
+editor: source
+---
+
+Por Kamal Romero
+
+------------------------------------------------------------------------
+
+🗓️ Sábado 18 de enero 2025\
+⏰ 10:00 - 14:00\
+🏨 Aula 2.02\
+<!-- ✍️ [pos.it/conf](http://pos.it/conf) -->
+
+------------------------------------------------------------------------
+
+### Resumen
+
+Las tablas [FIGARO de Eurostat](https://ec.europa.eu/eurostat/web/esa-supply-use-input-tables/information-data#figaro) proporcionan una visión detallada de las transacciones económicas entre sectores y países. En esta presentación, se describirá el proceso de construcción de estas tablas utilizando el lenguaje de programación R. Utilizar R para la elaboración de las tablas FIGARO permite no solo una gestión eficiente de datos complejos, sino la implementación rápida de algoritmos de balanceo y una evaluación analítica y gráfica de los resultados en forma de reportes automatizados. En la presentación abordaremos las distintas áreas del proceso como la recopilación y transformación de ingentes datos, el cálculo de tablas intersectoriales multi-país, y la validación y visualización. Se discutirán los desafíos encontrados durante el proceso y las soluciones implementadas, destacando cómo R facilita un flujo de trabajo flexible y reproducible.
+
+
+### Instructor
+
+**Kamal Romero** es científico de datos y desarrollador de R (consultor externo) en el departamento de Advanced Computing & ICT Services del Centro de Investigación Común de la Comisión Europea.
+
+
+------------------------------------------------------------------------
+
+![](https://i.creativecommons.org/l/by/4.0/88x31.png) This work is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).

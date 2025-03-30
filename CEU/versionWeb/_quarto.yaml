@@ -1,0 +1,65 @@
+project:
+  type: website
+  render:
+    - "*.qmd"
+
+website:
+  title: "Desarrollo de un proyecto a gran escala usando R (y otras cosas) FIGARO"
+  navbar:
+    background: dark
+    logo: "materiales/images/R_logo.svg.png"
+    right:
+       - icon: envelope
+         href: mailto:karomero@ucm.es
+
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Secciones
+        menu:
+        - text: "SQL en R"
+          href: materiales/01_sql.qmd
+        - text: "Data table"
+          href: materiales/05_dataTable.qmd
+        - text: "DuckDB"
+          href: materiales/07_duckDb.qmd
+        # - text: "Análisis exploratorio de datos"
+        #   href: materiales/03_eda.qmd
+        # - text: "Statistics"
+        #   href: materials/07_statistics.qmd
+        #   #target: "_blank"
+        #   #target: "_blank"
+        # - text: "ggplot"
+        #   href: materials/09_ggplot.qmd
+        #   #target: "_blank"
+        # - text: "Regression analysis"
+        #   href: materials/10_regression.qmd
+      #   - text: "Thank you 👋"
+      #     href: materials/8_closing.qmd
+      #     target: "_blank"
+      # - text: Exercises
+      #   menu:
+      #   - text: "Hello Arrow Exercises"
+      #     href: materials/1_hello_arrow-exercises.qmd
+      #   - text: "Data Manipulation Part I Exercises"
+      #     href: materials/2_data_manipulation_1-exercises.qmd
+      #   - text: "Data Engineering Exercises"
+      #     href: materials/3_data_engineering-exercises.qmd
+      #   - text: "Arrow In-Memory Workflow Exercises"
+      #     href: materials/5_arrow_single_file-exercises.qmd
+      #   - text: "Data Manipulation Part II Exercises"
+      #     href: materials/4_data_manipulation_2-exercises.qmd
+
+
+format:
+  html:
+    theme: journal
+    #css: styles.css
+    toc: true
+    toc-depth: 4
+    link-external-newwindow: true
+
+# editor: visual
+# engine: knitr
+# execute:
+#   freeze: auto

@@ -1,0 +1,170 @@
+---
+title: "DuckDb"
+format: html
+execute:
+  echo: true
+messages: false
+warning: false
+editor: source
+---
+
+# DuckDb
+
+Las siguientes notas están basadas en las notas de [Grant McDermott](https://grantmcdermott.com/)
+
+## Pasos preliminares
+
+Para esta sesión, utilizaremos los datos de los taxis de la ciudad de Nueva York, conocidos [New York City taxi](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page).
+
+- Descargaremos solo los datos de un año específico, en este caso 2012. Aunque es suficiente para demostrar el punto y es de tamaño comparable al conjunto de datos "típico" con el que pueden encontrar en aplicaciones reales.
+- El conjunto de datos final ocupa aproximadamente 8.5 GB comprimido en disco y puede tardar de 10 a 20 minutos en descargarse, dependiendo de la velocidad de la conexión a internet.
+
+Puedes descargar el conjunto de datos con las siguientes líneas de comandos.
+
+:::{.callout-note}
+Necesitarás la herramienta `aws cli` ([enlace de instalación](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)) para que funcionen los siguientes comandos. Esta debería ser una instalación rápida y sencilla (no necesitas una cuenta de AWS), pero más adelante encontrarás algunas opciones alternativas de descarga.
+:::
+
+```sh
+mkdir -p nyc-taxi/year=2012
+mkdir "nyc-taxi\year=2012"
+aws s3 cp s3://voltrondata-labs-datasets/nyc-taxi/year=2012 nyc-taxi/year=2012 --recursive --no-sign-request
+```
+
+Además de ser relativamente grande, hay dos características de este conjunto de datos a las que volveremos más adelante, ya que son clave para nuestro flujo de trabajo:
+
+- Los datos están almacenados en formato de archivo `.parquet`.
+- Estos archivos Parquet están organizados en particiones estilo "Hive" en el disco.
+
+## Otras opciones
+
+### Subconjuntos más pequeños de los datos
+
+Si tienes poco tiempo y/o espacio en disco, siéntete libre de descargar solo un subconjunto de los datos manualmente. Asegúrate de preservar la partición estilo Hive. Aquí tienes un ejemplo rápido de cómo hacerlo para los primeros dos meses.
+
+```sh
+mkdir -p nyc-taxi/year=2012/month=1
+mkdir -p nyc-taxi/year=2012/month=2
+aws s3 cp s3://voltrondata-labs-datasets/nyc-taxi/year=2012/month=1/ nyc-taxi/year=2012/month=1 --recursive --no-sign-request
+aws s3 cp s3://voltrondata-labs-datasets/nyc-taxi/year=2012/month=2/ nyc-taxi/year=2012/month=2 --recursive --no-sign-request
+```
+
+### Opciones alternativas de descarga
+
+Si no tienes la herramienta `aws cli`, o no puedes instalarla por algún motivo, siempre puedes descargar el conjunto de datos directamente desde R o Python usando algunos paquetes. Por ejemplo:
+
+```r
+library(arrow)
+library(dplyr)
+
+ruta_datos <- "nyc-taxi/year=2012" # O establece tu ruta preferida
+
+open_dataset("s3://voltrondata-labs-datasets/nyc-taxi/year=2012") |>
+    write_dataset(ruta_datos, partitioning = "month")
+```
+
+Ten en cuenta que estos enfoques alternativos de descarga serán más lentos que el enfoque utilizando `aws cli`.
+
+## Cargar librerías
+
+```{r dbplyr_libs}
+#| cache: false
+
+library(duckdb)
+library(dplyr)
+library(tidyr)
+```
+
+## Crear una conexión a la base de datos
+
+Para el flujo de trabajo de `d(b)plyr`, el paso de conexión es muy similar al enfoque puramente en SQL. La única diferencia es que, después de crear la conexión a la base de datos, necesitamos registrar nuestro conjunto de datos en formato parquet como una tabla en nuestra conexión mediante la función `dplyr::tbl()`. Es importante asignarlo a un objeto (en este caso: `nyc`) que pueda ser referenciado desde R.
+
+```{r dbplyr_con}
+#| cache: false
+
+## Crear la conexión a DuckDB en memoria
+con <-dbConnect(duckdb(), shutdown = TRUE)
+
+## Registrar nuestro conjunto de datos parquet como una tabla en la conexión (y asignarlo
+## a un objeto que R pueda entender)
+# nyc = tbl(con, "nyc-taxi/**/*.parquet") # funciona, pero es más seguro usar la función read_parquet
+nyc <-tbl(con, "read_parquet('nyc-taxi/year=2012/**/*.parquet', hive_partitioning = true)")
+```
+
+## Primer ejemplo
+
+El siguiente comando se ejecuta al instante porque toda la computación está diferida (evaluación perezosa -lazy-). En otras palabras, es solo un objeto de consulta.
+
+```{r dbplyr_q1}
+q1 <- nyc |>
+  group_by(passenger_count) |> 
+  summarize(mean_tip = mean(tip_amount))
+```
+
+Podemos ver cómo es el árbol de consultas de DuckDB pidiéndole que explique el plan.
+
+```{r dbplyr_q1_explain}
+explain(q1)
+```
+
+De manera similar, para mostrar la traducción SQL que se implementará en el backend, usamos `show_query`.
+
+```{r dbplyr_q1_show_query}
+show_query(q1)
+```
+
+Para traer todos los datos resultantes a R, debemos llamar a `collect()` en el objeto de consulta.
+
+```{r dbplyr_q1_collect}
+tic <- Sys.time()
+dat1 <- collect(q1)
+toc <- Sys.time()
+
+dat1
+toc - tic
+```
+
+```{r dbplyr_dat_time}
+#| include: false
+dat1_time <- sprintf("%.2f", toc - tic)
+```
+
+## Agregación
+
+Un ejemplo de filtrado con múltiples variables de agrupación y agregación.
+
+```{r dbplyr_q3}
+q3 <- nyc |>
+  group_by(passenger_count, trip_distance) |>
+  summarize(
+    across(c(tip_amount, fare_amount), mean),
+  ) 
+collect(q3)
+```
+
+
+## Uniones (joins)
+
+```{r dbplyr_join0}
+mean_tips  <- nyc |> group_by(month) |>  summarise(mean_tips = mean(tip_amount))
+mean_fares <- nyc |> group_by(month) |> summarise(mean_fares = mean(fare_amount))
+```
+
+Nuevamente, estos comandos se completan al instante porque toda la computación está diferida hasta que sea absolutamente necesaria (evaluación perezosa).
+
+```{r dbplyr_join1}
+left_join(
+  mean_fares,
+  mean_tips
+  ) |>
+  collect()
+```
+
+
+## Cerrar la conexión
+
+```{r dbplyr_con_close}
+#| cache: false
+
+dbDisconnect(con)
+```
