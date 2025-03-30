@@ -1,0 +1,609 @@
+---
+title: "Dplyr"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Más allá de los data frames
+
+Los data frames son una estructura extremadamente útil, con la gran ventaja de que forma parte del ecosistema de R base (no depende de librería elaboradas por terceros). Pero, lo anterior también representa también una restricción, por lo que se han desarrollado librerías que complementan las propiedades de los data frames
+
+## El universo Tidyverse
+
+::: {#fig-tidyverse}
+![](images/tidyverse_website.png)
+
+Colección de paquetes del ecosistema Tidyverse. Ver su [web](https://www.tidyverse.org/)
+:::
+
+La principal referencia de este apartado va a ser este [capítulo](https://r4ds.had.co.nz/transform.html) del libro [R for Data Science](https://r4ds.had.co.nz/index.html) (acá en [español](https://es.r4ds.hadley.nz/))
+
+En esta primera parte de la exposición nos concentraremos en el paquete [dplyr](https://dplyr.tidyverse.org/) y en la manipulación de datos, e introduciremos el pipe.
+
+### Dplyr
+
+::: {#fig-dplyr}
+![](images/logo.png){width=200}
+
+Hex sticker de dplyr
+:::
+
+
+En su página web, se presenta la librería dplyr como “*dplyr es una gramática de manipulación de datos, que proporciona un conjunto coherente de verbos que ayudan a resolver los problemas más comunes de manipulación de datos*” 
+
+Otra definición se puede ver en este [texto](https://www.datanalytics.com/libro_r/1300_dplyr.html) de [Carlos Gil Bellosta](https://www.datanalytics.com/bio/) 
+
+El “conjunto de verbos” es el siguiente:
+
+* `mutate()` añade nuevas variables que son funciones de variables existentes
+* `select()` selecciona variables basándose en sus nombres
+* `filter()` selecciona casos basándose en sus valores
+* `summarise()` reduce múltiples valores a un único resumen
+* `arrange()` cambia el orden de las filas.
+
+Al ser una librería desarrollada por terceros, hay que instalar la librería (se hace una sola vez) y cargarla
+
+
+```{r dplyr01}
+#| warning: false
+
+#install.packages("dplyr")
+library(dplyr)
+
+```
+
+
+
+Vamos a cargar los datos con los que hemos trabajado durante el curso. Empezaremos por usar una función distinta para leer los archivos csv, usaremos la función `read_csv()` de la librería `readr`
+
+
+```{r dplyr02}
+
+library(readr)
+
+productos <- read_csv(file = "./data/product.csv")
+clientes <- read_csv(file = "./data/customer.csv")
+ordenes <- read_csv(file = "./data/order.csv")
+
+head(productos)
+
+```
+
+Observen que nuestro data frame ha *cambiado* de nombre, ahora es un `tibble`. Leer este capítulo del [libro](https://es.r4ds.hadley.nz/10-tibble.html) para una exposición detallada.
+
+Inspeccionamos el data frame (si, el tibble sigue siendo un data frame) con `glimpse`
+
+
+```{r dplyr03}
+
+glimpse(productos)
+
+```
+
+
+Antes de continuar, es mejor presentar ya el *pipe*. Empezaremos con un ejemplo simple en el cual deseamos calcular el logaritmo de la raíz cuadrada de la sumatoria de una secuencia de 20 realizaciones de una distribución uniforme.
+
+Los pasos serían los siguientes:
+
+* Generar la secuencia de 20 realizaciones de una distribución uniforme `runif(20)`
+* Calcular la sumatoria `sum(runif(20)))`
+* Obtener la raíz cuadrada `sqrt(sum(runif(20)))`
+* Aplicar el logaritmo `log(sqrt(sum(runif(20))))` 
+
+
+
+```{r dplyr04}
+
+set.seed(356)
+log(sqrt(sum(runif(20))))
+
+```
+
+
+La función es algo complicada de leer, y se complica su lectura a medida que añadimos más funciones.
+
+El **pipe** (tubería) `|>` parte de la misma idea que el pipe de bash `|`, pasar el output de la salida de una función a otra función de manera encadenada.
+
+Una manera “limpia” de ejecutar varios verbos de manera secuencial es a través del uso del pipe 
+
+Según su web, dicha herramienta permite hacer nuestro código más legible por las siguientes razones:
+
+* estructurando secuencias de operaciones de datos de izquierda a derecha (en lugar de dentro a fuera)
+
+* evitando las llamadas a funciones anidadas
+
+* minimizando la necesidad de variables locales y definiciones de funciones
+
+* facilitar añadir pasos en cualquier punto de la secuencia de operaciones
+
+La operación anterior quedaría de la siguiente forma con pipes:
+
+
+```{r dplyr05}
+
+set.seed(356)
+
+runif(20) |> 
+  sum() |> 
+  sqrt() |> 
+  log()
+
+
+```
+
+
+Lo cual, es más natural y fácil de leer. Vamos a aplicar este encadenamiento de funciones con el pipe de manera intensiva con dplyr
+
+Utilizaremos las queries empleadas en las sesiones anteriores
+
+Creamos la base de datos con sus correspondientes tablas
+
+```{r con01}
+#|echo: false
+
+library(DBI, RSQLite)
+
+con <- dbConnect(RSQLite::SQLite(), dbname = ":memory:")
+
+dbWriteTable(conn = con, name = "clander", value = read.csv("./data/clander.csv"))
+dbWriteTable(conn = con, name = "clientes", value = read.csv("./data/customer.csv"))
+dbWriteTable(conn = con, name = "ordenes", value = read.csv("./data/order.csv"))
+dbWriteTable(conn = con, name = "productos", value = read.csv("./data/product.csv"))
+
+```
+
+Vamos a seleccionar filas que cumplan una determinada condición, esto se hace con el verbo `filter()`
+
+
+```{sql query01}
+#| connection: con
+SELECT *
+FROM clientes
+WHERE Country <> 'China'
+LIMIT 5
+```
+
+
+```{r dplyr06}
+
+clientes |> 
+  filter(Country != "China") |> 
+  slice(1:5)
+
+```
+
+Usamos la función `slice()` que nos permite extraer las filas de un data frame por índices
+
+Si lo que deseamos es seleccionar columnas, usamos el verbo `select()`
+
+Para renombrar columnas usamos el verbo `rename()`
+
+```{sql query03}
+#| connection: con
+SELECT
+CustomerID AS IDCliente,
+Email AS Correo,
+Country AS Pais
+FROM clientes
+WHERE Country <> 'China'
+LIMIT 5
+```
+
+
+```{r dplyr09}
+
+clientes |> 
+  select(CustomerID, Email, Country) |> 
+  filter(Country != "China") |>
+  rename(IDCliente = CustomerID, Correo = Email, Pais = Country) |>
+  slice(1:5)
+
+```
+
+
+```{sql query04}
+#| connection: con
+SELECT CustomerID AS IDCliente,
+       Email AS Correo,
+       Country AS Pais,
+       Gender AS Genero
+FROM clientes
+WHERE Country = 'China'
+AND Gender = 'Male'
+LIMIT 5
+```
+
+
+```{r dplyr10}
+
+clientes |> 
+  select(CustomerID, Email, Country, Gender) |> 
+  filter(Country == "China" & Gender == "Male") |>
+  rename(IDCliente = CustomerID, Correo = Email, Pais = Country, Genero = Gender) |>
+  slice(1:5)
+
+```
+
+```{sql query05}
+#| connection: con
+SELECT CustomerID AS IDCliente,
+       Email AS Correo,
+       Country AS Pais,
+       Gender AS Genero
+FROM clientes
+WHERE CustomerID > 5
+AND CustomerID < 10
+
+```
+
+```{r dplyr11}
+
+clientes |> 
+  select(CustomerID, Email, Country, Gender) |> 
+  filter(CustomerID > 5 & CustomerID < 10) |>
+  rename(IDCliente = CustomerID, Correo = Email, Pais = Country, Genero = Gender) 
+
+```
+
+Presentamos dos verbos de los más usado en el ciclo de análisis de datos: `group_by()` y `summarise()`
+
+Como ya sabemos de SQL, los dos verbos anteriores son el equivalente a un `GROUP BY` y una operación de agregación 
+
+```{sql query06}
+#| connection: con
+SELECT Country AS Pais,
+       COUNT(CustomerID) AS Clientes
+FROM clientes
+GROUP BY Country
+ORDER BY Clientes DESC
+LIMIT 5
+
+```
+
+Vamos a ir por partes, primero hacemos la agrupación y agregación
+
+
+```{r dplyr12}
+
+clientes |> 
+  select(CustomerID, Country) |> 
+  rename(Pais = Country) |> 
+  group_by(Pais) |> 
+  summarise(Clientes = n()) |> 
+  slice(1:5)
+
+```
+
+Si se desea ordenar la columna, usamos el verbo `arrange()`. 
+
+```{r dplyr13}
+
+clientes |> 
+  select(CustomerID, Country) |> 
+  rename(Pais = Country) |> 
+  group_by(Pais) |> 
+  summarise(Clientes = n()) |> 
+  arrange(Clientes) |> 
+  slice(1:5)
+
+```
+
+Para ordenarlo de mayor a menor usamos la función `desc()` dentro de `arrange()`
+
+```{r dplyr14}
+
+clientes |> 
+  select(CustomerID, Country) |> 
+  rename(Pais = Country) |> 
+  group_by(Pais) |> 
+  summarise(Clientes = n()) |> 
+  arrange(desc(Clientes)) |> 
+  slice(1:5)
+
+```
+
+Acabamos con las queries abarcando un problema con el cual ya se han topado en módulos anteriores, el hecho de que es común trabajar con más de una tabla de datos que guardan relación entre si, por lo que recurrimos a los ya conocidos JOINS y sus variantes.
+
+También podemos realizar estas operaciones en tidyverse con las siguientes funciones:
+
+* `left_join()`
+
+* `right_join()` 
+
+* `inner_join()` 
+
+* `full_join()` 
+
+* `anti_join()`
+
+* `semi_join()` 
+
+::: {.callout-tip}
+
+Una buena introducción a los joins (uniones) con dplyr es  [esta](https://es.r4ds.hadley.nz/13-relational-data.html#mutating-joins). Y para una comparación con R base y SQL [esto](https://es.r4ds.hadley.nz/13-relational-data.html#otras-implementaciones)
+
+:::
+
+
+```{sql query07}
+#| connection: con
+SELECT
+  ordenes.OrderID AS Pedido,
+  ordenes.CustomerID AS Cliente,
+  clientes.Email AS Correo,
+  clientes.Country AS Pais,
+  clientes.Gender AS Genero
+FROM ordenes
+LEFT JOIN clientes
+  ON ordenes.CustomerID = clientes.CustomerID
+WHERE clientes.Country = 'China'
+LIMIT 5
+
+```
+
+Vamos a realizar el join de las tablas, y posteriormente seleccionaremos las columnas, filtramos por filas y renombramos las columnas
+
+```{r join01}
+
+left_join(x = clientes, y = ordenes, by = "CustomerID") |> 
+  select(OrderID, CustomerID, Email, Country, Gender) |> 
+  filter(Country == "China") |> 
+  rename(Pedido = OrderID, Cliente = CustomerID, Correo = Email, Pais = Country, Genero = Gender) |> 
+  slice(1:5)
+
+```
+
+```{sql query08}
+#| connection: con
+SELECT
+  clientes.FirstName,
+  clientes.LastName,
+  productos.Category,
+  COUNT(ordenes.OrderID) AS ordenes,
+  SUM(ordenes.TotalAmount) AS total
+FROM clientes
+JOIN ordenes
+  ON clientes.CustomerID = ordenes.CustomerID
+JOIN productos
+  ON ordenes.OrderID = productos.ProductID
+GROUP BY
+  clientes.CustomerID, productos.Category
+LIMIT 10;
+
+```
+
+```{r join02}
+
+
+inner_join(x = clientes, y = ordenes, by = "CustomerID") |> 
+  inner_join(productos, by = c("OrderID" = "ProductID")) |>
+  group_by(CustomerID, Category) |>
+  summarise(
+    FirstName = first(FirstName),
+    LastName = first(LastName),
+    ordenes = n(),
+    total = sum(TotalAmount),
+     .groups = "drop"
+  ) |>
+  select(-CustomerID) |> 
+  slice(1:10)
+
+```
+
+Las queries no pretenden realizar un inventario exhaustivo de todas las funciones de la librería dplyr, ni lo pretenden estas notas, pero presentamos a continuación funciones que se consideran de uso frecuente en el análisis de datos.
+
+Supongamos que no sabemos de antemano, cuantos tipos de productos hay, y deseamos saberlo para aplicar los filtros adecuados. En R base tendríamos que extraer la columna y usar la función `unique()` (`unique(productos$Category)`). En dplyr tenemos la función `distinct()`
+
+```{r dplyr11_5}
+
+productos |> 
+  select(ProductName) |> 
+  distinct()
+
+```
+
+
+Si queremos contar cuantos registros hay por especie, usamos la función `count()`
+
+
+```{r dplyr12_2}
+
+productos |> 
+  count(ProductName)
+
+```
+
+
+Si deseamos que presente la información en orden descendente
+
+
+
+```{r dplyr12_5}
+
+productos |> 
+  count(ProductName, sort = TRUE)
+
+```
+
+Supongamos que deseamos seleccionar solo las columnas que cumplan una determinada condición, esto se puede hacer con la función `where()` dentro del verbo `select()`. Por ejemplo, si deseamos solo las columnas que contengan variables numéricas en la tabla de productos
+
+
+```{r dplyr14_2}
+
+productos |>
+  select(where(is.numeric))
+
+```
+
+
+Pero, también existen variantes de `select()` más específicas. Por ejemplo, para este caso también podríamos haber usado `select_if()` y la condición
+
+
+```{r dplyr14_3}
+
+productos |>
+  select_if(is.numeric)
+
+```
+
+
+::: {.callout-tip}
+
+Hay varias funciones *helpers* que permiten hacer una selección más fina de columnas. Para echar un vistazo ejecutar `?select`
+
+:::
+
+Algo que solemos realizar de manera muy frecuente, es crear nuevas columnas transformando las existentes, esto lo hacemos con el verbo `mutate()`
+
+
+```{r dplyr15}
+
+productos |> 
+  mutate(cociente = UnitsOnOrder / UnitsInStock) |> 
+  head()
+
+```
+
+
+Es posible crear varias columnas al mismo tiempo
+
+
+```{r dplyr16}
+
+productos |> 
+  mutate(cociente = UnitsOnOrder / UnitsInStock,
+         fakePrice = sqrt(UnitPrice)) |> 
+  head()
+
+```
+
+Y para finalizar, si deseamos cambiar el orden de las columnas `relocate()`
+
+
+```{r dplyr22}
+
+productos |> 
+  relocate(Discontinued, .after = ProductID)
+
+```
+
+Algo adicional que conviene saber y combina bien con las funciones `map`, son los tibbles anidados. Los tibbles anidados se crean con el verbo `nest_by()`
+
+
+```{r dplyr23}
+
+productos_anidado <- productos |>
+  nest_by(Category)
+
+productos_anidado
+
+```
+
+
+Se accede al tibble anidado con la sintaxis de una lista
+
+
+```{r dplyr23_5}
+
+productos_anidado$data[[3]]
+
+```
+
+
+```{r exec01}
+
+fechas <- ordenes |>
+  select(ShippedDate, ShipAddress) |> 
+  tidyr::separate(ShippedDate,
+                  into = c("month", "day", "year"),
+                  sep = "/",
+                  remove = FALSE)
+
+fechas |> 
+  head()
+
+```
+
+```{r exec02}
+
+fechas <- fechas |> 
+  mutate(Quarter = case_when(month %in% c(1,2,3) ~ 1,
+                             month %in% c(4,5,6) ~ 2,
+                             month %in% c(7,8,9) ~ 3,
+                             .default = 4)
+         )
+
+fechas |> 
+  head()
+
+```
+
+```{r exec03}
+
+fechas <- fechas |> 
+  mutate(estaciones = case_when(month %in% c(1,2,12) ~ "invierno",
+                                month %in% 3:5 ~ "primavera",
+                                month %in% 6:8 ~ "verano",
+                                .default = "otoño")
+         )
+
+fechas |> 
+  head()
+
+```
+
+```{r exec04}
+
+fechas |>
+  mutate(Date2 = as.Date(ShippedDate, "%m/%d/%Y"))
+
+```
+
+Con `lubridate`
+
+```{r exec05}
+
+pacman::p_load(lubridate)
+
+fechas |> 
+  mutate(Date2 = as.Date(ShippedDate, "%m/%d/%Y"),
+         Date3 = mdy(ShippedDate))
+
+```
+
+Formatos de fecha
+
+```{r exec06}
+
+?strftime
+
+```
+
+Ejemplos con `Sys.time()` y `format()`
+
+```{r exec07}
+
+Sys.time()
+format(Sys.time(), "%y/%m/%d")
+format(Sys.time(), "%Y/%m/%d")
+format(Sys.time(), "%Y/%m/%dT%H%M")
+format(Sys.time(), "%Y/%m/%dT%H:%M")
+format(Sys.time(), "%Y/%m/%dT%H:%M:%S")
+format(Sys.time(), "%Y/%m/%dT%H:%M:%S")
+format(Sys.time(), "%Y/%m/%dTime%H:%M:%S")
+format(Sys.time(), "%Y/%m/%d.Time%H:%M:%S")
+format(Sys.time(), "%Y/%m/%d.Time:%H:%M:%S")
+format(Sys.time(), "%Y/%m/%d.Hora:%H:%M:%S")
+
+
+```
+
+Pueden encontrar información más detallada de como manipular fechas y horas (con `lubridate`) leer este [capítulo](https://es.r4ds.hadley.nz/16-datetimes.html) del [libro](https://es.r4ds.hadley.nz/) recomendado arriba 
+
+
+
+

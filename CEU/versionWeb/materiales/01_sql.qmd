@@ -8,7 +8,7 @@ warning: false
 editor: source
 ---
 
-Continuaremos con el desarrollo de la primera parte del curso, en la cual se destacó la importancia del lenguaje SQL en la ciencia de datos, ya que nos permite interactuar con bases de datos relacionales. Lo anterior permite manipular gran cantidad de datos de manera eficiente sin necesidad de cargarlos en memoria.
+En asignaturas previas se ha destacado la importancia del lenguaje SQL en la ciencia de datos, ya que nos permite interactuar con bases de datos relacionales. Lo anterior permite manipular gran cantidad de datos de manera eficiente sin necesidad de cargarlos en memoria.
 
 Ya se han mostrado las ventajas de usar SQL, la estructura del lenguaje, y practicado con las queries más básicas, en esta sección vamos a replicar lo aprendido en R.
 
@@ -51,7 +51,7 @@ dbListTables(con)
 
 Ya podemos comenzar a realizar queries, lo haremos a través de la función `dbGetQuery()`, cuyos argumentos son: la conexión a la base de datos y la query entre comillas
 
-Replicaremos las queries realizadas en la primera parte de la asignatura
+Usaremos un conjunto de queries básicas cuya dificultad se va incrementando poco a poco
 
 ```{r sql04}
 

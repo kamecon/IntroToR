@@ -51,9 +51,11 @@ Entorno de R studio
 
 Existen alternativas a Posit (algunos lo seguimos llamando Rstudio), pero este es el IDE de facto de R para muchos y el que seguramente se toparán en su actividad profesional.
 
+Recientemente ha surgido una alternativa que puede que se considere la opción _natural_ a Posit, [Positron](https://positron.posit.co/). Aún está en estado de desarrollo.
+
 Una alternativa que va ganando mucha popularidad es el conocido [Visual Studio Code](https://code.visualstudio.com/)
 
-Si no desean usar Posit, esta sería la alternativa recomendada
+Si no desean usar Posit, estas serían la alternativa recomendada
 
 ## Entorno de trabajo: funcionamiento básico
 
@@ -152,7 +154,7 @@ Numero_de_empleados + 2
 
 Las librerías o paquetes puede que sean los elementos de mayor uso en R para el trabajo práctico.
 
-Una definición formal de una librería sacada del libro R Packages de Hadley Wickham y Jennifer Bryan es la siguiente:
+Una definición formal de una librería sacada del libro [R Packages](https://r-pkgs.org/) de Hadley Wickham y Jennifer Bryan es la siguiente:
 
 "*En R, la unidad fundamental de código compartible es el paquete. Un paquete agrupa código, datos, documentación y pruebas, y es fácil de compartir con otros. En marzo de 2023, había más de 19.000 paquetes disponibles en Comprehensive R Archive Network, o CRAN, el centro público de intercambio de paquetes de R.*"
 
