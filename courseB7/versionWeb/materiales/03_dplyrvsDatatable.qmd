@@ -1,0 +1,97 @@
+---
+title: "Dplyr y data.table"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Más allá de los data frames
+
+Los data frames son una estructura extremadamente útil, con la gran ventaja de que forma parte del ecosistema de R base (no depende de librería elaboradas por terceros). Pero, lo anterior también representa también una restricción, por lo que se han desarrollado librerías que complementan las propiedades de los data frames
+
+## El universo Tidyverse
+
+::: {#fig-tidyverse}
+![](images/tidyverse_website.png)
+
+Colección de paquetes del ecosistema Tidyverse. Ver su [web](https://www.tidyverse.org/)
+:::
+
+La principal referencia de este apartado va a ser este [capítulo](https://r4ds.had.co.nz/transform.html) del libro [R for Data Science](https://r4ds.had.co.nz/index.html) (acá en [español](https://es.r4ds.hadley.nz/))
+
+En esta primera parte de la exposición nos concentraremos en el paquete [dplyr](https://dplyr.tidyverse.org/) y en la manipulación de datos, e introduciremos el pipe.
+
+### Dplyr
+
+::: {#fig-dplyr}
+![](images/logo.png){width=200}
+
+Hex sticker de dplyr
+:::
+
+
+En su página web, se presenta la librería dplyr como “*dplyr es una gramática de manipulación de datos, que proporciona un conjunto coherente de verbos que ayudan a resolver los problemas más comunes de manipulación de datos*” 
+
+Otra definición se puede ver en este [texto](https://www.datanalytics.com/libro_r/1300_dplyr.html) de [Carlos Gil Bellosta](https://www.datanalytics.com/bio/) 
+
+El “conjunto de verbos” es el siguiente:
+
+* `mutate()` añade nuevas variables que son funciones de variables existentes
+* `select()` selecciona variables basándose en sus nombres
+* `filter()` selecciona casos basándose en sus valores
+* `summarise()` reduce múltiples valores a un único resumen
+* `arrange()` cambia el orden de las filas.
+
+## data.table: The need for speed
+
+::: {#fig-datatble}
+![](images/logo4.png){width=200}
+
+Hex sticker de data.table
+:::
+
+Antes de empezar a analizar esta librería, primero habría que preguntarse ¿Por qué debemos aprender otras alternativas ya teniendo R base y el tidyverse? 
+
+data.table posee unas ventajas idiosincráticas que la hacen una alternativa atractiva. Según los mismos desarrolladores de la librería, data.table:
+
+“*es un paquete extremadamente rápido y eficiente en memoria para transformar datos en R.*”
+
+Siguiendo a [Carlos Gil Bellosta](https://www.datanalytics.com/bio/), tal y como menciona en su [texto](https://www.datanalytics.com/libro_r/1300_dplyr.html):
+
+“*El tidyverse no es el único dialecto popular de R. Por ejemplo, el paquete data.table propone otro dialecto con características muy distintas. El código en dicho dialecto es mucho menos legible pero tiene una ventaja importante: es increíblemente rápido y gestiona muy bien la memoria. Es un paquete (o dialecto) con el que conviene familiarizarse para trabajar con conjuntos de datos muy grandes, de millones, decenas de millones o, incluso de cientos de millones de filas*”
+
+Y finalizamos con esta afirmación de [Grant McDermott](https://grantmcdermott.com/), profesor de la Universidad de Oregon y consultor de analítica de grandes datos
+
+“_El tidyverse es genial (…) Entonces, ¿por qué molestarse en aprender otro paquete/sintaxis de gestión de datos? En lo que respecta a data.table, se me ocurren al menos cinco razones_:
+
+* _Conciso_ 
+
+* _Increíblemente rápido_
+
+* _Uso eficiente de memoria_
+
+* _Rico en funciones (y estable)_
+
+* _Sin dependencias_”
+
+Mi opinión personal es muy concreta, data.table es muy rápido y eficiente a la hora de manejar una gran cantidad de datos que aún no hayan pasado el límite para convertirse en Big Data.
+
+Pero nada es gratuito, como menciona Gil Bellosta, la sintaxis es menos amigable si la comparamos con la del tidyverse.
+
+La sintaxis de data table se puede resumir mediante el siguiente diagrama:
+
+::: {#fig-tablesintax}
+![](images/datatable.jpg){width=200}
+
+Sintaxis de data.table
+:::
+
+* <span style="color:green;">i</span> indica las filas que deseamos seleccionar ya sea para filtrar o para ejecutar una operación sobre ese subconjunto de filas. El equivalente a <span style="color:green;">filter()</span>, <span style="color:green;">slice()</span> y <span style="color:green;">arrange()</span> en dplyr o <span style="color:green;">WHERE</span> en SQL
+
+ * <span style="color:blue;">j</span> indica ya sea las columnas que deseamos seleccionar o la operación que deseamos realizar sobre las columnas. El equivalente a <span style="color:blue;">select()</span>; <span style="color:blue;">mutate()</span> en dplyr o <span style="color:blue;">SELECT</span> o las funciones de agregación en SQL
+
+* <span style="color:red;">by</span> indica como debemos agregar el conjunto de datos. El equivalente a <span style="color:red;">group_by()</span> en dplyr o <span style="color:red;">GROUP BY</span> en SQL
+

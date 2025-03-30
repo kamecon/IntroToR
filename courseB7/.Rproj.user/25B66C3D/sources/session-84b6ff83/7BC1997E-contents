@@ -1,0 +1,266 @@
+---
+title: "Data table"
+format: html
+execute:
+  echo: true
+messages: false
+warning: false
+editor: source
+---
+
+## data.table: The need for speed
+
+::: {#fig-datatble}
+![](images/logo4.png){width=200}
+
+Hex sticker de data.table
+:::
+
+Antes de empezar a analizar esta librería, primero habría que preguntarse ¿Por qué debemos aprender otras alternativas ya teniendo R base y el tidyverse? 
+
+data.table posee unas ventajas idiosincráticas que la hacen una alternativa atractiva. Según los mismos desarrolladores de la librería, data.table:
+
+“*es un paquete extremadamente rápido y eficiente en memoria para transformar datos en R.*”
+
+Siguiendo a [Carlos Gil Bellosta](https://www.datanalytics.com/bio/), tal y como menciona en su [texto](https://www.datanalytics.com/libro_r/1300_dplyr.html):
+
+“*El tidyverse no es el único dialecto popular de R. Por ejemplo, el paquete data.table propone otro dialecto con características muy distintas. El código en dicho dialecto es mucho menos legible pero tiene una ventaja importante: es increíblemente rápido y gestiona muy bien la memoria. Es un paquete (o dialecto) con el que conviene familiarizarse para trabajar con conjuntos de datos muy grandes, de millones, decenas de millones o, incluso de cientos de millones de filas*”
+
+Y finalizamos con esta afirmación de [Grant McDermott](https://grantmcdermott.com/), profesor de la Universidad de Oregon y consultor de analítica de grandes datos
+
+“_El tidyverse es genial (…) Entonces, ¿por qué molestarse en aprender otro paquete/sintaxis de gestión de datos? En lo que respecta a data.table, se me ocurren al menos cinco razones_:
+
+* _Conciso_ 
+
+* _Increíblemente rápido_
+
+* _Uso eficiente de memoria_
+
+* _Rico en funciones (y estable)_
+
+* _Sin dependencias_”
+
+Mi opinión personal es muy concreta, data.table es muy rápido y eficiente a la hora de manejar una gran cantidad de datos que aún no hayan pasado el límite para convertirse en Big Data.
+
+Pero nada es gratuito, como menciona Gil Bellosta, la sintaxis es menos amigable si la comparamos con la del tidyverse.
+
+La sintaxis de data table se puede resumir mediante el siguiente diagrama:
+
+::: {#fig-tablesintax}
+![](images/datatable.jpg){width=200}
+
+Sintaxis de data.table
+:::
+
+* <span style="color:green;">i</span> indica las filas que deseamos seleccionar ya sea para filtrar o para ejecutar una operación sobre ese subconjunto de filas. El equivalente a <span style="color:green;">filter()</span>, <span style="color:green;">slice()</span> y <span style="color:green;">arrange()</span> en dplyr o <span style="color:green;">WHERE</span> en SQL
+
+ * <span style="color:blue;">j</span> indica ya sea las columnas que deseamos seleccionar o la operación que deseamos realizar sobre las columnas. El equivalente a <span style="color:blue;">select()</span>; <span style="color:blue;">mutate()</span> en dplyr o <span style="color:blue;">SELECT</span> o las funciones de agregación en SQL
+
+* <span style="color:red;">by</span> indica como debemos agregar el conjunto de datos. El equivalente a <span style="color:red;">group_by()</span> en dplyr o <span style="color:red;">GROUP BY</span> en SQL
+
+Vamos a replicar los ejemplos de la sección anterior para poder realizar una comparación directa
+
+Primero, instalamos la librería y la llamamos posteriormente
+
+
+```{r datatable01}
+
+#install.packages(data.table)
+library(data.table)
+
+```
+
+
+Convertimos `starwars` a un objeto `data.table`
+
+
+```{r datatable02}
+
+starwars_dt <- as.data.table(dplyr::starwars)
+
+starwars_dt |> head()
+
+```
+
+
+Observar que la presentación de la tabla en la consola es distinta a la de un tibble que a su vez era distinta a la de un data frame
+
+Empezamos, nos quedamos solo con los personajes de Star Wars que son de Tatooine
+
+
+
+```{r datatable03}
+
+starwars_dt[homeworld == "Tatooine"] |> head()
+
+```
+
+
+Que viva en Tatooine y sean de género masculino
+
+
+```{r datatable04}
+
+starwars_dt[homeworld == "Tatooine" & gender == "masculine"] |> head()
+
+```
+
+
+Solo los registros que no sean humanos
+
+
+```{r datatable05}
+
+starwars_dt[species != "Human"] |> head()
+
+```
+
+
+También podemos seleccionar filas por posición, por ejemplo las 6 primeras filas
+
+
+```{r datatable05_5}
+
+starwars_dt[1:6]
+
+```
+
+
+
+Ahora seleccionamos columnas, recordar que para eso debemos usar el segundo argumento
+
+
+```{r datatable06}
+
+starwars_dt[homeworld == "Tatooine", list(name)] |> head()
+
+```
+
+
+Tenemos que pasar los nombres de las columnas como una lista, afortunadamente podemos usar el alias `.`
+
+
+```{r datatable07}
+
+starwars_dt[homeworld == "Tatooine", .(name)] |> head()
+
+```
+
+
+Si pasamos el nombre solamente, nos devuelve un vector en lugar de un data table
+
+
+```{r datatable08}
+
+starwars_dt[homeworld == "Tatooine", name] |> head()
+
+```
+
+
+::: {.callout-note}
+
+Pruebe lo anterior con dos columnas, ¿Qué devuelve? ¿Tiene lógica?
+
+Ahora intente con tres columnas ¿Por qué cree que tiene un error?
+
+Intente lo anterior pasando un vector de caracteres con los nombres de las columnas que desea seleccionar
+
+:::
+
+Más columnas
+
+
+```{r datatable09}
+
+starwars_dt[homeworld == "Tatooine", .(name, height, species)] |> head()
+
+```
+
+
+Si deseamos ordenar el data table según alguna columna en particular
+
+
+```{r datatable10}
+
+starwars_dt[, .(name, mass)][order(mass)] |> head()
+
+```
+
+
+Observamos dos cosas nuevas:
+
+La primera, si no vamos a realizar una operación sobre las filas, la *casilla* de ese argumento queda en blanco, y en el segundo argumento seleccionamos las columnas.
+
+Lo segundo, una vez seleccionadas las columnas de interés, queremos operar sobre las filas, asi que necesitamos *encadenar* esa operación abriendo unos nuevos corchetes y operando sobre el primer argumento que es de la fila.
+
+
+Para ordenar de manera descendente
+
+
+```{r datatable11}
+
+starwars_dt[, .(name, mass)][order(-mass)] |> head()
+
+```
+
+
+Para seleccionar solo las columnas que cumplan una determinada condición, por ejemplo, si deseamos solo las columnas que contengan variables numéricas, la operación es algo más verbosa
+
+
+```{r datatable12}
+
+starwars_dt[, .SD, .SDcols = is.numeric] |> head()
+
+```
+
+Acá introducimos dos elementos nuevos: `.SD` se emplea para hacer sub conjuntos del data table, definidos por las columnas enunciadas en `.SDcols`. A primera vista no es intuitivo, veremos un ejemplo menos trivial
+
+Supongamos que queremos calcular la media de las columnas numéricas
+
+
+```{r datatable13}
+
+starwars_dt[, lapply(.SD, mean, na.rm = TRUE), .SDcols = is.numeric]
+
+```
+
+
+O solo a dos columnas
+
+
+```{r datatable13_5}
+
+starwars_dt[, lapply(.SD, mean, na.rm = TRUE), .SDcols = c("height", "mass")]
+
+```
+
+
+En data table creamos nuevas columnas transformando las existentes con `:=`
+
+
+```{r datatable14}
+
+starwars_dt[, H_W := height / mass][] |> head()
+
+```
+
+
+Es posible crear varias columnas al mismo tiempo
+
+
+```{r datatable15}
+
+starwars_dt[, `:=` (H_W = height / mass,
+                    fakeVar = sqrt(mass))][] |> head()
+
+```
+
+
+Y para realizar operaciones de agrupación en data table
+
+
+```{r datatable16}
+
+starwars_dt[, .(altura_media = mean(height, na.rm = TRUE)), by = gender]
+
+```

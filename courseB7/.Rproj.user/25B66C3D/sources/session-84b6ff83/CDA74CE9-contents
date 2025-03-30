@@ -1,0 +1,247 @@
+---
+title: "R y RStudio"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# R: Una introducción rápida 
+
+# ¿Qué es R?
+
+La siguiente definición es del libro [Learning R de Richard Cotton](https://www.oreilly.com/library/view/learning-r/9781449357160/):
+
+"*Para confundirte, R se refiere a dos cosas. Está R, el lenguaje de programación, y R, el software que se utiliza para ejecutar programas escritos en R. Afortunadamente, la mayoría de las veces debería estar claro en el contexto a qué R se hace referencia.*"
+
+"*R (el lenguaje) fue creado a principios de los 90 por Ross Ihaka y Robert Gentleman, ambos trabajaban en la Universidad de Auckland. Se basa en el lenguaje S desarrollado en los Laboratorios Bell en los años 70, principalmente por John Chambers. R (el software) es un proyecto GNU, lo que refleja su condición de importante software libre y de código abierto.*"
+
+Características del lenguaje
+
+-   Interpretado: permite ejecuciones directas del código, lo que lo hace más lento que los lenguajes compilados.
+-   Tipado dinámicamente: Fácil y menos boiler plate, facilita mucho la metaprogramación.
+-   Multiparadigma. Aunque la mayoría de los usuarios explotan la versión funcional y algunos la orientación a objetos.
+
+## R vs RStudio
+
+La siguiente imagen y frase están tomadas del libro [Statistical Inference via Data Science: A ModernDive into R and the Tidyverse](https://moderndive.com/index.html)
+
+::: {#fig-rvsrstudio}
+![](https://moderndive.com/images/shutterstock/R_vs_RStudio_1.png)
+
+R vs Studio [Fuente](https://moderndive.com/1-getting-started.html). 
+
+:::
+
+# Entorno de trabajo
+
+En este curso utilizaremos la herramienta online [Posit cloud](https://login.rstudio.cloud/login?redirect=%2F) de Posit.
+
+[Rstudio](https://posit.co/download/rstudio-desktop/) es un IDE (entorno de desarrollo integrado) que funciona como una interfaz gráfica que facilita el uso del lenguaje R.
+
+Posit Cloud en su versión online
+
+::: {#fig-atomic}
+![](images/rstudio.jpg)
+
+Entorno de R studio
+:::
+
+## Entorno de trabajo: alternativas
+
+Existen alternativas a Posit (algunos lo seguimos llamando Rstudio), pero este es el IDE de facto de R para muchos y el que seguramente se toparán en su actividad profesional.
+
+Recientemente ha surgido una alternativa que puede que se considere la opción _natural_ a Posit, [Positron](https://positron.posit.co/). Aún está en estado de desarrollo.
+
+Una alternativa que va ganando mucha popularidad es el conocido [Visual Studio Code](https://code.visualstudio.com/)
+
+Si no desean usar Posit, estas serían la alternativa recomendada
+
+# Proyectos, directorios y librerías: Organizar el entorno de trabajo
+
+Para mantener todos nuestros archivos organizados, incluyendo bases de datos que cargamos o gráficas que creamos, vamos a trabajar en lo que Posit llama proyectos.
+
+Esencialmente, un proyecto de Posit es una carpeta o directorio de nuestro ordenador que contiene todos los elementos de nuestro proyecto.
+
+![Create R project](images/create RProject.gif)
+
+El uso de proyectos en RStudio es una buena práctica que permite mantener el control de todos los archivos empleados en un proyecto.
+
+Los proyectos suelen ser no solo complejos sino dinámicos, el manejo de todos los elementos que componen los mismos suele ser una parte esencial en el flujo de trabajo.
+
+Asimismo, la organización en proyectos facilita la reproducibilidad
+
+Para una discusión más detallada, leer esta [sección](https://r4ds.hadley.nz/workflow-scripts.html#projects) de este [buen libro](https://r4ds.hadley.nz/) (también en [español](https://es.r4ds.hadley.nz/))
+
+
+# Entorno de trabajo: funcionamiento básico
+
+A continuación, vamos a introducir manejos básicos del entorno de trabajo, tales como definir variables, realizar comentarios al código, etc. En este proceso, iremos introduciendo conceptos del lenguaje que iremos definiendo de manera formal más adelante
+
+## Operaciones aritméticas
+
+Para introducirnos al uso del editor y de la linea de comandos de Rstudio, empezaremos con unas operaciones muy básica
+
+```{r operaciones}
+
+2 + 2
+
+5 - 3
+
+3 * 2
+
+6 / 3
+
+```
+
+Es posible aplicar reglas de asociación estándar así como operaciones más allá de las básicas (potencia, logaritmo, etc.)
+
+```{r operaciones 2}
+
+(5 + 3) / 4
+
+3^2
+
+log(100, base = 10)
+
+sqrt(9)
+
+```
+
+## Asignación de variables
+
+Podemos guardar *valores* asignándoles un nombre, de modo que podamos acceder a dicho valor posteriormente
+
+```{r asigna}
+
+x <- 4
+
+x
+
+y <- (5 + 3) / 4
+
+y
+
+```
+
+Se crean variables, o crean nuevos *objetos* (puede que volvamos a esto luego) con el operador `<-`. También se puede hacer de la manera más convencional con `=`.
+
+```{r asigna2}
+
+Numero_de_empleados <- 150
+
+Numero_de_empleados
+
+```
+
+Con los nombres hay que respetar ciertas convenciones: deben comenzar con una letra y solo pueden contener letras, números, `_` y `.`
+
+Se es libre de nombrar las variables como uno prefiera, pero existen unas reglas de estilo, como por ejemplo
+
+```{r librerias}
+#| eval: false
+
+yoUsoCamelCase
+otros_usan_snake_case
+algunos.usan.puntos
+Lo_queMeSale.de.por_AHI
+
+```
+
+::: {#fig-elephant}
+[![](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/dbb99049-2916-4bc8-824f-1816f5c4f06d_rw_1920.png?h=f0b45a30ba31ad414562d1085cd6c172)](https://allisonhorst.com/everything-else)
+
+Una ilustración de los estilos con que nombrar variables hecho por la gran [Allison Horst](https://allisonhorst.com/allison-horst). La fuente es [esta](https://allisonhorst.com/everything-else).
+:::
+
+## Introducir comentarios
+
+Se inician los comentarios con \#
+
+```{r comentarios}
+
+#Calculo del numero de empleados mas dos
+
+Numero_de_empleados + 2
+
+
+```
+
+## Librerías
+
+Las librerías o paquetes puede que sean los elementos de mayor uso en R para el trabajo práctico.
+
+Una definición formal de una librería sacada del libro [R Packages](https://r-pkgs.org/) de Hadley Wickham y Jennifer Bryan es la siguiente:
+
+"*En R, la unidad fundamental de código compartible es el paquete. Un paquete agrupa código, datos, documentación y pruebas, y es fácil de compartir con otros. En marzo de 2023, había más de 19.000 paquetes disponibles en Comprehensive R Archive Network, o CRAN, el centro público de intercambio de paquetes de R.*"
+
+Un paquete de R es una manera de compartir código de una manera organizada y que expanden las posibilidades de R extendiendo las funcionalidades del mismo
+
+Las librerías se instalan usando el comando `install.packages()`, y se cargan las librerías con `library()`
+
+```{r libreria}
+#| eval: false
+
+install.packages(emoji)
+library(emoji)
+
+
+```
+
+## El Pipe (tuberías)
+
+Antes de continuar, es mejor presentar ya el *pipe*. Empezaremos con un ejemplo simple en el cual deseamos calcular el logaritmo de la raíz cuadrada de la sumatoria de una secuencia de 20 realizaciones de una distribución uniforme.
+
+Los pasos serían los siguientes:
+
+* Generar la secuencia de 20 realizaciones de una distribución uniforme `runif(20)`
+* Calcular la sumatoria `sum(runif(20)))`
+* Obtener la raíz cuadrada `sqrt(sum(runif(20)))`
+* Aplicar el logaritmo `log(sqrt(sum(runif(20))))` 
+
+
+
+```{r pipe01}
+
+set.seed(356L)
+log(sqrt(sum(runif(20))))
+
+```
+
+
+La función es algo complicada de leer, y se complica su lectura a medida que añadimos más funciones.
+
+El **pipe** (tubería) `|>` parte de la misma idea que el pipe de bash `|`, pasar el output de la salida de una función a otra función de manera encadenada.
+
+Una manera “limpia” de ejecutar varios verbos de manera secuencial es a través del uso del pipe 
+
+Según su web, dicha herramienta permite hacer nuestro código más legible por las siguientes razones:
+
+* estructurando secuencias de operaciones de datos de izquierda a derecha (en lugar de dentro a fuera)
+
+* evitando las llamadas a funciones anidadas
+
+* minimizando la necesidad de variables locales y definiciones de funciones
+
+* facilitar añadir pasos en cualquier punto de la secuencia de operaciones
+
+La operación anterior quedaría de la siguiente forma con pipes:
+
+
+```{r pipe02}
+
+set.seed(356L)
+
+runif(20) |> 
+  sum() |> 
+  sqrt() |> 
+  log()
+
+
+```
+
+
+Lo cual, es más natural y fácil de leer. Vamos a aplicar este encadenamiento de funciones con el pipe de manera intensiva con dplyr
+

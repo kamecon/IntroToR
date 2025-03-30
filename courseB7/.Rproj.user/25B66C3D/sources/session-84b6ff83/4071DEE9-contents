@@ -1,0 +1,70 @@
+---
+title: "R y RStudio"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# R: Una introducción rápida 
+
+## ¿Qué es R?
+
+La siguiente definición es del libro [Learning R de Richard Cotton](https://www.oreilly.com/library/view/learning-r/9781449357160/):
+
+"*Para confundirte, R se refiere a dos cosas. Está R, el lenguaje de programación, y R, el software que se utiliza para ejecutar programas escritos en R. Afortunadamente, la mayoría de las veces debería estar claro en el contexto a qué R se hace referencia.*"
+
+"*R (el lenguaje) fue creado a principios de los 90 por Ross Ihaka y Robert Gentleman, ambos trabajaban en la Universidad de Auckland. Se basa en el lenguaje S desarrollado en los Laboratorios Bell en los años 70, principalmente por John Chambers. R (el software) es un proyecto GNU, lo que refleja su condición de importante software libre y de código abierto.*"
+
+Características del lenguaje
+
+-   Interpretado: permite ejecuciones directas del código, lo que lo hace más lento que los lenguajes compilados.
+-   Tipado dinámicamente: Fácil y menos boiler plate, facilita mucho la metaprogramación.
+-   Multiparadigma. Aunque la mayoría de los usuarios explotan la versión funcional y algunos la orientación a objetos.
+
+## R vs RStudio
+
+La siguiente imagen y frase están tomadas del libro [Statistical Inference via Data Science: A ModernDive into R and the Tidyverse](https://moderndive.com/index.html)
+
+::: {#fig-rvsrstudio}
+![](https://moderndive.com/images/shutterstock/R_vs_RStudio_1.png)
+
+R vs Studio [Fuente](https://moderndive.com/1-getting-started.html). 
+
+:::
+
+# Entorno de trabajo
+
+En este curso utilizaremos la herramienta online [Posit cloud](https://login.rstudio.cloud/login?redirect=%2F) de Posit.
+
+[Rstudio](https://posit.co/download/rstudio-desktop/) es un IDE (entorno de desarrollo integrado) que funciona como una interfaz gráfica que facilita el uso del lenguaje R.
+
+Posit Cloud en su versión online
+
+# Entorno de trabajo: alternativas
+
+Existen alternativas a Posit (algunos lo seguimos llamando Rstudio), pero este es el IDE de facto de R para muchos y el que seguramente se toparán en su actividad profesional.
+
+Una alternativa que va ganando mucha popularidad es el conocido [Visual Studio Code](https://code.visualstudio.com/)
+
+Si no desean usar Posit, esta sería la alternativa recomendada
+
+![R studio](images/rstudio-panes-labeled.jpeg)
+
+# Proyectos, directorios y librerías: Organizar el entorno de trabajo
+
+Para mantener todos nuestros archivos organizados, incluyendo bases de datos que cargamos o gráficas que creamos, vamos a trabajar en lo que Posit llama proyectos.
+
+Esencialmente, un proyecto de Posit es una carpeta o directorio de nuestro ordenador que contiene todos los elementos de nuestro proyecto.
+
+![Create R project](images/create RProject.gif)
+
+El uso de proyectos en RStudio es una buena práctica que permite mantener el control de todos los archivos empleados en un proyecto.
+
+Los proyectos suelen ser no solo complejos sino dinámicos, el manejo de todos los elementos que componen los mismos suele ser una parte esencial en el flujo de trabajo.
+
+Asimismo, la organización en proyectos facilita la reproducibilidad
+
+Para una discusión más detallada, leer esta [sección](https://r4ds.hadley.nz/workflow-scripts.html#projects) de este [buen libro](https://r4ds.hadley.nz/) (también en [español](https://es.r4ds.hadley.nz/))

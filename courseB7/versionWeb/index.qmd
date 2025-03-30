@@ -1,0 +1,30 @@
+---
+title: Lenguajes de programación. R
+subtitle: Máster Universitario en Inteligencia Artificial UAX
+editor: source
+---
+
+Por Kamal Romero
+
+------------------------------------------------------------------------
+
+🗓️ Octubre 17 - noviembre 21, 2024\
+⏰ Jueves 17:00 - 19:00\
+<!-- 🏨 Hall 102/305 305 - Floor 003 \ -->
+<!-- ✍️ [pos.it/conf](http://pos.it/conf) -->
+
+------------------------------------------------------------------------
+
+### Objetivos del curso
+
+El objetivo del presente módulo es introducir al alumno al uso de R dentro del ciclo de trabajo para el análisis de datos, con el objeto de crear herramientas que permitan la generación de valor a partir de la información cuantitativa generada por un proceso, ya sea un proceso físico derivado de la operación de dispositivo, o el generado a través de la interacción social implícita en las actividades comerciales. El presente curso es introductorio y operativo, se pretende introducir las herramientas básicas y más populares que ofrece R para poder capturar, transformar, analizar, preparar para la modelización y presentar los datos.
+
+
+### Instructor
+
+**Kamal Romero** es científico de datos y desarrollador de R (consultor externo) en el departamento de Advanced Computing & ICT Services del Centro de Investigación Común de la Comisión Europea.
+
+
+------------------------------------------------------------------------
+
+![](https://i.creativecommons.org/l/by/4.0/88x31.png) This work is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).

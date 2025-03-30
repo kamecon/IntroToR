@@ -1,0 +1,219 @@
+---
+title: "Data Frames"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+En esta formación abarcaremos tres formas de ineractuar con datos rectangulares (tablas, datasets, etc.): usando R base (sin recurrir a ninguna librería), la librería `dplyr` y la librería `data.table`.
+
+Empezaremos por describir un conjunto de operaciones básicas comunes a los tres enfoques, para posteriormente comparar operaciones con las tres estrategias.
+
+Vamos a cargar las librerías que usaremos
+
+```{r datos01}
+#| warning: false
+#| message: false
+
+#install.packages("dplyr", "readr", "tidyr", "data.table", "tictoc")
+library(dplyr)
+library(readr)
+library(tidyr)
+library(data.table)
+library(tictoc)
+
+```
+
+
+# Data frames
+
+Gran parte de los datos con los que trabajamos están organizados en arreglos rectangulares, donde las filas representan las instancias, individuos u objetos de estudio, y las columnas las características de los mismos.  Esto implica que por definición, dado que las unidades de estudio se representan como entes multidimensionales, que las filas son heterogéneas (una fila es un individuo caracterizado, por ejemplo, por su edad, código postal de su residencia, saldo de su cuenta bancaria, etc.), y las columnas son homogéneas (la columna de edad son todos enteros si se representan en años) 
+
+En R, el contenedor usado para poder realizar análisis sobre datos rectangulares, son los data frames.
+
+Formalmente hablando, los data frames son **listas de vectores** de igual magnitud. **Por eso es importante tener un buen conocimiento de como se comportan los vectores y las listas**. Aunque un estudio en profundidad de estas estructuras de datos (contenedores) no forma parte de esta formación, haremos referencia a estas cuando haga falta.
+
+## Cargar los datos
+
+Debemos cargar el archivo .csv y asignarlo a un objeto en R. Con R base lo haríamos con la función `read.csv()`, con dplyr con la función `read_csv()` y con data.table con `fread()` 
+
+
+::: {.panel-tabset}
+
+## R base
+
+```{r df1}
+tic(msg = "R base")
+figarodf <- read.csv(file = "./data/icUse24ed2020.csv")
+toc()
+
+```
+
+## Dplyr
+
+```{r dplyr02}
+tic(msg = "dplyr")
+figarotb <- read_csv(file = "./data/icUse24ed2020.csv")
+toc()
+
+```
+
+## data.table
+
+```{r datatable}
+tic(msg = "data.table")
+figarodt <- fread(file = "./data/icUse24ed2020.csv")
+toc()
+
+```
+
+
+:::
+
+Sin haber mencionado nada acerca de las diferencias entre las tres librerías, ya podemos observar algo, la **velocidad** a la cual se leen los datos en memoria. Analizaremos más adelante que esto no es algo específico a esta tarea, sino una característica general de la librería `data.table`  
+
+
+## Inspeccionar los datos
+
+Por lo general, solemos inspeccionar los datos de una tabla para familiarizarnos con ellos y ver que tipo de análisis podemos realizar con ellos.
+
+Como hemos mencionado al inicio, vamos a empezar con operaciones básicas en R base, y luego pasaremos a analizar estrategias por librerías.
+
+Existen varias formas de echar vistazos rápidos a los datos sin necesidad de visualizar la tabla entera, haremos todo
+
+Por ejemplo podemos ver las 6 primeras filas
+
+```{r df2}
+
+head(figarodf)
+
+```
+
+O las 6 últimas
+
+```{r df3}
+
+tail(figarodf)
+
+```
+
+Si en lugar de 6, queremos ver un determinado número de filas, simplemente se lo decimos a las funciones `head`y `tail`
+
+```{r df4}
+
+head(figarodf, n = 3)
+
+tail(figarodf, n = 2)
+
+```
+
+En el caso en que tengamos muchas columnas, la inspección visual es engorrosa, pero, al igual que las listas, si un data frame es una lista de vectores, donde los vectores son las columnas, podemos acceder a los nombres de las columnas usando `names()`
+
+```{r df5}
+
+names(figarodf)
+
+```
+
+
+Asimismo, un data frame es un objeto rectangular, es decir, con más de una dimensión, como una matriz, por lo que podremos obtener el número de filas y columnas con `dim()`
+
+```{r df6}
+
+dim(figarodf)
+
+```
+
+Podemos ver por separado el número de filas y columnas con `nrow` y `ncol`
+
+```{r df7}
+
+ncol(figarodf)
+
+nrow(figarodf)
+
+```
+
+
+Otra forma es usando la función `str`. Aunque no es intuitiva e incluso intimida a primera vista, no es tan complicado y aporta información útil. En `dplyr` la función `glimpse` hace algo similar
+
+
+::: {.panel-tabset}
+
+## R base
+
+```{r df8}
+
+str(figarodf)
+
+```
+
+## Dplyr 
+
+```{r dplyr03}
+
+glimpse(figarodf)
+
+```
+
+:::
+
+Una versión que aporta información estadística es `summary`
+
+```{r df9}
+
+summary(figarodf)
+
+```
+
+Podemos acceder a elementos de los vectores por posición o nombre
+
+```{r df12}
+
+head(figarodf, n = 1)
+
+figarodf[1,2] 
+
+figarodf[1,4] 
+
+```
+
+En el primer caso le decimos a R que queremos que nos muestre el dato de la primera fila y la segunda columna, en el segundo caso el dato de la primera fila y cuarta columna
+
+En el caso que deseemos ver una columna o fila específica, dejamos una de las dimensiones en blanco
+
+Si queremos acceder a la información de la segunda fila
+
+```{r df13}
+
+figarodf[2, ]
+
+```
+
+Si queremos acceder a la información de la cuarta columna
+
+```{r df14}
+
+figarodf[ , 4] |> head()
+
+```
+
+Observe que el resultado ya no parece un data frame, y es porque no lo es.
+
+Los vectores son el contenedor básico de datos en R, podemos reducir cualquier contenedor en R a un vector. En los vectores podemos almacenar datos de un solo tipo (numérico -entero o doble-, caracteres y lógico)
+
+Asimismo, podemos inspeccionar una columna de data frame escribiendo el nombre del mismo seguido de un signo `$` y el nombre de la columna
+
+La ventaja de este método es que los nombres de la columna se autocompletan
+
+```{r df16}
+
+head(figarodf$OBS_VALUE)
+
+```
+
+A partir de ahora, describiremos las principales operaciones de manipulación de datos con las tres estrategias, pero antes de esto, describieremos brevemente las librerías `dplyr` y `data.tabla`
+
