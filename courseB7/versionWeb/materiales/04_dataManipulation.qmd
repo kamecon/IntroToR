@@ -1,0 +1,146 @@
+---
+title: "Data Frames"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Manipulación de datos: Operaciones básicas
+
+```{r dfload}
+#| message: false
+#| echo: false
+#| warning: false
+
+library(dplyr)
+library(readr)
+library(tidyr)
+library(data.table)
+
+figarodf <- read.csv(file = "./data/icUse24ed2020.csv")
+figarotb <- read_csv(file = "./data/icUse24ed2020.csv")
+figarodt <- fread(file = "./data/icUse24ed2020.csv")
+
+
+```
+
+
+## Seleccionar columnas y filas
+
+### R base
+
+Como hemos visto en secciones anteriores, para acceder a elementos de un data frame, escribimos el nombre del data frame con corchetes y una coma `df[ , ]`. A la izquierda de la coma accedemos a las filas por su índice (localización), a la derecha accedemos a las columnas por su índice (posición) o nombre. Se pueden acceder a varias filas y columnas. En el caso que deseemos ver una columna o fila específica, dejamos una de las dimensiones en blanco
+
+### dplyr
+
+Recordemos que dplyr se basa en el uso de una gramática basada en _verbos_ en forma de funciones. Las funciones tienen nombres los suficientemente descriptivos de la labor que realizan.
+
+La función `slice()` que nos permite extraer las filas de un data frame por índices.
+
+Si lo que deseamos es seleccionar columnas, usamos el verbo `select()`
+
+### data.table
+
+Siguiendo un poco la lógica de la sintaxis de los data frames de R base, para seleccionar filas por índice usaremos el espacio delante de la primera de las 3 comas, y para seleccionar columnas ya sea por nombre o índice, el bloque a la derecha de la primera coma.
+
+::: {.panel-tabset}
+
+## R base
+
+```{r dffilcol}
+#Selecciona filas por índice
+
+figarodf[1:5, ]
+
+#No contiguas
+
+figarodf[c(1,10,24598), ]
+
+#Selecciona columnas por índice 
+
+figarodf[ , 3:6] |> head()
+
+#No contiguas
+
+figarodf[ , c(2,8,12)] |> head()
+
+#Por nombre
+
+figarodf[ , "REF_AREA"] |> head()
+
+#Ejemplo real: eliminar las filas de metadatos
+
+figarodf[ , c("TIME_PERIOD", "REF_AREA", "ROW_PI", "COUNTERPART_AREA", "COL_PI", "OBS_VALUE" )] |> head()
+
+
+```
+
+## Dplyr
+
+```{r dplyrfilcol}
+#Selecciona filas por índice
+
+figarotb |>  slice(1:5)
+
+#No contiguas
+
+figarotb |> slice(c(1,10,24598))
+
+#Selecciona columnas por índice 
+
+figarotb |> select(3:6)
+
+#No contiguas
+
+figarotb |> select(c(2,8,12))
+
+#Por nombre
+
+figarotb |> select(REF_AREA)
+
+#Ejemplo real: eliminar las filas de metadatos
+
+figarotb |> 
+  select(TIME_PERIOD, REF_AREA, ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)
+
+```
+
+## data.table
+
+```{r datatablefilcol}
+#Selecciona filas por índice
+
+figarodt[1:5, ]
+
+#No contiguas
+
+figarodt[c(1,10,24598), ]
+
+#Selecciona columnas por índice 
+
+figarodt[ , 3:6] 
+
+#No contiguas
+
+figarodt[ , c(2,8,12)]
+
+#Por nombre
+
+figarodt[ , list(REF_AREA)] 
+
+figarodt[ , .(REF_AREA)]
+
+#Ejemplo real: eliminar las filas de metadatos
+
+figarodt[ , .(TIME_PERIOD, REF_AREA, ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)]
+
+
+```
+
+
+:::
+
+
