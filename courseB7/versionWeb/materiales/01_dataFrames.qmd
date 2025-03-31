@@ -8,7 +8,7 @@ execute:
 editor: source
 ---
 
-En esta formación abarcaremos tres formas de ineractuar con datos rectangulares (tablas, datasets, etc.): usando R base (sin recurrir a ninguna librería), la librería `dplyr` y la librería `data.table`.
+En esta formación abarcaremos tres formas de ineractuar con datos rectangulares (tablas, datasets, etc.): usando R base (sin recurrir a ninguna librería externa), la librería `dplyr` y la librería `data.table`.
 
 Empezaremos por describir un conjunto de operaciones básicas comunes a los tres enfoques, para posteriormente comparar operaciones con las tres estrategias.
 
@@ -215,5 +215,5 @@ head(figarodf$OBS_VALUE)
 
 ```
 
-A partir de ahora, describiremos las principales operaciones de manipulación de datos con las tres estrategias, pero antes de esto, describieremos brevemente las librerías `dplyr` y `data.tabla`
+A partir de ahora, describiremos las principales operaciones de manipulación de datos con las tres estrategias, pero antes de esto, describieremos brevemente las librerías `dplyr` y `data.table`
 
