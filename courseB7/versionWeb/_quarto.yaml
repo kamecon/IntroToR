@@ -23,8 +23,8 @@ website:
           href: materiales/01_dataFrames.qmd
         - text: "dplyr vs data.table"
           href: materiales/03_dplyrvsDatatable.qmd
-        # - text: "Análisis exploratorio de datos"
-        #   href: materiales/03_eda.qmd
+        - text: "Manipulación de datos"
+          href: materiales/04_dataManipulation.qmd
         # - text: "ggplot2"
         #   href: materiales/05_ggplot2.qmd
         #   #target: "_blank"
