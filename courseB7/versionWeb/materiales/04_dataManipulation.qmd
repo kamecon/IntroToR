@@ -182,6 +182,8 @@ Una condición lógica siempre devuelve `TRUE` o `FALSE`, la idea es que nos que
 
 ::: {.panel-tabset}
 
+## R base
 
+```{r dfrows}
 
 :::
