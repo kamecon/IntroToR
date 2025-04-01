@@ -140,7 +140,48 @@ figarodt[ , .(TIME_PERIOD, REF_AREA, ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE
 
 ```
 
+:::
+
+En el caso de dplyr, la función `select()` ofrece opciones más amplias.
+
+Supongamos que deseamos seleccionar solo las columnas que cumplan una determinada condición, esto se puede hacer con la función `where()` dentro del verbo `select()`. Por ejemplo, si deseamos solo las columnas que contengan variables numéricas en la tabla de productos
+
+
+```{r dplyr14_2}
+
+figarotb |>
+  select(where(is.numeric))
+
+```
+
+
+Pero, también existen variantes de `select()` más específicas. Por ejemplo, para este caso también podríamos haber usado `select_if()` y la condición
+
+
+```{r dplyr14_3}
+
+figarotb |>
+  select_if(is.character)
+
+```
+
+
+::: {.callout-tip}
+
+Hay varias funciones *helpers* que permiten hacer una selección más fina de columnas. Para echar un vistazo ejecutar `?select`
 
 :::
 
+## Seleccionar filas
 
+La operación de seleccionar ciertas filas que cumplan una condición, puede que sea de las más frecuentes en el análisis de datos.
+
+En el caso de las tres librerías, la estrategia es la misma, crear una _máscara_ a partir de una condición lógica.
+
+Una condición lógica siempre devuelve `TRUE` o `FALSE`, la idea es que nos quedemos con aquellos elementos del data frame que cumplan la condición lógica, es decir, aquellos que sean `TRUE`
+
+::: {.panel-tabset}
+
+
+
+:::
