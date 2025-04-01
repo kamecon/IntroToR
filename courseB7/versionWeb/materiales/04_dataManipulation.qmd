@@ -172,6 +172,76 @@ Hay varias funciones *helpers* que permiten hacer una selección más fina de co
 
 :::
 
+De nuevo, cabe resaltar que `dplyr` posee funciones que permiten operar sobre las columnas de manera cómoda, como por ejemplo renombrar y reorganizar
+
+```{r dplyrcolumns}
+
+#Renombrar columnas
+figarotb |> 
+  rename(Origin = REF_AREA, Destination = COUNTERPART_AREA)
+
+#Cambiar columnas de posición
+figarotb |> 
+  relocate(COUNTERPART_AREA, .after = REF_AREA)
+
+figarotb |> 
+  relocate(where(is.numeric), .after = last_col())
+
+```
+
+
+En R base esto es algo menos amigable, pero es bueno saber como manipular el nombre de las columnas.
+
+Si aplicamos la función `colnames()`, esta no es más que un vector de carácteres, del cual podemos extraer elementos
+
+```{r basecolumns}
+
+colnames(figarodf)
+
+colnames(figarodf)[3]
+
+colnames(figarodf)[c(4,6)]
+
+```
+
+Para replicar lo que hemos hecho con dplyr, hacemos lo siguiente
+
+```{r basecolumns2}
+
+colnames(figarodf)[c(4,6)] <- c("Origin", "Destination")
+
+```
+
+Reasignar filas es también menos directo, hay que suministrar al data frame una máscara con el nuevo orden
+
+```{r basecolumns3}
+
+nuevoOrden <- c("PROD_STAGE", "PRICES", "TIME_PERIOD", "Origin", "Destination", "ROW_PI",  "COL_PI", "OBS_VALUE", "UNIT_MULT", "DECIMALS", "UNIT_MEASURE", "OBS_STATUS", "CONF_STATUS", "LAST_UPDATE")
+
+figarodf[ , nuevoOrden] |> head()
+
+```
+
+### Ordenar columnas
+
+::: {.panel-tabset}
+
+## R base
+
+```{r basecolorder}
+
+#Orden ascendente
+figarodf[order(figarodf$ROW_PI), ] |> head()
+
+#Orden descendente
+figarodf[order(-figarodf$ROW_PI), ] |> head()
+
+
+```
+
+
+:::
+
 ## Seleccionar filas
 
 La operación de seleccionar ciertas filas que cumplan una condición, puede que sea de las más frecuentes en el análisis de datos.
@@ -186,4 +256,76 @@ Una condición lógica siempre devuelve `TRUE` o `FALSE`, la idea es que nos que
 
 ```{r dfrows}
 
+#Seleccionar filas: condicion simple
+
+figarodf[figarodf$REF_AREA == "AT", ] |> head()
+
+#Seleccionar filas: condiciones simultaneas
+
+figarodf[figarodf$REF_AREA == "AT" & figarodf$COUNTERPART_AREA == "AT", ] |> head()
+
+figarodf[figarodf$REF_AREA == "AT" & figarodf$COUNTERPART_AREA != "AT", ] |> head()
+
+figarodf[figarodf$REF_AREA %in% c("AT", "BE", "IT"), ] |> head()
+
+figarodf[figarodf$REF_AREA %in% c("AT", "BE", "IT") & figarodf$COL_PI %in% c("P3_S13", "P3_S14", "P3_S15", "P51G", "P5M"), ] |>
+  head()
+
+```
+
+## dplyr
+
+```{r dplyrrows}
+
+#Seleccionar filas: condicion simple
+
+figarotb |> 
+  filter(REF_AREA == "AT")
+
+#Seleccionar filas: condiciones simultaneas
+
+figarotb |> 
+  filter(REF_AREA == "AT" & COUNTERPART_AREA == "AT")
+
+figarotb |> 
+  filter(REF_AREA == "AT" & COUNTERPART_AREA != "AT")
+
+figarotb |> 
+  filter(REF_AREA %in% c("AT", "BE", "IT"))
+
+figarotb |> 
+  filter(REF_AREA %in% c("AT", "BE", "IT") & COL_PI %in% c("P3_S13", "P3_S14", "P3_S15", "P51G", "P5M"))
+
+figarotb |> 
+  filter(REF_AREA %in% c("AT", "BE", "IT") & !COL_PI %in% c("P3_S13", "P3_S14", "P3_S15", "P51G", "P5M"))
+
+
+```
+
+## data.table
+
+```{r dtrows}
+
+#Seleccionar filas: condicion simple
+
+figarodt[REF_AREA == "AT"]
+
+#Seleccionar filas: condiciones simultaneas
+
+figarodt[REF_AREA == "AT" & COUNTERPART_AREA == "AT"]
+
+figarodt[REF_AREA == "AT" & COUNTERPART_AREA != "AT"] 
+
+figarodt[REF_AREA %chin% c("AT", "BE", "IT")]
+
+figarodt[REF_AREA %chin% c("AT", "BE", "IT") & COL_PI %chin% c("P3_S13", "P3_S14", "P3_S15", "P51G", "P5M")]
+
+figarodt[REF_AREA %chin% c("AT", "BE", "IT") & !COL_PI %chin% c("P3_S13", "P3_S14", "P3_S15", "P51G", "P5M")]
+
+```
+
 :::
+
+
+
+
