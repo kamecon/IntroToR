@@ -370,7 +370,7 @@ En este punto las tres librerías difieren algo en su estrategia, pero los tres 
 
 figarodf$NEW_COLUMN <- figarodf$UNIT_MULT + figarodf$DECIMALS
 
-figarodf$OBS_VALUE_WEIRD <- log(figarodf$OBS_VALUE)
+figarodf$OBS_VALUE_WEIRD <- sqrt(figarodf$OBS_VALUE)
 
 head(figarodf)
 
@@ -382,7 +382,7 @@ head(figarodf)
 ```{r dplyrnewcol}
 
 figarotb |> 
-  mutate(NEW_COLUMN = UNIT_MULT + DECIMALS , OBS_VALUE_WEIRD = log(OBS_VALUE))
+  mutate(NEW_COLUMN = UNIT_MULT + DECIMALS , OBS_VALUE_WEIRD = sqrt(OBS_VALUE))
 
 #Fijaros que en este caso no modificamos la tabla original a no ser que la guardemos en un objeto nuevo
 
@@ -393,7 +393,7 @@ figarotb |>
 ```{r datatablenewcol}
 
 figarodt[, NEW_COLUMN := UNIT_MULT + DECIMALS]
-figarodt[, OBS_VALUE_WEIRD := log(OBS_VALUE)]
+figarodt[, OBS_VALUE_WEIRD := sqrt(OBS_VALUE)]
 
 # Al mismo tiempo
 # figarodt[, `:=` (NEW_COLUMN = UNIT_MULT + DECIMALS,
@@ -569,8 +569,19 @@ Para culminar esta sección, presentamos una función de dplyr que hace lo contr
 
 ```{r separate}
 
-figarotb |> 
+figarotb_sep <- figarotb |> 
+  slice(1:100) |> 
   separate(col = LAST_UPDATE, into = c("day", "hour"), sep = " ", remove = FALSE)
+
+figarotb_sep
+
+```
+
+```{r separate2}
+
+figarotb_sep |> 
+  slice(1:100) |> 
+  separate(col = day, into = c("year", "month", "weekday"), sep = "-", remove = FALSE)
 
 ```
 
@@ -590,10 +601,13 @@ En esta sección solo comparamos dplyr y data.table
 
 ```{r dplyrsum}
 
-#Usamos la función unite
-
 figarotb |>
   summarise(media = mean(OBS_VALUE))
+
+#Varias variables
+figarotb |>
+  summarise(media = mean(OBS_VALUE), suma = sum(OBS_VALUE))
+
 
 
 ```
@@ -603,21 +617,22 @@ figarotb |>
 
 ```{r data.tablesum}
 
-figarodt[, mean(OBS_VALUE)]
+figarodt[, .(media = mean(OBS_VALUE))]
+
+figarodt[, .(media = mean(OBS_VALUE), suma = sum(OBS_VALUE))]
 
 ```
 
 :::
 
+Pero por lo general, para tablas con categorías (en nuestro caso, productos, industrias y países), estamos interesados en calcular estadísticos de resumen por cada categoría. Esto lo hacemos con el conocido (de SQL) group by
 
 ::: {.panel-tabset}
 
 
 ## dplyr
 
-```{r dplyrsum}
-
-#Usamos la función unite
+```{r dplyrby}
 
 figarotb |>
   group_by(REF_AREA) |> 
@@ -629,7 +644,7 @@ figarotb |>
 
 ## data.table
 
-```{r data.tablesum}
+```{r data.tableby}
 
 figarodt[, .(suma = sum(OBS_VALUE)) , by = REF_AREA ]
 
@@ -637,12 +652,14 @@ figarodt[, .(suma = sum(OBS_VALUE)) , by = REF_AREA ]
 
 :::
 
+Se puede calcular más de un estadístico de resumen
+
 ::: {.panel-tabset}
 
 
 ## dplyr
 
-```{r dplyrsum}
+```{r dplyrby2}
 
 #Usamos la función unite
 
@@ -656,7 +673,7 @@ figarotb |>
 
 ## data.table
 
-```{r data.tablesum}
+```{r data.tablesby2}
 
 figarodt[, .(suma = sum(OBS_VALUE), media = mean(OBS_VALUE)) , by = REF_AREA ]
 
@@ -664,8 +681,129 @@ figarodt[, .(suma = sum(OBS_VALUE), media = mean(OBS_VALUE)) , by = REF_AREA ]
 
 :::
 
+Y agrupar por más de una categoría
+
+::: {.panel-tabset}
 
 
+## dplyr
+
+```{r dplyrby3}
+
+figarotb |>
+  group_by(REF_AREA, ROW_PI) |> 
+  summarise(suma = sum(OBS_VALUE))
+
+
+```
+
+
+## data.table
+
+```{r data.tableby3}
+
+figarodt[, .(suma = sum(OBS_VALUE)) , by = .(REF_AREA, ROW_PI) ]
+
+```
+
+:::
+
+Finalizamos esta sección combinando varios de los comandos trabajados
+
+::: {.panel-tabset}
+
+
+## dplyr
+
+```{r dplyrbyall}
+
+figarotb |>
+  filter(REF_AREA != COUNTERPART_AREA) |> 
+  group_by(REF_AREA, ROW_PI) |> 
+  summarise(suma = sum(OBS_VALUE))
+
+
+```
+
+
+## data.table
+
+```{r data.tablebyall}
+
+figarodt[REF_AREA != COUNTERPART_AREA,
+         .(suma = sum(OBS_VALUE)),
+         by = .(REF_AREA, ROW_PI) ]
+
+```
+
+:::
+
+## Añadir sub tablas
+
+Hemos aprendido como añadir nuevas columnas a partir de la creación de columnas que se generan en función de columnas ya existentes, pero en ocasiones, deseamos simplemente añadir nuevas columnas (y filas) que comparten la misma estructura de la tabla original.
+
+A esta operación se le denomina **bind**
+
+Veremos dos ejemplos sencillos con sub tablas más pequeñas
+
+```{r bind01}
+
+figarodf_small01 <- figarodf[1:10, ]
+figarodf_small02 <- figarodf[11:20, ]
+
+```
+
+Estas dos tablas poseen la misma estructura de columnas, por lo que podríamos a partir de las mismas, generar una nueva tabla que tuviera las mismas columnas, pero más filas. Haremos esto con `rbind`
+
+
+```{r bind02}
+
+figarodf_small03 <- rbind(figarodf_small01, figarodf_small02)
+figarodf_small03
+
+```
+
+Creamos otro par de subtablas, pero esta vez, en lugar de compartir las mismas columnas, compartiran los mismos registros o filas
+
+```{r bind03}
+
+figarodf_small04 <- figarodf[1:10, 1:10]
+figarodf_small05 <- figarodf[1:10, 11:20]
+
+```
+
+Estas dos tablas poseen la misma estructura de filas (pertencen a la misma combinación de país exportador e importador, producto e industria), por lo que podríamos a partir de las mismas, generar una nueva tabla que tuviera las mismas filas, pero más columnas. Haremos esto con `cbind`
+
+
+```{r bind04}
+
+figarodf_small06 <- cbind(figarodf_small04, figarodf_small05)
+figarodf_small06
+
+```
+## Joins o merges
+
+Cerramos esta parte de la formación abarcando un problema con el cual se toparan, el hecho de que es común trabajar con más de una tabla de datos que guardan relación entre si, por lo que recurrimos a los ya conocidos JOINS y sus variantes.
+
+También podemos realizar estas operaciones en dplyr con las siguientes funciones:
+
+* `left_join()`
+
+* `right_join()` 
+
+* `inner_join()` 
+
+* `full_join()` 
+
+* `anti_join()`
+
+* `semi_join()` 
+
+::: {.callout-tip}
+
+Una buena introducción a los joins (uniones) con dplyr es  [esta](https://es.r4ds.hadley.nz/13-relational-data.html#mutating-joins). Y para una comparación con R base y SQL [esto](https://es.r4ds.hadley.nz/13-relational-data.html#otras-implementaciones)
+
+:::
 
 
 
