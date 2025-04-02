@@ -1,0 +1,436 @@
+---
+title: "Programación básica"
+format: html
+execute:
+  echo: true
+  messages: false
+  warning: false
+editor: source
+---
+
+# Estructuras de control
+
+El análisis de datos es un flujo de trabajo en el que los datos capturados se convierten en productos que generan valor. En dicho proceso es necesario variar el flujo de control si ciertas condiciones se cumplen o no, así como repetir operaciones un gran número de veces. En este tema se introducen las estructuras básicas para este proceso
+
+
+El objetivo de las estructuras condicionales es hacer nuestro proceso contingente a ciertas situaciones
+
+Por ejemplo, que se transforme una variable solo si su valor es negativo, que se asigne una etiqueta solo a aquellas personas que tengan más de 25 años, o que un algoritmo de previsión se lleve a cabo acorde a las características de los datos.
+
+Las estructuras condicionales en R no difieren mucho del presente en el resto de los lenguajes de programación, pero si existen algunos cambios en cuanto a su sintaxis
+
+## Estructura `if`
+
+```{r control1}
+#| eval: false
+
+if (condicion se cumple) {
+  ejecuta una acción
+}
+
+```
+
+Vamos a ver un ejemplo usando una columna de `mtcars´
+
+```{r control1_5}
+#| eval: false
+
+if (mtcars$mpg[1] > 15) {
+  print("Bien")
+}
+
+
+if (mtcars$mpg[1] < 15) {
+  print("Mal")
+}
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+}
+
+
+```
+
+## Estructura `if - else`
+
+```{r control1_6}
+#| eval: false
+
+if (condicion se cumple) {
+  ejecuta una acción
+} else {
+  ejecuta otra acción
+}
+
+```
+
+Por ejemplo
+
+```{r control2}
+
+
+if (mtcars$mpg[1] > 15) {
+  print("Bien")
+} else {
+  print("Mal")
+}
+
+
+if (mtcars$mpg[1] > 15) {
+  mtcars$mpg[1] + 5
+} else {
+  mtcars$mpg[1] - 5
+}
+
+
+```
+
+
+## Estructura `if` - `else if` - `else`
+
+```{r control3_5}
+#| eval: false
+
+if (condicion se cumple) {
+  ejecuta una acción
+} else if (se cumple esta condicion) {
+  ejecuta otra acción
+} else{
+  ejecuta esta otra accion
+}
+
+```
+
+Por ejemplo
+
+```{r control4_5}
+
+mtcars$mpg[15]
+
+if (mtcars$mpg[15] >= 25) {
+  print("Grande")
+} else if (mtcars$mpg[15] > 15 & mtcars$mpg[15] < 25) {
+  print("Mediano")
+} else {
+  print("Pequeno")
+}
+
+
+```
+
+R nos proporciona una función muy útil, sobretodo cuando trabajamos con data frames o flujos complejos, la función `ifelse()`, la cual nos ahorra escribir la estructura entera del `if`
+
+```{r control5}
+
+ifelse(mtcars$mpg[1] > 15, "Grande", "Pequeno")
+
+```
+
+# Estructura iterativa en R
+
+Es común que tengamos que aplicar la misma operación un número de veces, donde este número es lo suficientemente grande como para que sea inviable, o al menos, incómoda.
+
+Por lo general aplicaremos funciones en este esquema iterativo, o unas cuentas líneas de código que deseamos ejecutar varias veces.
+
+La estructura iterativa básica es un buble (loop) que adopta la siguiente forma:
+
+
+```{r loop1}
+#| eval: false
+
+for (variable in vector) {
+  Ejecuta esta accion
+  Ejecuta esta accion
+  ...
+  Ejecuta esta accion
+}
+
+```
+
+
+Ejemplos
+
+```{r loop2}
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+}
+
+
+```
+
+```{r loop2_5}
+
+contador <- 1
+
+for (cyl in mtcars$cyl) {
+  print(cyl)
+  contador <- contador + 1
+  if (contador >10){
+    break
+  }
+}
+
+
+```
+
+```{r loop3}
+
+mtcars_peque <- mtcars[1:20,]
+
+for (i in seq_along(mtcars_peque$cyl)) {
+  if (mtcars_peque$cyl[i] >= 8){
+    mtcars_peque$cyl[i] <- "Grande"
+  } else{
+    mtcars_peque$cyl[i] <- "Pequeno"
+  }
+}
+
+mtcars_peque
+
+```
+
+
+```{r loop4}
+
+for (i in seq_along(mtcars_peque$cyl)) {
+  if (mtcars_peque$cyl[i] >= 6) {
+    mtcars_peque$cyl[i] <- "Grande"
+  } else if (mtcars_peque$cyl[i] > 4 & mtcars_peque$cyl[i] < 6) {
+    mtcars_peque$cyl[i] <- "Mediano"
+  } else {
+    mtcars_peque$cyl[i] <-"Pequeno"
+  }
+}
+
+mtcars_peque
+
+```
+
+
+# Funciones
+
+Ya hemos trabajado con varias funciones de R, tales como `length()`, `nrow()`, `summary()`
+
+Pero en esta sección no nos concentramos en las distintas funciones que podemos llamar en R y sus librerías, que son miles, sino en como podemos definir nuestras propias funciones.
+
+Es más que habitual en el flujo de trabajos con datos necesitemos repetir un tipo de operación no trivial (cuya realización implique el uso de un script de código) varias veces. En este caso, en lugar de copiar y pegar las instrucciones una y otra vez, podemos escribir una función que encapsule esas instrucciones y llamar a la misma cada vez que necesitemos realizar la operación.
+
+Siguiendo este [consejo](https://es.r4ds.hadley.nz/19-functions.html#cu%C3%A1ndo-deber%C3%ADas-escribir-una-funci%C3%B3n), deberíamos convertir en una función cualquier bloque de código que hayamos copiado y pegado al menos 3 veces en nuestro flujo de trabajo
+
+Veamos un ejemplo muy sencillo. deseamos escribir una función que normalice una variable que pertenece a un conjunto de datos, sustrayendo su media y dividiéndolo por su desviación típica.
+
+Generamos unos datos aleatorios que sirvan de ejemplo
+
+```{r fun01}
+
+set.seed(154)
+datos_1 <- rnorm(n = 100, mean = 50, sd = 15)
+
+```
+
+Seleccionamos uno al azar
+
+```{r fun02}
+
+dato_1 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_1
+
+```
+
+Normalizamos la variable
+
+```{r fun03}
+
+normal_1 <- (dato_1 - mean(datos_1)) / sd(datos_1)
+
+normal_1
+
+```
+
+Queremos volver a hacer esta operación con otro dato del conjunto
+
+```{r fun04}
+
+dato_2 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_2
+
+normal_2 <- (dato_2 - mean(datos_1)) / sd(datos_1)
+
+normal_2
+
+
+```
+
+Y otra vez
+
+```{r fun05}
+
+dato_3 <- sample(x = datos_1, size = 1, replace = TRUE)
+
+dato_3
+
+normal_3 <- (dato_3 - mean(datos_1)) / sd(datos_1)
+
+normal_3
+
+
+```
+
+Esto de copiar y pegar un trozo de código cada vez que necesitamos hacer una operación, no tiene sentido.
+
+Para evitar eso definimos una *función personalizada* 
+
+En R se definen funciones del siguiente modo:
+
+```{r fun06}
+#| eval: false
+
+nombre_de_la_funcion <- function(argumentos) {
+  
+  Cuerpo de la funcion
+}
+
+```
+
+Podemos identificar tres partes de la función:
+
+* Nombre de la función
+
+* Argumentos
+
+* Cuerpo de la función
+
+El nombre de la función debe ser informativo (ver estos [consejos](https://es.r4ds.hadley.nz/19-functions.html#las-funciones-son-para-los-seres-humanos-y-para-las-computadoras)).
+
+EL cuerpo de la función es el código que deseamos re utilizar
+
+Los argumentos son las variables (pueden ser de cualquier tipo: vectores, matrices, dtataframes, etc.) que necesita el cuerpo para poder ejecutar el código
+
+Implementamos nuestro ejemplo
+
+```{r fun07}
+
+normalizar <- function(dato, datos) {
+  
+  (dato - mean(datos)) / sd(datos)
+  
+}
+
+```
+
+Una vez ejecutamos la instrucción anterior, la función está a nuestra disposición en el entorno de trabajo
+
+Probemos con los valores utilizados antes
+
+```{r fun08}
+
+normalizar(dato = dato_1, datos = datos_1)
+
+normalizar(dato = dato_2, datos = datos_1)
+
+normalizar(dato = dato_2, datos = datos_1)
+
+```
+
+Por supuesto, podemos asignar el resultado de la función a una variable (objeto)
+
+```{r fun09}
+
+normal_1_2 <- normalizar(dato = dato_1, datos = datos_1)
+
+normal_2_2 <- normalizar(dato = dato_2, datos = datos_1)
+
+normal_3_2 <- normalizar(dato = dato_2, datos = datos_1)
+
+normal_1_2
+normal_2_2
+normal_3_2
+
+```
+
+Podemos pasar un vector como argumento
+
+```{r fun10}
+
+datos_entrada <- c(dato_1, dato_2, dato_3)
+
+normal_vec <- normalizar(dato = datos_entrada, datos = datos_1)
+
+normal_vec
+
+```
+
+Y por ende, una columna de un data frame
+
+```{r fun11}
+
+datos_entrada_2 <- mtcars$mpg
+
+normal_mpg <- normalizar(dato = datos_entrada_2, datos = datos_entrada_2)
+
+normal_mpg
+
+```
+
+Escribir funciones es un mundo y un arte, a la función anterior por ejemplo habría que añadirle alguna prueba que verificara, por ejemplo, si los vectores de entrada son numéricos, como actuar en caso de que haya datos faltantes, imprimir errores informativos en caso de errores, posibilidad de llamar a otras funciones, etc.
+
+La primera parte del párrafo anterior se implementa con el uso de las estructuras condicionales vistas en las secciones anteriores.
+
+# La familia `apply`
+
+Exploraremos las funciones `lapply()` y `sapply()`, que son poderosas herramientas para pasar una función a cada elemento de una lista o un vector.
+
+Estas funciones combinan dos conceptos previamente discutidos: las funciones personalizadas y los bucles.
+
+Estas funciones minimizan la necesidad de crear un bucle explícito, lo que hace que el código sea más conciso y eficiente.
+
+Con `lapply()`, puedes aplicar una función a cada elemento de una lista y obtener como resultado otra lista.
+
+```{r apply01}
+
+normal_vec
+
+```
+
+```{r apply02}
+
+normalized_vector02 <- lapply(datos_entrada, normalizar, datos = datos_1)
+
+normalized_vector02
+
+```
+
+Por otro lado, `sapply` simplifica el resultado a un vector o matriz cuando es posible.
+
+```{r apply03}
+
+normalized_vector03 <- sapply(datos_entrada, normalizar, datos = datos_1)
+
+normalized_vector03
+
+```
+
+No podremos cubrir en detalle el alcance completo de estas funciones y sus diversas aplicaciones en este curso.
+
+::: {.callout-tip title="Ejemplo: Distribución muestral con `replicate`"}
+
+En lugar de usar un bucle, puedes utilizar la función `replicate` de la familia de funciones `apply`. Estas funciones aplican una operación específica a un conjunto de valores representados por un vector. En este caso, estamos repitiendo una instrucción específica encapsulada en una función un número determinado de veces, lo que implica extraer una muestra de una población y realizar un análisis de regresión. En este ejemplo, `replicate` se utiliza para repetir esta operación 1000 veces.
+
+Este tipo de operación es comúnmente utilizado en estadística para realizar simulaciones, donde se repiten numerosas veces realizaciones de una distribución de probabilidad o fenómenos inciertos (por ejemplo, lanzar un dado 50,000 veces).
+
+```{r loopex7}
+
+# A continuación creamos una población de tamaño 1.000.000 que se distribuye como una normal con media 100 y desviación estándar 15
+
+pop <- rnorm(1000000, mean = 100, sd = 15)
+
+distribucion_medias <- replicate(expr = mean(sample(x = pop, size = 100)), n = 1000)
+
+hist(distribucion_medias)
+
+```
+
+:::
