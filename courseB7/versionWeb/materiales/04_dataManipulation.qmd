@@ -208,7 +208,11 @@ Para replicar lo que hemos hecho con dplyr, hacemos lo siguiente
 
 ```{r basecolumns2}
 
-colnames(figarodf)[c(4,6)] <- c("Origin", "Destination")
+figarodf_02 <- figarodf[sample(x = nrow(figarodf), size = 1000), ]
+
+colnames(figarodf_02)[c(4,6)] <- c("Origin", "Destination")
+
+head(figarodf_02)
 
 ```
 
@@ -229,13 +233,41 @@ figarodf[ , nuevoOrden] |> head()
 ## R base
 
 ```{r basecolorder}
+set.seed(125L)
+
+figarodfSmall <- figarodf[sample(x = nrow(figarodf), size = 1000), ]
 
 #Orden ascendente
-figarodf[order(figarodf$ROW_PI), ] |> head()
+figarodfSmall[order(figarodfSmall$ROW_PI), ] |> head()
 
 #Orden descendente
-figarodf[order(-figarodf$ROW_PI), ] |> head()
+figarodfSmall[order(figarodfSmall$ROW_PI, decreasing = TRUE), ] |> head()
 
+```
+
+## dplyr 
+
+```{r dplyrorder}
+
+#Orden ascendente
+figarotb |> 
+  arrange(ROW_PI)
+
+#Orden descendente
+figarotb |> 
+  arrange(desc(ROW_PI))
+
+
+```
+
+## data.table
+
+```{r datatableorder}
+#Orden ascendente
+figarodt[order(ROW_PI)]
+
+#Orden descendente
+figarodt[order(-ROW_PI)]
 
 ```
 
@@ -325,6 +357,217 @@ figarodt[REF_AREA %chin% c("AT", "BE", "IT") & !COL_PI %chin% c("P3_S13", "P3_S1
 ```
 
 :::
+
+## Crear nuevas variables (columnas)
+
+En este punto las tres librerías difieren algo en su estrategia, pero los tres son bastante claros para el usuario  
+
+::: {.panel-tabset}
+
+## R base
+
+```{r basenewcol}
+
+figarodf$NEW_COLUMN <- figarodf$UNIT_MULT + figarodf$DECIMALS
+
+figarodf$OBS_VALUE_WEIRD <- log(figarodf$OBS_VALUE)
+
+head(figarodf)
+
+
+```
+
+## dplyr
+
+```{r dplyrnewcol}
+
+figarotb |> 
+  mutate(NEW_COLUMN = UNIT_MULT + DECIMALS , OBS_VALUE_WEIRD = log(OBS_VALUE))
+
+#Fijaros que en este caso no modificamos la tabla original a no ser que la guardemos en un objeto nuevo
+
+```
+
+## data.table
+
+```{r datatablenewcol}
+
+figarodt[, NEW_COLUMN := UNIT_MULT + DECIMALS]
+figarodt[, OBS_VALUE_WEIRD := log(OBS_VALUE)]
+
+# Al mismo tiempo
+# figarodt[, `:=` (NEW_COLUMN = UNIT_MULT + DECIMALS,
+#                  OBS_VALUE_WEIRD = log(OBS_VALUE))]
+
+figarodt
+
+```
+
+
+:::
+
+También es posible crear columnas contingentes, es decir, que su valor pertenezca a un conjunto reducido discreto y que dependa del valor de otra variable/columna. Esta s una práctica habitual en el análisis empírico para codificar variables que van a ser usadas en un modelo (NOTA: en R esto no hace falta en el análisis empírico porque existe el tipo de variable factor)
+
+
+::: {.panel-tabset}
+
+## R base
+
+```{r basecase}
+
+figarodf$NEW_PRODUCT <- ifelse(figarodf$ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53"),
+                               "CPA_NEW",
+                               figarodf$ROW_PI)
+
+figarodf[figarodf$NEW_PRODUCT == "CPA_NEW", ] |> head()
+
+```
+
+## dplyr
+
+```{r dplyrcase}
+
+figarotb |> 
+  mutate(NEW_PRODUCT = if_else(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53"),
+                               "CPA_NEW",
+                               ROW_PI))
+
+#Fijaros que en este caso no modificamos la tabla original a no ser que la guardemos en un objeto nuevo
+
+```
+
+## data.table
+
+```{r datatablecase}
+
+figarodt[, NEW_PRODUCT := fifelse(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53"),
+                               "CPA_NEW",
+                               ROW_PI)]
+
+figarodt
+
+```
+
+:::
+
+Cuando tenemos condiciones múltiples, se puede anidar la función `ifelse()` del siguiente modo (solo hacemos el ejemplo en dplyr, pero es análogo en las otras dos opciones):
+
+```{r dplyrcase2}
+
+figarotb |> 
+  mutate(NEW_PRODUCT2 = if_else(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53"),
+                                "CPA_NEW",
+                                if_else(ROW_PI %in% c("CPA_C16", "CPA_Q86", "CPA_C28", "CPA_C19", "CPA_H50"),
+                                        "CPA_NEW2",
+                                        ROW_PI)
+                                )
+          )
+
+
+```
+
+
+Esta sintaxis es poco legible y se puede volver aún más confusa a medida que introducimos más condiciones
+
+Afortunadamente, podemos usar la función `case_when()` en dplyr y `fcase()` en data.table
+
+::: {.panel-tabset}
+
+## dplyr
+
+```{r dplyrcase3}
+
+figarotb |> 
+  mutate(NEW_PRODUCT3 = case_when(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53") ~ "CPA_NEW",
+                                  ROW_PI %in% c("CPA_C16", "CPA_Q86", "CPA_C28", "CPA_C19", "CPA_H50") ~ "CPA_NEW2",
+                                  .default = ROW_PI)
+         )
+
+```
+
+
+## data.table
+
+```{r data.tablecase3}
+
+figarodt[, NEW_PRODUCT3 := fcase(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53"), "CPA_NEW",
+                                 ROW_PI %in% c("CPA_C16", "CPA_Q86", "CPA_C28", "CPA_C19", "CPA_H50"), "CPA_NEW2",
+                                 default = ROW_PI)]
+
+figarodt
+
+```
+
+:::
+
+Asimismno, además de ser mas legibles, este tipo de operaciones con `case_when()` y `fcase()` son más rápidas
+
+Otra operación útil cuando manipulamos columnas es la de crear una columna de carácteres uniendo o separando otras dos columnas
+
+En el caso de unir dos columnas de carácteres
+
+
+::: {.panel-tabset}
+
+## R base
+
+
+```{r basepaste}
+
+figarodf$IC_ROW <- paste(figarodf$REF_AREA, figarodf$ROW_PI, sep = "_")
+
+head(figarodf)
+
+#Para crear identificadores únicos
+
+figarodf$IC_COL <- paste(figarodf$REF_AREA, figarodf$COL_PI, sep = "_")
+
+figarodf$TRADE_ID <- paste(figarodf$IC_ROW, figarodf$IC_COL, sep = "_")
+
+head(figarodf)
+
+
+```
+
+
+
+## dplyr
+
+```{r dplyrcase3}
+
+figarotb |> 
+  mutate(NEW_PRODUCT3 = case_when(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53") ~ "CPA_NEW",
+                                  ROW_PI %in% c("CPA_C16", "CPA_Q86", "CPA_C28", "CPA_C19", "CPA_H50") ~ "CPA_NEW2",
+                                  .default = ROW_PI)
+         )
+
+```
+
+
+## data.table
+
+```{r data.tablecase3}
+
+figarodt[, NEW_PRODUCT3 := fcase(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53"), "CPA_NEW",
+                                 ROW_PI %in% c("CPA_C16", "CPA_Q86", "CPA_C28", "CPA_C19", "CPA_H50"), "CPA_NEW2",
+                                 default = ROW_PI)]
+
+figarodt
+
+```
+
+:::
+
+
+
+
+
+
+
+
+
+
+
 
 
 
