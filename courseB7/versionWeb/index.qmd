@@ -1,6 +1,6 @@
 ---
-title: Lenguajes de programación. R
-subtitle: Máster Universitario en Inteligencia Artificial UAX
+title: Formación básica de R. Manipulación de datos y análisis input-output
+subtitle: AMADEUS team
 editor: source
 ---
 
@@ -8,21 +8,21 @@ Por Kamal Romero
 
 ------------------------------------------------------------------------
 
-🗓️ Octubre 17 - noviembre 21, 2024\
-⏰ Jueves 17:00 - 19:00\
-<!-- 🏨 Hall 102/305 305 - Floor 003 \ -->
+🗓 Abril 03 - 04, 2025\
+⏰  09:30 - 13:30\
+🏨 Room 65 - Floor 002 \
 <!-- ✍️ [pos.it/conf](http://pos.it/conf) -->
 
 ------------------------------------------------------------------------
 
 ### Objetivos del curso
 
-El objetivo del presente módulo es introducir al alumno al uso de R dentro del ciclo de trabajo para el análisis de datos, con el objeto de crear herramientas que permitan la generación de valor a partir de la información cuantitativa generada por un proceso, ya sea un proceso físico derivado de la operación de dispositivo, o el generado a través de la interacción social implícita en las actividades comerciales. El presente curso es introductorio y operativo, se pretende introducir las herramientas básicas y más populares que ofrece R para poder capturar, transformar, analizar, preparar para la modelización y presentar los datos.
+Los objetivos del presente curso son dos: El primero es introducir al alumno al uso de R para la manipulación de datos en forma tabular mediante el uso de R base y las librerías dplyr y data.table. El segundo, realizar un breve ejercicio de análisis de input - output con las herramientas de algebra lineal de R en combinación con las estrategias de manipulación de tablas mencionada arriba.
 
 
 ### Instructor
 
-**Kamal Romero** es científico de datos y desarrollador de R (consultor externo) en el departamento de Advanced Computing & ICT Services del Centro de Investigación Común de la Comisión Europea.
+**Kamal Romero** es científico de datos y desarrollador de R (consultor externo) en el departamento de Advanced Computing & ICT Services (JRC T6).
 
 
 ------------------------------------------------------------------------
