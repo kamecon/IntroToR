@@ -220,7 +220,7 @@ Reasignar filas es también menos directo, hay que suministrar al data frame una
 
 ```{r basecolumns3}
 
-nuevoOrden <- c("PROD_STAGE", "PRICES", "TIME_PERIOD", "Origin", "Destination", "ROW_PI",  "COL_PI", "OBS_VALUE", "UNIT_MULT", "DECIMALS", "UNIT_MEASURE", "OBS_STATUS", "CONF_STATUS", "LAST_UPDATE")
+nuevoOrden <- c("PROD_STAGE", "PRICES", "TIME_PERIOD", "REF_AREA", "COUNTERPART_AREA", "ROW_PI",  "COL_PI", "OBS_VALUE", "UNIT_MULT", "DECIMALS", "UNIT_MEASURE", "OBS_STATUS", "CONF_STATUS", "LAST_UPDATE")
 
 figarodf[ , nuevoOrden] |> head()
 
@@ -500,7 +500,7 @@ figarodt
 
 :::
 
-Asimismno, además de ser mas legibles, este tipo de operaciones con `case_when()` y `fcase()` son más rápidas
+Asimismo, además de ser mas legibles, este tipo de operaciones con `case_when()` y `fcase()` son más rápidas
 
 Otra operación útil cuando manipulamos columnas es la de crear una columna de carácteres uniendo o separando otras dos columnas
 
@@ -520,7 +520,7 @@ head(figarodf)
 
 #Para crear identificadores únicos
 
-figarodf$IC_COL <- paste(figarodf$REF_AREA, figarodf$COL_PI, sep = "_")
+figarodf$IC_COL <- paste(figarodf$COUNTERPART_AREA, figarodf$COL_PI, sep = "_")
 
 figarodf$TRADE_ID <- paste(figarodf$IC_ROW, figarodf$IC_COL, sep = "_")
 
@@ -533,24 +533,31 @@ head(figarodf)
 
 ## dplyr
 
-```{r dplyrcase3}
+```{r dplyrpaste}
 
-figarotb |> 
-  mutate(NEW_PRODUCT3 = case_when(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53") ~ "CPA_NEW",
-                                  ROW_PI %in% c("CPA_C16", "CPA_Q86", "CPA_C28", "CPA_C19", "CPA_H50") ~ "CPA_NEW2",
-                                  .default = ROW_PI)
-         )
+#Usamos la función unite
+
+figarotb |>
+  unite(col = "IC_ROW", REF_AREA, ROW_PI, sep = "_")
+
+#Para crear identificadores únicos
+
+figarotb |>
+  unite(col = "TRADE_ID", REF_AREA, ROW_PI, COUNTERPART_AREA, COL_PI, sep = "_")
+
 
 ```
 
 
 ## data.table
 
-```{r data.tablecase3}
+```{r data.tablepaste}
 
-figarodt[, NEW_PRODUCT3 := fcase(ROW_PI %in% c("CPA_C29", "CPA_N78", "CPA_C21", "CPA_K64", "CPA_H53"), "CPA_NEW",
-                                 ROW_PI %in% c("CPA_C16", "CPA_Q86", "CPA_C28", "CPA_C19", "CPA_H50"), "CPA_NEW2",
-                                 default = ROW_PI)]
+figarodt[, `:=` (IC_ROW = paste(REF_AREA, ROW_PI, sep = "_"),
+                 IC_COL = paste(COUNTERPART_AREA, COL_PI, sep = "_"))]
+
+figarodt[, TRADE_ID := paste(IC_ROW, IC_COL, sep = "_")]
+
 
 figarodt
 
@@ -558,12 +565,104 @@ figarodt
 
 :::
 
+Para culminar esta sección, presentamos una función de dplyr que hace lo contrario, separar columnas de carácteres, `separate()`
+
+```{r separate}
+
+figarotb |> 
+  separate(col = LAST_UPDATE, into = c("day", "hour"), sep = " ", remove = FALSE)
+
+```
+
+## Agrupación y agregación
+
+Las operaciones de agrupación y agregación suelen ser las más habituales en el análisis de datos, desde lo más básico como calcular estadísticos descriptivos por variables hasta crear tablas de resumen por registros agrupados (comercio por países o productos)
+
+En esta sección solo comparamos dplyr y data.table
+
+### Estadísticos descriptivos
 
 
+::: {.panel-tabset}
 
 
+## dplyr
+
+```{r dplyrsum}
+
+#Usamos la función unite
+
+figarotb |>
+  summarise(media = mean(OBS_VALUE))
 
 
+```
+
+
+## data.table
+
+```{r data.tablesum}
+
+figarodt[, mean(OBS_VALUE)]
+
+```
+
+:::
+
+
+::: {.panel-tabset}
+
+
+## dplyr
+
+```{r dplyrsum}
+
+#Usamos la función unite
+
+figarotb |>
+  group_by(REF_AREA) |> 
+  summarise(suma = sum(OBS_VALUE))
+
+
+```
+
+
+## data.table
+
+```{r data.tablesum}
+
+figarodt[, .(suma = sum(OBS_VALUE)) , by = REF_AREA ]
+
+```
+
+:::
+
+::: {.panel-tabset}
+
+
+## dplyr
+
+```{r dplyrsum}
+
+#Usamos la función unite
+
+figarotb |>
+  group_by(REF_AREA) |> 
+  summarise(suma = sum(OBS_VALUE), media = mean(OBS_VALUE))
+
+
+```
+
+
+## data.table
+
+```{r data.tablesum}
+
+figarodt[, .(suma = sum(OBS_VALUE), media = mean(OBS_VALUE)) , by = REF_AREA ]
+
+```
+
+:::
 
 
 
