@@ -4,13 +4,13 @@ project:
     - "*.qmd"
 
 website:
-  title: "Programación y entorno de trabajo para la IA: R"
+  title: "Formación básica de R: Manipulación de datos y análisis input-output"
   navbar:
     background: dark
     logo: "materiales/images/R_logo.svg.png"
     right:
        - icon: envelope
-         href: mailto:kromesoo@uax.es
+         href: mailto:kamal.romero-sookoo@ext.ec.europa.eu
 
     left:
       - href: index.qmd
@@ -33,11 +33,11 @@ website:
       #   - text: "Thank you 👋"
       #     href: materials/8_closing.qmd
       #     target: "_blank"
-      # - text: Exercises
-      #   menu:
-      #   - text: "Hello Arrow Exercises"
-      #     href: materials/1_hello_arrow-exercises.qmd
-      #   - text: "Data Manipulation Part I Exercises"
+      - text: Material adicional
+        menu:
+        - text: "Programación básica"
+          href: materiales/08_programming.qmd
+        # - text: "Data Manipulation Part I Exercises"
       #     href: materials/2_data_manipulation_1-exercises.qmd
       #   - text: "Data Engineering Exercises"
       #     href: materials/3_data_engineering-exercises.qmd
