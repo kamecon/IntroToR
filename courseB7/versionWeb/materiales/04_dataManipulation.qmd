@@ -785,7 +785,7 @@ figarodf_small06
 
 Cerramos esta parte de la formación abarcando un problema con el cual se toparan, el hecho de que es común trabajar con más de una tabla de datos que guardan relación entre si, por lo que recurrimos a los ya conocidos JOINS y sus variantes.
 
-También podemos realizar estas operaciones en dplyr con las siguientes funciones:
+Empezamos por dplyr que es más intuitivo, podemos realizar estas operaciones en dplyr con las siguientes funciones:
 
 * `left_join()`
 
@@ -805,7 +805,101 @@ Una buena introducción a los joins (uniones) con dplyr es  [esta](https://es.r4
 
 :::
 
+En data.table usaremos una versión de la función de R base `merge` 
+
+Vamos a crear dos tablas con campos comunes para crear un ejemplo sencillo, que involucra muchas de las cosas que hemos aprendido hasta ahora
 
 
+::: {.panel-tabset}
+
+
+## dplyr
+
+```{r join2}
+
+tbEs01 <- figarotb |>
+  filter(REF_AREA == "ES" & COL_PI == "P3_S13") |> 
+  select(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE) |> 
+  group_by(ROW_PI) |> 
+  summarise(P3_S13 = sum(OBS_VALUE))
+
+tbEs02 <- figarotb |>
+  filter(REF_AREA == "ES" & COL_PI == "P3_S14") |> 
+  select(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE) |> 
+  group_by(ROW_PI) |> 
+  summarise(P3_S14 = sum(OBS_VALUE))
+
+tbEsCompare <- full_join(x = tbEs01, y = tbEs02, by = "ROW_PI") |> 
+  mutate(SHARE = if_else(P3_S13 == 0, 0, P3_S14 / P3_S13)) |> 
+  arrange(desc(SHARE))
+
+```
+
+
+## data.table
+
+```{r join3}
+
+dtEs01 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S13", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |> 
+  _[, .(P3_S13 = sum(OBS_VALUE)), by = ROW_PI]
+
+dtEs02 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S14", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |> 
+  _[, .(P3_S14 = sum(OBS_VALUE)), by = ROW_PI]
+
+dtEsCompareTemp <- merge.data.table(x = dtEs01, y = dtEs02, by = "ROW_PI", all = TRUE)
+
+dtEsCompare <- dtEsCompareTemp[, SHARE := fifelse(P3_S13 == 0, 0, P3_S14 / P3_S13)][order(-SHARE)]
+
+```
+
+:::
+
+<!-- ## Pivotar -->
+
+<!-- Finalizamos esta sesión hablando acerca de como modificar las estructura de filas y columnas de un data frame. -->
+
+<!-- En la tabla de FIGARO que hemos utilizado en este curso, nos percatamos que la variable relevante, el comercio, viene toda en una sola columna, más allá de que estamos trabajando con 4 dimensiones (país de origen, país de destino, producto e industria) -->
+
+<!-- Lo anterior es lo que se conoce como formato **long** -->
+
+<!-- Puede que necesitemos representar los datos en otro formato, con un número de filas y columnas igual al número de países por industria y producto. -->
+
+<!-- Este tipo de formato con _muchas columnas_ se suele denominar **wide** -->
+
+<!-- Vamos a aprender como pasar de long a wide y viceversa con dplyr y data.table. En dplyr usamos las funciones `pivot_wider()` y `pivot_longer()`, en data table las funciones `dcast()` y `melt()`   -->
+
+<!-- ::: {.panel-tabset} -->
+
+
+<!-- ## dplyr -->
+
+<!-- ```{r join2} -->
+
+<!-- figarotb |> -->
+<!--   unite(col = "IC_ROW", REF_AREA, ROW_PI, sep = "_", remove = FALSE) |>  -->
+<!--   unite(col = "IC_COL", REF_AREA, COL_PI, sep = "_", remove = FALSE) |>  -->
+<!--   select(IC_ROW ,IC_COL, OBS_VALUE)  -->
+
+
+<!-- ``` -->
+
+
+<!-- ## data.table -->
+
+<!-- ```{r join3} -->
+
+<!-- dtEs01 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S13", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |>  -->
+<!--   _[, .(P3_S13 = sum(OBS_VALUE)), by = ROW_PI] -->
+
+<!-- dtEs02 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S14", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |>  -->
+<!--   _[, .(P3_S14 = sum(OBS_VALUE)), by = ROW_PI] -->
+
+<!-- dtEsCompareTemp <- merge.data.table(x = dtEs01, y = dtEs02, by = "ROW_PI", all = TRUE) -->
+
+<!-- dtEsCompare <- dtEsCompareTemp[, SHARE := fifelse(P3_S13 == 0, 0, P3_S14 / P3_S13)][order(-SHARE)] -->
+
+<!-- ``` -->
+
+<!-- ::: -->
 
 
