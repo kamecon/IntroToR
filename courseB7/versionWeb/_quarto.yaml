@@ -25,8 +25,8 @@ website:
           href: materiales/03_dplyrvsDatatable.qmd
         - text: "Manipulación de datos"
           href: materiales/04_dataManipulation.qmd
-        # - text: "ggplot2"
-        #   href: materiales/05_ggplot2.qmd
+        - text: "IO analysis"
+          href: materiales/05_matricesIO.qmd
         #   #target: "_blank"
         # - text: "Regression analysis"
         #   href: materials/10_regression.qmd
