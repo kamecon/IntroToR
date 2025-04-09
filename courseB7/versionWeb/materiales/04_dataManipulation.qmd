@@ -768,7 +768,7 @@ Creamos otro par de subtablas, pero esta vez, en lugar de compartir las mismas c
 ```{r bind03}
 
 figarodf_small04 <- figarodf[1:10, 1:10]
-figarodf_small05 <- figarodf[1:10, 11:20]
+figarodf_small05 <- figarodf[1:10, 11:14]
 
 ```
 
@@ -840,13 +840,18 @@ tbEsCompare <- full_join(x = tbEs01, y = tbEs02, by = "ROW_PI") |>
 
 ```{r join3}
 
-dtEs01 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S13", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |> 
+dtEs01 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S13",
+                   .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |> 
   _[, .(P3_S13 = sum(OBS_VALUE)), by = ROW_PI]
 
-dtEs02 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S14", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |> 
+dtEs02 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S14",
+                   .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |> 
   _[, .(P3_S14 = sum(OBS_VALUE)), by = ROW_PI]
 
-dtEsCompareTemp <- merge.data.table(x = dtEs01, y = dtEs02, by = "ROW_PI", all = TRUE)
+dtEsCompareTemp <- merge.data.table(x = dtEs01,
+                                    y = dtEs02,
+                                    by = "ROW_PI",
+                                    all = TRUE)
 
 dtEsCompare <- dtEsCompareTemp[, SHARE := fifelse(P3_S13 == 0, 0, P3_S14 / P3_S13)][order(-SHARE)]
 
@@ -854,52 +859,46 @@ dtEsCompare <- dtEsCompareTemp[, SHARE := fifelse(P3_S13 == 0, 0, P3_S14 / P3_S1
 
 :::
 
-<!-- ## Pivotar -->
+## Pivotar
 
-<!-- Finalizamos esta sesión hablando acerca de como modificar las estructura de filas y columnas de un data frame. -->
+Finalizamos esta sesión hablando acerca de como modificar las estructura de filas y columnas de un data frame.
 
-<!-- En la tabla de FIGARO que hemos utilizado en este curso, nos percatamos que la variable relevante, el comercio, viene toda en una sola columna, más allá de que estamos trabajando con 4 dimensiones (país de origen, país de destino, producto e industria) -->
+En la tabla de FIGARO que hemos utilizado en este curso, nos percatamos que la variable relevante, el comercio, viene toda en una sola columna, más allá de que estamos trabajando con 4 dimensiones (país de origen, país de destino, producto e industria)
 
-<!-- Lo anterior es lo que se conoce como formato **long** -->
+Lo anterior es lo que se conoce como formato **long**
 
-<!-- Puede que necesitemos representar los datos en otro formato, con un número de filas y columnas igual al número de países por industria y producto. -->
+Puede que necesitemos representar los datos en otro formato, con un número de filas y columnas igual al número de países por industria y producto.
 
-<!-- Este tipo de formato con _muchas columnas_ se suele denominar **wide** -->
+Este tipo de formato con _muchas columnas_ se suele denominar **wide**
 
-<!-- Vamos a aprender como pasar de long a wide y viceversa con dplyr y data.table. En dplyr usamos las funciones `pivot_wider()` y `pivot_longer()`, en data table las funciones `dcast()` y `melt()`   -->
+Vamos a aprender como pasar de long a wide y viceversa con dplyr y data.table. En dplyr usamos las funciones `pivot_wider()` y `pivot_longer()`, en data table las funciones `dcast()` y `melt()`
 
-<!-- ::: {.panel-tabset} -->
-
-
-<!-- ## dplyr -->
-
-<!-- ```{r join2} -->
-
-<!-- figarotb |> -->
-<!--   unite(col = "IC_ROW", REF_AREA, ROW_PI, sep = "_", remove = FALSE) |>  -->
-<!--   unite(col = "IC_COL", REF_AREA, COL_PI, sep = "_", remove = FALSE) |>  -->
-<!--   select(IC_ROW ,IC_COL, OBS_VALUE)  -->
+::: {.panel-tabset}
 
 
-<!-- ``` -->
+## dplyr
+
+```{r pivot2}
+
+testPivot <- figarotb |>
+  unite(col = "IC_ROW", REF_AREA, ROW_PI, sep = "_", remove = FALSE) |>
+  unite(col = "IC_COL", COUNTERPART_AREA, COL_PI, sep = "_", remove = FALSE) |>
+  select(IC_ROW, IC_COL, OBS_VALUE) |> 
+  pivot_wider(names_from = IC_COL, values_from = OBS_VALUE)
+```
 
 
-<!-- ## data.table -->
+## data.table
 
-<!-- ```{r join3} -->
+```{r pivot3}
 
-<!-- dtEs01 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S13", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |>  -->
-<!--   _[, .(P3_S13 = sum(OBS_VALUE)), by = ROW_PI] -->
+figarodtPivot <- figarodt[, `:=` (IC_ROW = paste(REF_AREA, ROW_PI, sep = "_"),
+                                  IC_COL = paste(COUNTERPART_AREA, COL_PI, sep = "_"))] |> 
+  _[, .(IC_ROW, IC_COL, OBS_VALUE)] |> 
+  data.table::dcast(formula = IC_ROW ~ IC_COL, value.var = "OBS_VALUE")
 
-<!-- dtEs02 <- figarodt[REF_AREA == "ES" & COL_PI == "P3_S14", .(ROW_PI, COUNTERPART_AREA, COL_PI, OBS_VALUE)] |>  -->
-<!--   _[, .(P3_S14 = sum(OBS_VALUE)), by = ROW_PI] -->
+```
 
-<!-- dtEsCompareTemp <- merge.data.table(x = dtEs01, y = dtEs02, by = "ROW_PI", all = TRUE) -->
-
-<!-- dtEsCompare <- dtEsCompareTemp[, SHARE := fifelse(P3_S13 == 0, 0, P3_S14 / P3_S13)][order(-SHARE)] -->
-
-<!-- ``` -->
-
-<!-- ::: -->
+:::
 
 
