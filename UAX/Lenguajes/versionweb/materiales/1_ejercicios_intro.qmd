@@ -1,0 +1,193 @@
+---
+title: "Documentos Quarto en RStudio"
+format: html
+---
+
+
+
+## ¿Cómo crear un documento Quarto en RStudio?  
+**Guía para principiantes**
+
+
+
+### ¿Qué es Quarto?
+
+[Quarto](https://quarto.org/) es una herramienta que te permite unir texto (con explicaciones), ecuaciones, imágenes y código R (con sus 
+resultados) en un solo documento. Es ideal para tareas, informes y presentaciones en análisis de datos.
+
+
+
+### Paso 1: Instalar Quarto (solo si es necesario)
+
+1. Abre **RStudio**.
+2. Ve al menú `Tools` > `Global Options` > `Quarto`.
+3. Si ves un mensaje diciendo que no tienes instalado Quarto, haz clic en “Install Quarto”.
+
+*En la mayoría de las versiones recientes de RStudio, Quarto ya está instalado, pero revisa por si acaso.*
+
+
+
+### Paso 2: Crear un nuevo documento Quarto
+
+1. En la barra superior de RStudio, haz clic en el botón **`File`** luego `New File` y selecciona **Quarto Document**.
+2. Aparecerá una ventana llamada “New Quarto Document”:
+    - **Title:** Escribe el título de tu trabajo, por ejemplo, `Ejercicios de R: parte 1`.
+    - **Author:** Escribe tu nombre.
+    - **Format:** Elige “HTML” (así podrás ver bien el resultado en el navegador).
+3. Haz clic en **Create**.
+
+Esto te abrirá un archivo con una estructura básica como esta:
+
+````{markdown}
+#| warning: false
+#| eval: false
+
+---
+title: "Ejercicios de R: parte 1"
+author: "Tu Nombre"
+format: html
+---
+
+# Tu primer título
+
+Algún texto introductorio.
+````
+
+Guarda tu documento con **nombre**:  
+Por ejemplo: `R_01_kamal_romero.qmd`
+
+
+
+### Paso 3: Estructura de un documento Quarto
+
+- **Textos**: Escribes normalmente, como si fuera Word, pero usando títulos con `#`.
+- **Código R**: Se coloca en “chunks” o bloques especiales.
+
+**Ejemplo de chunk de código R:**
+
+````{markdown}
+#| warning: false
+#| eval: false
+
+```{r}
+# Este es un bloque de código R
+1 + 1
+```
+
+````
+
+- El resultado de ese bloque aparecerá justo debajo cuando “compiles” el documento.
+
+
+
+### Paso 4: Redactar la actividad
+
+- Para cada ejercicio, usa títulos para organizar (por ejemplo, `## Ejercicio 1`).
+- Añade explicaciones o comentarios antes/después de cada bloque de código.
+- Pega tu código de R **dentro** de los ‘chunks’.
+
+**Ejemplo:**
+
+````{markdown}
+#| warning: false
+#| eval: false
+
+## Ejercicio 1
+
+En este ejercicio creo una matriz de ejemplo y muestro sus dimensiones.
+
+```{r}
+mi_matriz <- matrix(1:6, nrow = 2, ncol = 3)
+dim(mi_matriz)
+```
+
+La matriz tiene 2 filas y 3 columnas.
+````
+
+
+
+### Paso 5: “Compilar” o Renderizar tu documento
+
+1. Haz clic en el botón azul que dice **Render** (generalmente arriba a la derecha en el panel del editor).
+2. Espera unos segundos.
+3. Se abrirá automáticamente tu navegador mostrando el documento listo (verás el texto, los resultados y las gráficas).
+
+- ¡Si aparece un error, repasa el código en los chunks y verifica los paréntesis/corchetes!
+
+
+
+### Paso 6: Entregar el archivo
+
+- Debes entregar **un archivos**:
+  1. El archivo fuente `.qmd` (por ejemplo, `actividad_matrices.qmd`).
+  <!-- 2. El archivo generado `.html` (por ejemplo, `actividad_matrices.html`). -->
+
+<!-- Puedes comprimir ambos en un `.zip` para subirlos. -->
+
+
+
+### Tips adicionales
+
+- Si quieres agregar **comentarios** en el código que no se mostrarán en el output, usa el símbolo `#`.
+- Si quieres escribir en **negrita**, encierra el texto entre `**así**`.
+
+
+
+### Resumen de comandos útiles:
+
+- Títulos:  
+    - `# Título`  
+    - `## Subtítulo`
+- Texto normal: escribe como siempre.
+- Bloque de código:
+
+`````{markdown}
+#| warning: false
+#| eval: false
+
+```{r}
+# Tu código de R aquí
+```
+`````
+
+
+
+### ¿Necesitas inspiración?
+
+Aquí tienes el esqueleto de un archivo Quarto para una actividad de ejercicios:
+
+````{markdown}
+#| warning: false
+#| eval: false
+
+---
+title: "Solución ejercicios de R"
+author: "Tu nombre"
+format: html
+---
+
+# Actividad matrices
+
+## Ejercicio 1
+
+Descripción corta.
+
+```{r}
+# Código R
+```
+
+## Ejercicio 2
+
+Descripción...
+
+```{r}
+# Código R
+```
+````
+
+
+
+**¡Listo!**  
+Con estas instrucciones puedes crear, editar, compilar y exportar tu primer documento Quarto en RStudio sin 
+complicaciones.
+

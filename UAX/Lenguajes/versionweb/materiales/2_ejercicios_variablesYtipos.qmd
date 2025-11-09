@@ -1,0 +1,140 @@
+---
+title: "Actividad: Profundizando en tipos y estructuras de datos en R"
+format: html
+---
+
+## Instrucciones generales
+Resuelve los siguientes ejercicios en tu cuaderno Quarto. Escribe una breve explicación de lo que realiza cada bloque de código, interpreta los resultados e identifica posibles errores o comportamientos inesperados.
+
+---
+
+## Ejercicios
+
+1. **Creación y pruebas de tipo**
+   - Crea una variable llamada `doble_negativo` con el valor `-12.7`.
+   - Crea una variable llamada `entero_grande` con el valor `12000L`.
+   - Crea una variable `cadena` con el texto `"r es divertido"`.
+   - Crea una variable lógica llamada `mayor_cero` que sea el resultado lógico de `doble_negativo > 0`.
+   - Para cada variable, imprime el valor, usa `typeof()`, y muestra con las funciones `is.numeric()`, `is.integer()`, 
+`is.character()`, `is.logical()` si es identificada como ese tipo.
+   - ¿Qué tipo reporta R para la variable `mayor_cero`? ¿Por qué?
+
+2. **Coerción avanzada y errores**
+   - Crea un vector llamado `vec_coercion` con los elementos: `"100"`, `FALSE`, y `3.14`. Muestra el valor de cada 
+elemento y el tipo general del vector.
+   - Explica qué hizo R y por qué, considerando el orden de coerción.
+
+3. **Operaciones y coerción en vectores lógicos y numéricos**
+   - Crea un vector lógico `vec_log` con `c(TRUE, FALSE, TRUE, TRUE, FALSE)`.
+   - Suma `vec_log` más `2`, y explica el resultado.
+   - Usa `as.character()` sobre este vector y comenta el resultado.  
+   - Multiplica el vector lógico por tu variable `doble_negativo` y comenta el tipo y resultado.
+
+4. **Indexación y filtrado**
+   - Crea un vector `v_num` con los valores del 1 al 12.
+   - Extrae todos los elementos pares del vector, usando indexado lógico y la operación `v_num %% 2 == 0` (busca en la ayuda que hace la función `%%`).
+   - Cuenta cuántos pares hay y cuáles son.
+   - Cambia todos los valores múltiplos de 3 por el texto `"Tres"`. ¿Qué ocurre con el tipo de `v_num`? Explica.
+
+5. **Transformaciones y mezclas de tipos**
+   - Crea un vector `v_mix` con estos valores: `1L, 2.25, "3", TRUE, FALSE`.
+   - Aplica la función `unique()` (busca en la ayuda qué hace esta función) y explica el resultado (¿cambió algo?).
+   - Convierte `v_mix` a tipo numérico usando `as.numeric()` y explica en cuáles posiciones aparecen `NA` y por qué.
+
+6. **Secuencias complejas y repeticiones**
+   - Usa `seq()` para crear una secuencia `seq_a` desde -5 hasta 5 con incrementos de 0.5.
+   - Usa `rep()` para construir un vector `rep_b` que repita el patrón `c("a", "b", "c")` tres veces y, luego, otro 
+vector `rep_c` que repita `"X"` cinco veces por cada letra de `c("d", "e", "f")`, usando el parámetro `each`.
+   - Muestra ambos resultados y comenta.
+
+7. **Cambios de nombres e indexado por nombre avanzado**
+   - Crea el vector `c(0, 10, 20, 30, 40, 50)` y asignarle como nombres de elementos: `"cero"`, `"diez"`, `"veinte"`, 
+`"treinta"`, `"cuarenta"`, `"cincuenta"`.
+   - Extrae el elemento llamado `"treinta"`, cambia su valor a `123`, y después sustituye todos los elementos cuyo nombre termina en “a” por el valor `NA`. Muestra el resultado y explica.
+
+8. **Trabajo con longitudes y expansión de vectores**
+   - Crea un vector `v_largo` con 8 elementos secuenciales usando `seq_len()`.
+   - Añade tres elementos extra usando`c()` al final, los valores deben ser `100, 200 y 300`.
+   - Muestra la longitud antes y después.
+
+9. **Conversión inversa de tipos**
+   - Crea un vector de texto `v_txt` con los elementos `"8"`, `"16"`, `"hola"`, `"32"`, `"TRUE"`, `"FALSE"`.
+   - Convierte el vector a numérico usando `as.numeric()`, muestra el resultado y explica cuáles valores se convierten a `NA`.
+   - Luego, convierte el mismo vector a lógico con `as.logical()`, explica el valor de cada elemento resultante.
+
+10. **Creación y llenado por filas y columnas**
+
+-  Crea un vector `vec1` que contenga los números del 7 al 26.
+-  Construye con `vec1` una matriz llamada `matA` de 5 filas y 4 columnas usando el llenado por columnas (por defecto).
+-  Construye la matriz `matB` de las mismas dimensiones pero llenando por filas.
+-  Muestra ambas matrices e identifica al menos dos diferencias en los resultados.
+
+11. **Nombres en matrices**
+
+-  Asigna a las filas de `matB` los nombres "r1" a "r5" y a las columnas "c1" a "c4" usando `rownames()` y 
+`colnames()`.
+-  Visualiza los nombres actuales de filas y columnas utilizando las funciones correspondientes.
+-  Extrae el elemento correspondiente a la fila "r3" y columna "c2".
+
+
+
+12. **Acceso e índices**
+
+Dada la matriz `matA`:
+
+-  Extrae una submatriz formada por las filas 2 a 4 y columnas 2 y 3.
+-  Extrae todos los elementos de la cuarta columna.
+-  Extrae los elementos de las filas cuyo número de fila sea impar y la segunda columna.
+
+
+
+13. **Unión de matrices**
+
+-  Crea una matriz `matC` de 5 filas y 2 columnas con números pares consecutivos desde el 30.
+-  Usa `cbind()` para unir `matB` y `matC` horizontalmente en una nueva matriz `matD`.
+-  Crea otra matriz `matE` de 2 filas y 6 columnas (rellena con números del 100 al 111, por filas), y únete a 
+`matD` con `rbind()`.
+
+
+
+14. **Inspección de atributos y conversión**
+
+-  Usa `dim()`, `nrow()` y `ncol()` con `matD` para mostrar sus dimensiones.
+-  Convierte `matD` a un vector con `as.vector()` e indica en un comentario cómo se ordenaron los datos.
+-  Vuelve a definir la matriz original a partir de ese vector, usando nuevamente `matrix()`.
+
+
+
+15. **Manipulación de elementos**
+
+Dada la matriz `matD`:
+
+-  Cambia todos los elementos en la primera columna cuyo valor sea mayor a 15 por el valor 0.
+-  Extrae los elementos en la segunda fila, excluyendo la primera y última columna.
+
+
+
+16. **Álgebra lineal básico**
+
+-  Crea una matriz cuadrada `M4` de 3x3 con los números del 1 al 9.
+-  Calcula el determinante de `M4` usando `det()`.
+-  Extrae los elementos de la diagonal con `diag()`.
+-  Cambia los valores de la diagonal de `M4` por el valor 99 y muestra la matriz resultante.
+
+
+
+17. **Arreglos (“arrays”) y acceso multidimensional**
+
+-  Construye un array de dimensiones 2×3×2 que contenga consecutivamente los números del 1 al 12.
+-  Muestra el array completo.
+-  Extrae:
+  - i) la “matriz” del primer plano (primera capa),
+  - ii) el elemento en posición [2,3,2],
+  - iii) todos los elementos de la segunda columna en ambas capas.
+
+
+
+18. **Explora funciones avanzadas de álgebra lineal**
+
+Consulta la ayuda de las funciones `inv()` y `%*%` y escribe en un comentario breve para qué sirve cada una y si consideras son útiles en el análisis de datos.
+
